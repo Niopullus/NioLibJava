@@ -4,6 +4,7 @@ import com.niopullus.NioLib.DataPath;
 import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.Draw;
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.DynamicScene;
 import com.niopullus.NioLib.scene.dynscene.Node;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
@@ -19,56 +20,74 @@ import java.util.ArrayList;
  */
 public class Tilemap implements Serializable {
 
-    private SignedContainer<TileRegion> map;
-    private int tileSize;
-    private int width;
-    private int height;
-    private DynamicScene dynamicScene;
-    private Node world;
-    private int z;
-    private int regSize;
+    private final SignedContainer<TileRegion> map;
+    private final int tileSize;
+    private final int width;
+    private final int height;
+    private final Scene scene;
+    private final Node world;
+    private final int z;
+    private final int regSize;
 
-    public Tilemap(int tileSize, int width, int height, int regSize) {
+    private Tilemap(final Scene scene, final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
         this.tileSize = tileSize;
         this.width = width;
         this.height = height;
         this.regSize = regSize;
+        this.world = world;
+        this.scene = scene;
+        this.z = z;
         int xRegions = (int) Math.ceil((double) width / this.regSize) + 3;
         int yRegions = (int) Math.ceil((double) height / this.regSize) + 3;
         this.map = new SignedContainer<TileRegion>(xRegions, yRegions);
     }
 
-    public void setTile(Tile t, int x, int y) {
-        int xReg = x / this.regSize;
-        int yReg = y / this.regSize;
-        int xinReg = Math.abs(x % this.regSize);
-        int yinReg = Math.abs(y % this.regSize);
-        if (x < 0) {
-            xReg--;
-        }
-        if (y < 0) {
-            yReg--;
-        }
-        TileRegion reg = this.map.get(xReg, yReg);
-        if (reg == null) {
-            this.map.set(xReg, yReg, new TileRegion(this.regSize));
-            reg = this.map.get(xReg, yReg);
-        }
-        reg.set(t, xinReg, yinReg);
-        if (t != null) {
-            t.setTileMapPos(new Point(x, y));
-            t.setRwPos(new Point(x * this.tileSize, y * this.tileSize));
-            t.setTilemap(this);
-            if (t instanceof MultiTilePart) {
-                ((MultiTilePart) t).get().addPart((MultiTilePart) t);
-                ((MultiTilePart) t).get().setTilemap(this);
-            }
-        }
+    public Tilemap(final DynamicScene scene, final int tileSize, final int regSize, final int width, final int height, final int z) {
+        this(scene, scene.getWorld(), tileSize, regSize, width, height, z);
     }
 
-    private TileRegion getRegion(int x, int y) {
-        int xReg = x / this.regSize;
-        int yReg = y / this.regSize;
+    public Tilemap(final Scene scene, final int tileSize, final int regSize, final int width, final int height, final int z) {
+        this(scene, new Node(), tileSize, regSize, width, height, z);
+    }
+
+    public Tilemap(final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
+        this(null, world, tileSize, regSize, width, height, z);
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+
+    public int getTileSize() {
+        return tileSize;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public Tile getTile(final int x, final int y) { //Gets a tile from the map in tile coordinates
+        final int xinReg = Math.abs(x % regSize);
+        final int yinReg = Math.abs(y % regSize);
+        final TileRegion reg = getRegion(x, y);
+        if (reg != null) {
+            final Tile tile = reg.get(xinReg, yinReg);
+            if (tile instanceof MultiTilePart) {
+                MultiTilePart multiTilePart = (MultiTilePart) tile;
+                return multiTilePart.get();
+            }
+            return tile;
+        }
+        return null;
+    }
+
+    private TileRegion getRegion(final int x, final int y) { //Gets a region from the map in coordinate
+        int xReg = x / regSize;
+        int yReg = y / regSize;
         if (x < 0) {
             xReg--;
         }
@@ -78,23 +97,32 @@ public class Tilemap implements Serializable {
         return this.map.get(xReg, yReg);
     }
 
-    public Tile getTile(int x, int y) {
+    public void setTile(final Tile tile, final int x, final int y) { //Sets a tile in tile coordinates
+        int xReg = x / regSize;
+        int yReg = y / regSize;
         int xinReg = Math.abs(x % this.regSize);
         int yinReg = Math.abs(y % this.regSize);
-        TileRegion reg = this.getRegion(x, y);
-        if (reg != null) {
-            Tile tile = reg.get(xinReg, yinReg);
-            if (this.map.isValidLoc(x / this.regSize, y / this.regSize)) {
-                if (tile instanceof MultiTilePart) {
-                    return ((MultiTilePart) tile).get();
-                } else {
-                    return tile;
-                }
-            } else {
-                return null;
+        TileRegion reg;
+        if (x < 0) {
+            xReg--;
+        }
+        if (y < 0) {
+            yReg--;
+        }
+        reg = map.get(xReg, yReg);
+        if (reg == null) {
+            map.set(xReg, yReg, new TileRegion(regSize));
+            reg = map.get(xReg, yReg);
+        }
+        reg.set(tile, xinReg, yinReg);
+        if (tile != null) {
+            tile.setTileMapPos(new Point(x, y));
+            tile.setTilemap(this);
+            if (tile instanceof MultiTilePart) {
+                MultiTilePart multiTilePart = (MultiTilePart) tile;
+                MultiTile multiTile = multiTilePart.get();
+                multiTile.setTilemap(this);
             }
-        } else {
-            return null;
         }
     }
 
@@ -140,10 +168,6 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public int getTileSize() {
-        return this.tileSize;
-    }
-
     public Point convertPointToTileLoc(int x, int y) {
         return new Point(((int) Math.floor((double) x / this.tileSize)), ((int) Math.floor((double) y / this.tileSize)));
     }
@@ -175,35 +199,9 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public void setDynamicScene(DynamicScene dynamicScene) {
-        this.dynamicScene = dynamicScene;
-        this.world = dynamicScene.getWorld();
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public void setZ(int z) {
-        this.z = z;
-    }
-
     private void setRegion(TileRegion reg, int x, int y) {
         this.map.set(x, y, reg);
     }
-
-    public void setWorld(Node world) {
-        this.world = world;
-    }
-
-    public DynamicScene getDynamicScene() {
-        return this.dynamicScene;
-    }
-
 
      public DataTree compress() {
      //DATA TREE STRUCTURE:
@@ -251,8 +249,8 @@ public class Tilemap implements Serializable {
                          int dir3 = data.addFolder(new DataPath(new int[]{dir1, dir2}));
                          MultiTile mt = reg.getMultiTile(z);
                          data.addData(1, new DataPath(new int[]{dir1, dir2, dir3}));
-                         data.addData(mt.getPrimePosition().x, new DataPath(new int[]{dir1, dir2, dir3}));
-                         data.addData(mt.getPrimePosition().y, new DataPath(new int[]{dir1, dir2, dir3}));
+                         data.addData(mt.getRefTilePoint().x, new DataPath(new int[]{dir1, dir2, dir3}));
+                         data.addData(mt.getRefTilePoint().y, new DataPath(new int[]{dir1, dir2, dir3}));
                          data.addData((ArrayList) mt.compress().get(), new DataPath(new int[]{dir1, dir2, dir3}));
                      }
                  }

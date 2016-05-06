@@ -10,8 +10,8 @@ public class MultiTilePart extends Tile {
     private final MultiTile multiTile;
     private final int part;
 
-    public MultiTilePart(final MultiTile multiTile, final int part) { //part: Index of part in the MultiTile
-        super(multiTile.getName());
+    public MultiTilePart(final MultiTile multiTile, final Tilemap tilemap, final int part) { //part: Index of part in the MultiTile
+        super(multiTile.getName(), tilemap);
         this.multiTile = multiTile;
         this.part = part;
     }
@@ -20,7 +20,7 @@ public class MultiTilePart extends Tile {
         return multiTile;
     }
 
-    public BufferedImage getImage() {
+    public BufferedImage getImage() { //Gets the image of the multitile that corresponds with this part
         return multiTile.getImage(part);
     }
 

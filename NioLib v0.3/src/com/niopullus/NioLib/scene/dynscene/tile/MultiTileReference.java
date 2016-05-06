@@ -20,11 +20,11 @@ public class MultiTileReference extends TileReference {
         this.images.add(images);
     }
 
-    public int getWidth() {
+    public int getWidth() { //Gets the width of MultiTile in terms of tiles
         return width;
     }
 
-    public int getHeight() {
+    public int getHeight() { //Gets the height of MultiTile in terms of tiles
         return height;
     }
 

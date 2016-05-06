@@ -16,7 +16,7 @@ public class Tile implements CollideData, Cloneable {
     private final TileReference reference;
     private final DataTree data;
     private final Point tileMapPos;
-    private final Tilemap tilemap;
+    private Tilemap tilemap;
 
     public Tile(final String refName, final Tilemap tilemap, final DataTree data) {
         this.tilemap = tilemap;
@@ -86,6 +86,10 @@ public class Tile implements CollideData, Cloneable {
         tileMapPos.y = p.y;
     }
 
+    public void setTilemap(final Tilemap tilemap) {
+        this.tilemap = tilemap;
+    }
+
     public Tile clone() {
         try {
             return (Tile) super.clone();
@@ -94,7 +98,7 @@ public class Tile implements CollideData, Cloneable {
         }
     }
 
-    public DataTree compress() {
+    public DataTree compress() { //Converts the data into a DataTree
         DataTree result = new DataTree();
         result.addData(this.reference.getId());
         result.addData((ArrayList) this.data.get());
