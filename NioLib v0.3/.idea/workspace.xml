@@ -67,8 +67,8 @@
       <file leaf-file-name="DynamicScene.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/niopullus/NioLib/scene/dynscene/DynamicScene.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.21922429">
-              <caret line="55" column="25" selection-start-line="55" selection-start-column="25" selection-end-line="55" selection-end-column="25" />
+            <state vertical-scroll-proportion="0.16863406">
+              <caret line="20" column="6" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -107,6 +107,7 @@
         <option value="$PROJECT_DIR$/src/com/niopullus/NioLib/scene/dynscene/tile/MultiTilePart.java" />
         <option value="$PROJECT_DIR$/src/com/niopullus/NioLib/scene/dynscene/tile/Tile.java" />
         <option value="$PROJECT_DIR$/src/com/niopullus/NioLib/scene/dynscene/tile/Tilemap.java" />
+        <option value="$PROJECT_DIR$/src/com/niopullus/NioLib/scene/dynscene/DynamicScene.java" />
       </list>
     </option>
   </component>
@@ -609,6 +610,13 @@
       <option name="number" value="Default" />
       <updated>1462551343922</updated>
     </task>
+    <task id="LOCAL-00001" summary="Updated code">
+      <created>1462560285998</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1462560285998</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -641,6 +649,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Updated code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -693,8 +705,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/niopullus/NioLib/scene/dynscene/DynamicScene.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21922429">
-          <caret line="55" column="25" selection-start-line="55" selection-start-column="25" selection-end-line="55" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.16863406">
+          <caret line="20" column="6" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="6" />
           <folding />
         </state>
       </provider>
