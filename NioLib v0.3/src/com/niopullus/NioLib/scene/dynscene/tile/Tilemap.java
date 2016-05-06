@@ -140,7 +140,7 @@ public class Tilemap implements Serializable {
 
     public Tile getOTile(final int x, final int y) { //Gets a tile and ignores the MultiTile filter in tile coordinates
         final Point pointInRegion = getPointInRegion(x, y);
-        TileRegion reg = getRegion(x, y);
+        final TileRegion reg = getRegion(x, y);
         if (reg != null) {
             return reg.get(pointInRegion.x, pointInRegion.y);
         } else {
