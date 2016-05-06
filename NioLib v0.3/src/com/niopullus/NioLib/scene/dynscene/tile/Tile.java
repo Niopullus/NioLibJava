@@ -11,15 +11,14 @@ import java.util.ArrayList;
 /**Entry to a tilemap
  * Created by Owen on 3/23/2016.
  */
-public class Tile implements CollideData, Cloneable {
+public class Tile implements CollideData {
 
-    private final TileReference reference;
-    private final DataTree data;
-    private final Point tileMapPos;
+    private TileReference reference;
+    private DataTree data;
+    private Point tileMapPos;
     private Tilemap tilemap;
 
-    public Tile(final String refName, final Tilemap tilemap, final DataTree data) {
-        this.tilemap = tilemap;
+    public Tile(final String refName, final DataTree data) {
         this.data = data;
         this.tileMapPos = new Point();
         TileReference ref = null;
@@ -29,8 +28,12 @@ public class Tile implements CollideData, Cloneable {
         this.reference = ref;
     }
 
-    public Tile(final String refName, final Tilemap tilemap) {
-        this(refName, tilemap, new DataTree());
+    public Tile(final String refName) {
+        this(refName, new DataTree());
+    }
+
+    private Tile() { //For cloning
+        this("unreferenced (clone in progress)");
     }
 
     public double getElasticity() {
@@ -90,16 +93,27 @@ public class Tile implements CollideData, Cloneable {
         this.tilemap = tilemap;
     }
 
-    public Tile clone() {
+    public Tile clone(DataTree data) {
         try {
-            return (Tile) super.clone();
+            Class<?> tileClass = getClass();
+            Tile tile = (Tile) tileClass.newInstance();
+            tile.reference = reference;
+            tile.tilemap = tilemap;
+            tile.tileMapPos = tileMapPos;
+            tile.data = data;
+            return tile;
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
         }
+        return null;
+    }
+
+    public Tile clone() {
+        return clone(data);
     }
 
     public DataTree compress() { //Converts the data into a DataTree
-        DataTree result = new DataTree();
+        final DataTree result = new DataTree();
         result.addData(this.reference.getId());
         result.addData((ArrayList) this.data.get());
         return result;

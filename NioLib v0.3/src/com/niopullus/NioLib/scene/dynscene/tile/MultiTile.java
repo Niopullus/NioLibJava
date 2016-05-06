@@ -12,10 +12,10 @@ public class MultiTile extends Tile {
     private final ArrayList<MultiTilePart> parts;
     private Point refTilePoint;
 
-    public MultiTile(final String refName, final Tilemap tilemap, final Point refTP) {
-        super(refName, tilemap);
+    public MultiTile(final String refName, final Point refTP) {
+        super(refName);
         this.parts = new ArrayList<MultiTilePart>();
-        this.refTilePoint = refTP;
+        this.refTilePoint = new Point();
     }
 
     public Point getRefTilePoint() {
@@ -58,8 +58,25 @@ public class MultiTile extends Tile {
         return new Point(x, y);
     }
 
+    public Point getTileMapPos() {
+        final Point result = new Point();
+        final MultiTileReference ref = getReference();
+        final Tilemap tilemap = getTilemap();
+        final int tileSize = tilemap.getTileSize();
+        final int x = refTilePoint.x + ref.getWidth() / 2;
+        final int y = refTilePoint.y + ref.getHeight() / 2;
+        result.x = x;
+        result.y = y;
+        return result;
+    }
+
     public void addPart(final MultiTilePart part) {
         parts.add(part);
+    }
+
+    public void setRefTilePoint(Point point) {
+        refTilePoint.x = point.x;
+        refTilePoint.y = point.y;
     }
 
 }

@@ -10,8 +10,8 @@ public class MultiTilePart extends Tile {
     private final MultiTile multiTile;
     private final int part;
 
-    public MultiTilePart(final MultiTile multiTile, final Tilemap tilemap, final int part) { //part: Index of part in the MultiTile
-        super(multiTile.getName(), tilemap);
+    public MultiTilePart(final MultiTile multiTile, final int part) { //part: Index of part in the MultiTile
+        super(multiTile.getName());
         this.multiTile = multiTile;
         this.part = part;
     }
