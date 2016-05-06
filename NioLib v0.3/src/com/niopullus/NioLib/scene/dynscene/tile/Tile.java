@@ -93,6 +93,10 @@ public class Tile implements CollideData {
         this.tilemap = tilemap;
     }
 
+    public void setReference(final TileReference reference) {
+        this.reference = reference;
+    }
+
     public Tile clone(DataTree data) {
         try {
             Class<?> tileClass = getClass();
