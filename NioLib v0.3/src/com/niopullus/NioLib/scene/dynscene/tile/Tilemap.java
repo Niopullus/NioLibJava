@@ -264,27 +264,27 @@ public class Tilemap implements Serializable {
          final int height = (Integer) data.get(new DataPath(new int[]{2}));
          final int dataSize = data.getSize();
          final Tilemap map = new Tilemap(world, tileSize, regSize, width, height, world.getZ());
-         ArrayList<MultiTile> multiTiles = new ArrayList<MultiTile>();
+         final ArrayList<MultiTile> multiTiles = new ArrayList<MultiTile>();
          for (int i = 3; i < dataSize; i++) {
-             int regx = (Integer) data.get(new DataPath(new int[]{i, 0}));
-             int regy = (Integer) data.get(new DataPath(new int[]{i, 1}));
-             TileRegion reg = new TileRegion(regSize);
+             final int regx = (Integer) data.get(new DataPath(new int[]{i, 0}));
+             final int regy = (Integer) data.get(new DataPath(new int[]{i, 1}));
+             final TileRegion reg = new TileRegion(regSize);
              for (int j = 0; j < data.getSize(new DataPath(new int[]{i, 2})); j++) {
-                 int tiletype = (Integer) data.get(new DataPath(new int[]{i, 2, j, 0}));
-                 int x = (Integer) data.get(new DataPath(new int[]{i, 2, j, 1}));
-                 int y = (Integer) data.get(new DataPath(new int[]{i, 2, j, 2}));
-                 int id = (Integer) data.get(new DataPath(new int[]{i, 2, j, 3, 0}));
-                 ArrayList dataFolder = (ArrayList) data.get(new DataPath(new int[]{i, 2, j, 3, 1}));
-                 DataTree tileData = new DataTree(dataFolder);
-                 TileReference reference = TileReference.getRef(id);
+                 final int tiletype = (Integer) data.get(new DataPath(new int[]{i, 2, j, 0}));
+                 final int x = (Integer) data.get(new DataPath(new int[]{i, 2, j, 1}));
+                 final int y = (Integer) data.get(new DataPath(new int[]{i, 2, j, 2}));
+                 final int id = (Integer) data.get(new DataPath(new int[]{i, 2, j, 3, 0}));
+                 final ArrayList dataFolder = (ArrayList) data.get(new DataPath(new int[]{i, 2, j, 3, 1}));
+                 final DataTree tileData = new DataTree(dataFolder);
+                 final TileReference reference = TileReference.getRef(id);
                  if (reference != null) {
                      if (tiletype == 0) {
-                         Tile sample = reference.getSample();
-                         Tile tile = sample.clone(tileData);
+                         final Tile sample = reference.getSample();
+                         final Tile tile = sample.clone(tileData);
                          reg.set(tile, x, y);
                      } else if (tiletype == 1) {
-                         MultiTile sample = (MultiTile) reference.getSample();
-                         MultiTile multiTile = (MultiTile) sample.clone(tileData);
+                         final MultiTile sample = (MultiTile) reference.getSample();
+                         final MultiTile multiTile = (MultiTile) sample.clone(tileData);
                          multiTile.setRefTilePoint(new Point(x, y));
                          multiTiles.add(multiTile);
                      }
