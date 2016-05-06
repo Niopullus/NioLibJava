@@ -26,7 +26,7 @@ public class Tilemap implements Serializable {
     private final int height;
     private final Scene scene;
     private final Node world;
-    private final int z;
+    private final int z;//
     private final int regSize;
 
     private Tilemap(final Scene scene, final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
