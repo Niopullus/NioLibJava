@@ -4,61 +4,62 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-/**
+/**Tile thats takes up multiple tilemap spaces
  * Created by Owen on 4/11/2016.
  */
 public class MultiTile extends Tile {
 
-    private ArrayList<MultiTilePart> parts;
-    private Point primePosition;
+    private final ArrayList<MultiTilePart> parts;
+    private Point refTilePoint;
 
-    public MultiTile(String refName) {
+    public MultiTile(final String refName, final Point refTP) {
         super(refName);
         this.parts = new ArrayList<MultiTilePart>();
+        this.refTilePoint = refTP;
     }
 
-    public void setPrimePosition(Point p) {
-        this.primePosition = p;
+    public Point getRefTilePoint() {
+        return refTilePoint;
     }
 
-    public Point getPrimePosition() {
-        return this.primePosition;
+    public MultiTileReference getReference() {
+        return (MultiTileReference) super.getReference();
     }
 
     public int getWidth() {
-        MultiTileReference ref = (MultiTileReference) this.getReference();
+        final MultiTileReference ref = getReference();
         return ref.getWidth();
     }
 
     public int getHeight() {
-        MultiTileReference ref = (MultiTileReference) this.getReference();
+        final MultiTileReference ref = getReference();
         return ref.getHeight();
     }
 
-    public BufferedImage getImage(int part) {
-        return this.getReference().getImage(part);
+    public BufferedImage getImage(final int part) { //Gets the image of a particular part of the MultiTile
+        final MultiTileReference ref = getReference();
+        return ref.getImage(part);
     }
 
-    public void addPart(MultiTilePart part) {
-        this.parts.add(part);
-    }
-/**
-    public Point getRwPos() {
-        return new Point((this.parts.get(0).getRwPos().x + this.parts.get(this.getWidth() * this.getHeight() - 1).getRwPos().x) / 2, (this.parts.get(0).getRwPos().y + this.parts.get(this.getWidth() * this.getHeight() - 1).getRwPos().y) / 2);
-    }
-**/
-
-    public Point getRwPos() {
-        MultiTileReference ref = (MultiTileReference) this.getReference();
-        return new Point((this.primePosition.x + ref.getWidth() / 2) * this.getTilemap().getTileSize(), (this.primePosition.y + ref.getHeight() / 2) * this.getTilemap().getTileSize());
+    public MultiTilePart getPart(final int index) { //Gets the part of a certain index (0-[WIDTH * HEIGHT])
+        return parts.get(index);
     }
 
-    public MultiTilePart getPart(int index) {
-        return this.parts.get(index);
+    public int getPartsCount() { //Gets the amount of MultiTileParts (Can also be calculated with (WIDTH * HEIGHT))
+        return parts.size();
     }
 
-    public int getPartQuant() {
-        return this.parts.size();
+    public Point getRWPos() { //Gets the in-world position of the (x-center, y-center) of the MultiTile
+        final MultiTileReference ref = getReference();
+        final Tilemap tilemap = getTilemap();
+        final int tileSize = tilemap.getTileSize();
+        final int x = (refTilePoint.x + ref.getWidth() / 2) * tileSize;
+        final int y = (refTilePoint.y + ref.getHeight() / 2) * tileSize;
+        return new Point(x, y);
+    }
+
+    public void addPart(final MultiTilePart part) {
+        parts.add(part);
     }
 
 }

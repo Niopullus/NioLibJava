@@ -1,29 +1,27 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-/**
+/**Tile that stands in for a part of a MultiTile
  * Created by Owen on 4/11/2016.
  */
 public class MultiTilePart extends Tile {
 
-    private MultiTile tile;
-    private int part;
+    private final MultiTile multiTile;
+    private final int part;
 
-    public MultiTilePart(MultiTile tile, int part) {
-        super(tile.getName());
-        this.tile = tile;
+    public MultiTilePart(final MultiTile multiTile, final int part) { //part: Index of part in the MultiTile
+        super(multiTile.getName());
+        this.multiTile = multiTile;
         this.part = part;
     }
 
-    public MultiTile get() {
-        return this.tile;
+    public MultiTile get() { //Gets the MultiTile that this part points to
+        return multiTile;
     }
 
     public BufferedImage getImage() {
-        return this.tile.getImage(this.part);
+        return multiTile.getImage(part);
     }
 
 }

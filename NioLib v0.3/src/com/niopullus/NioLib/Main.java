@@ -16,6 +16,18 @@ import java.io.File;
  */
 public class Main extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
+    private static JFrame jFrame;
+    private static final int WIDTH = Config.IMGWIDTH;
+    private static final int HEIGHT = Config.IMGHEIGHT;
+    private static final double SCALE = Config.WINDOWSCALE;
+    private Thread thread;
+    private boolean running;
+    private int FPS = 30;
+    private long targetTime = 1000 / FPS;
+    private BufferedImage image;
+    private Graphics2D g;
+    private SceneManager sceneManager;
+
     public static void main(String[] args) {
         JFrame window = new JFrame(Config.WINDOWTITLE);
         jFrame = window;
@@ -28,17 +40,6 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         new File("C:\\" + Config.DIRNAME + "\\" + "worlds").mkdir();
         Config.init();
     }
-    private static JFrame jFrame;
-    private static final int WIDTH = Config.IMGWIDTH;
-    private static final int HEIGHT = Config.IMGHEIGHT;
-    private static final double SCALE = Config.WINDOWSCALE;
-    private Thread thread;
-    private boolean running;
-    private int FPS = 30;
-    private long targetTime = 1000 / FPS;
-    private BufferedImage image;
-    private Graphics2D g;
-    private SceneManager sceneManager;
 
     public Main() {
         super();
