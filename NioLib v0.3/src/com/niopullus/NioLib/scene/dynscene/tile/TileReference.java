@@ -91,7 +91,7 @@ public class TileReference implements Comparable<TileReference> {
     }
 
     public static void registerMultiTile(final String name, ArrayList<BufferedImage> images, double friction, double elasticity, boolean collidable, int width, int height, MultiTile tile) {
-        MultiTileReference ref = new MultiTileReference(name, getCurID(), images, friction, elasticity, collidable, width, height, tile);
+        final MultiTileReference ref = new MultiTileReference(name, getCurID(), images, friction, elasticity, collidable, width, height, tile);
         TileReference.refs.add(ref);
         TileReference.sortedRefs.add(ref);
         Collections.sort(sortedRefs);
@@ -100,14 +100,15 @@ public class TileReference implements Comparable<TileReference> {
 
     public static void registerMultiTile(String name, String baseIMGName, double friction, double elasticity, boolean collidable, int width, int height, MultiTile tile) {
         final ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
-        final int dotPos = 0;
+        final int parts = width * height;
+        int dotPos = 0;
         for (int i = 0; i < baseIMGName.length(); i++) {
             if (baseIMGName.charAt(i) == '.') {
                 dotPos = i;
                 break;
             }
         }
-        for (int i = 1; i <= width * height; i++) {
+        for (int i = 1; i <= parts; i++) {
             images.add(Utilities.loadImage(baseIMGName.substring(0, dotPos) + i + baseIMGName.substring(dotPos)));
         }
         registerMultiTile(name, images, friction, elasticity, collidable, width, height, tile);
@@ -117,20 +118,20 @@ public class TileReference implements Comparable<TileReference> {
         return TileReference.refs.size();
     }
 
-    public int compareTo(TileReference ref) {
-        return this.name.compareTo(ref.getName());
+    public int compareTo(final TileReference ref) {
+        return name.compareTo(ref.getName());
     }
 
     public boolean getCollidable() {
-        return this.collidable;
+        return collidable;
     }
 
     public Tile getSample() {
-        return this.tile;
+        return tile;
     }
 
-    public void addImage(BufferedImage image) {
-        this.images.add(image);
+    public void addImage(final BufferedImage image) {
+        images.add(image);
     }
 
 }
