@@ -5,10 +5,10 @@ package com.niopullus.NioLib.scene.dynscene;
  */
 public class Collision {
 
-    private final CollideData data1;
-    private final CollideData data2;
-    private final boolean passive;
-    private final Dir dir;
+    private CollideData data1;
+    private CollideData data2;
+    private boolean passive;
+    private Dir dir;
 
     public Collision(final CollideData data1, final CollideData data2, final Dir dir, final boolean passive) {
         this.data1 = data1;
@@ -34,15 +34,17 @@ public class Collision {
     }
 
     public boolean causedBy(String name) {
-        return data1.getName().equals(name);
+        final String name1 = data1.getName();
+        return name1.equals(name);
     }
 
     public boolean isVictim(String name) {
-        return data2.getName().equals(name);
+        final String name2 = data2.getName();
+        return name2.equals(name);
     }
 
     public boolean isPassive() {
-        return this.passive;
+        return passive;
     }
 
     public CollideData getCauser() {
@@ -54,7 +56,7 @@ public class Collision {
     }
 
     public Dir getDir() {
-        return this.dir;
+        return dir;
     }
 
 }

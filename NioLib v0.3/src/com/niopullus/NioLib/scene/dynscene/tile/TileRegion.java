@@ -7,9 +7,9 @@ import java.util.ArrayList;
  */
 public class TileRegion {
 
-    private final int size;
-    private final Tile[][] grid;
-    private final ArrayList<MultiTile> multiTiles;
+    private int size;
+    private Tile[][] grid;
+    private ArrayList<MultiTile> multiTiles;
 
     public TileRegion(final int regSize) {
         this.size = regSize;

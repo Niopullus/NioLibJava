@@ -18,14 +18,14 @@ import java.util.ArrayList;
  */
 public class Tilemap implements Serializable {
 
-    private final int tileSize;
-    private final int width;
-    private final int height;
-    private final int z;
-    private final int regSize;
-    private final SignedContainer<TileRegion> map;
-    private final Scene scene;
-    private final Node world;
+    private int tileSize;
+    private int width;
+    private int height;
+    private int z;
+    private int regSize;
+    private SignedContainer<TileRegion> map;
+    private Scene scene;
+    private Node world;
 
     private Tilemap(final Scene scene, final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
         this.tileSize = tileSize;

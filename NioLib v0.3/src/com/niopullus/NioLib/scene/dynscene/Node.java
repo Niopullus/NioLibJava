@@ -11,7 +11,7 @@ import java.util.Collections;
 /**
  * Created by Owen on 3/5/2016.
  */
-public class Node implements Comparable<Node>, CollideData, Serializable {
+public class Node implements Comparable<Node>, CollideData {
 
     private UUID id;
     private int x;
@@ -492,19 +492,19 @@ public class Node implements Comparable<Node>, CollideData, Serializable {
         return this.yScale;
     }
 
-    public void setOWidth(int width) {
+    public void osetWidth(int width) {
         this.oWidth = width;
     }
 
-    public void setOHeight(int height) {
+    public void osetHeight(int height) {
         this.oHeight = height;
     }
 
-    public int getOWidth() {
+    public int ogetWidth() {
         return this.oWidth;
     }
 
-    public int getOHeight() {
+    public int ogetHeight() {
         return this.oHeight;
     }
 

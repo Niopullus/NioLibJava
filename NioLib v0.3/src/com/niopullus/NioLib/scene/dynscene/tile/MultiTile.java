@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class MultiTile extends Tile {
 
-    private final ArrayList<MultiTilePart> parts;
+    private ArrayList<MultiTilePart> parts;
     private Point refTilePoint;
 
     public MultiTile(final String refName, final Point refTP) {

@@ -13,12 +13,12 @@ import java.util.Collections;
 public class TileReference implements Comparable<TileReference>, Serializable {
 
     private String name;
-    private final int id;
-    private final ArrayList<BufferedImage> images;
-    private final double friction;
-    private final double elasticity;
-    private final boolean collidable;
-    private final Tile sample;
+    private int id;
+    private ArrayList<BufferedImage> images;
+    private double friction;
+    private double elasticity;
+    private boolean collidable;
+    private Tile sample;
     private static final ArrayList<TileReference> refs = new ArrayList<TileReference>();
     private static final ArrayList<TileReference> sortedRefs = new ArrayList<TileReference>();
     private static int curID = 1;

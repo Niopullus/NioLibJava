@@ -8,9 +8,9 @@ import java.util.ArrayList;
  */
 public class MultiTileReference extends TileReference {
 
-    private final int width;
-    private final int height;
-    private final ArrayList<ArrayList<BufferedImage>> images;
+    private int width;
+    private int height;
+    private ArrayList<ArrayList<BufferedImage>> images;
 
     public MultiTileReference(final String name, final int id, final ArrayList<BufferedImage> images, final double friction, final double elasticity, final boolean collidable, final int width, final int height, final MultiTile tile) {
         super(name, id, null, friction, elasticity, collidable, tile);

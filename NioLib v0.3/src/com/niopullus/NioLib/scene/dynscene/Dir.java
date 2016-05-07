@@ -5,9 +5,9 @@ package com.niopullus.NioLib.scene.dynscene;
  */
 public enum Dir {
 
-    N,
-    S,
-    W,
-    E;
+    N, //North, Up
+    S, //South, Down
+    W, //West, Left
+    E; //East, Right
 
 }

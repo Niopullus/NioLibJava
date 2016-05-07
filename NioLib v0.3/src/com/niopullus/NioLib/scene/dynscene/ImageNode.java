@@ -15,21 +15,25 @@ public class ImageNode extends Node {
 
     private BufferedImage image;
 
-    public ImageNode(String name, String imageDir) {
-        this(name, imageDir, Utilities.loadImage(imageDir).getWidth(), Utilities.loadImage(imageDir).getHeight());
+    public ImageNode(final String name, final BufferedImage image, final int width, final int height) {
+        super(name, width, height);
+        this.image = image;
+        this.osetWidth(image.getWidth());
+        this.osetHeight(image.getHeight());
+        this.csetXScale((double) width / ogetWidth());
+        this.csetYScale((double) height / ogetHeight());
     }
 
-    public ImageNode(String name, String imageDir, int width, int height) {
-        super(name, width, height);
-        this.image = Utilities.loadImage(imageDir);
-        this.setOWidth(this.image.getWidth());
-        this.setOHeight(this.image.getHeight());
-        this.csetXScale((double) width / this.getOWidth());
-        this.csetYScale((double) height / this.getOHeight());
+    public ImageNode(final String name, final BufferedImage image) {
+        this(name, image, image.getWidth(), image.getHeight());
+    }
+
+    public BufferedImage getImage() {
+        return image;
     }
 
     public void draw() {
-        Draw.image(this.getTMinX(), Main.Height() - this.getTY() - this.getHeight(), this.getTMaxX(), Main.Height() - this.getTY(), 0, 0, this.image.getWidth(), this.image.getHeight(), this.getZ(), this.getAngle(), this.image);
+        Draw.image(getTMinX(), getTMinY(), getTMaxY(), getTMaxY(), getZ(), getAngle(), image);
     }
 
 }
