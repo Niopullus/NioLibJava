@@ -131,4 +131,8 @@ public class Tile implements CollideData {
 
     }
 
+    public final void causerCollision(Collision collision) {
+        //Blank Implementation
+    }
+
 }

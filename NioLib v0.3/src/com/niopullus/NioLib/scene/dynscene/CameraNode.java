@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-/**
+/**A node with movement bounds designed to have the setCamera(Node) method used on
  * Created by Owen on 4/10/2016.
  */
 public class CameraNode extends Node {
@@ -18,20 +18,20 @@ public class CameraNode extends Node {
         this.yMax = 0;
     }
 
-    public void setBounds(int xMin, int yMin, int xMax, int yMax) {
+    public void setBounds(final int xMin, final int yMin, final int xMax, final int yMax) {
         this.xMin = xMin;
         this.yMin = yMin;
         this.xMax = xMax;
         this.yMax = yMax;
     }
 
-    public void setX(int x) {
-        if (x > this.xMax) {
-            this.oSetX(this.xMax);
-        } else if (x < this.xMin) {
-            this.oSetX(this.xMin);
+    public void setX(final int x) {
+        if (x > xMax) {
+            oSetX(xMax);
+        } else if (x < xMin) {
+            oSetX(xMin);
         } else {
-            this.oSetX(x);
+            oSetX(x);
         }
     }
 

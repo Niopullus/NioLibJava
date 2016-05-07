@@ -138,7 +138,7 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public Tile getOTile(final int x, final int y) { //Gets a tile and ignores the MultiTile filter in tile coordinates
+    public Tile ogetTile(final int x, final int y) { //Gets a tile and ignores the MultiTile filter in tile coordinates
         final Point pointInRegion = getPointInRegion(x, y);
         final TileRegion reg = getRegion(x, y);
         if (reg != null) {
@@ -179,7 +179,7 @@ public class Tilemap implements Serializable {
         final int yMax = (int) Math.ceil((double) (-world.getY() + Main.Height()) / tileSize) + 1;
         for (int i = xMin; i < xMax ; i++) {
             for (int j = yMin; j < yMax; j++) {
-                final Tile tile = getOTile(i, j);
+                final Tile tile = ogetTile(i, j);
                 if (tile != null && tile.getImage() != null) {
                     final int x = i * tileSize + world.getX();
                     final int y = Main.Height() - ((j + 1) * tileSize) - world.getY();

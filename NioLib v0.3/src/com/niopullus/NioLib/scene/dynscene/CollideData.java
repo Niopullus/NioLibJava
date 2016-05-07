@@ -9,5 +9,6 @@ public interface CollideData {
     double getFriction();
     String getName();
     void victimCollision(Collision collision);
+    void causerCollision(Collision collision);
 
 }
