@@ -7,24 +7,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
+/**Stores common data from tiles
  * Created by Owen on 4/10/2016.
  */
 public class TileReference implements Comparable<TileReference>, Serializable {
 
     private String name;
-    private int id;
-    private ArrayList<BufferedImage> images;
-    private double friction;
-    private double elasticity;
-    private boolean collidable;
-    private Tile tile;
-    private static ArrayList<TileReference> refs = new ArrayList<TileReference>();
-    private static ArrayList<TileReference> sortedRefs = new ArrayList<TileReference>();
+    private final int id;
+    private final ArrayList<BufferedImage> images;
+    private final double friction;
+    private final double elasticity;
+    private final boolean collidable;
+    private final Tile sample;
+    private static final ArrayList<TileReference> refs = new ArrayList<TileReference>();
+    private static final ArrayList<TileReference> sortedRefs = new ArrayList<TileReference>();
     private static int curID = 1;
-    private static TileReference sampleRef = new TileReference(null, 0, null, 0, 0, false, null);
+    private static final TileReference sampleRef = new TileReference(null, 0, null, 0, 0, false, null);
 
-    public TileReference(String name, int id, BufferedImage image, double friction, double elasticity, boolean collidable, Tile tile) {
+    public TileReference(final String name, final int id, final BufferedImage image, final double friction, final double elasticity, final boolean collidable, final Tile sample) {
         this.id = id;
         this.images = new ArrayList<BufferedImage>();
         this.name = name;
@@ -32,36 +32,44 @@ public class TileReference implements Comparable<TileReference>, Serializable {
         this.elasticity = elasticity;
         this.collidable = collidable;
         this.images.add(image);
-        this.tile = tile;
+        this.sample = sample;
     }
 
     public double getElasticity() {
-        return this.elasticity;
+        return elasticity;
     }
 
     public double getFriction() {
-        return this.friction;
+        return friction;
     }
 
     public int getId() {
-        return this.id;
+        return id;
     }
 
     public BufferedImage getImage() {
-        return this.images.get(0);
+        return images.get(0);
     }
 
-    public BufferedImage getImage(int set) {
-        return this.images.get(set);
+    public BufferedImage getImage(final int set) {
+        return images.get(set);
     }
 
     public String getName() {
-        return this.name;
+        return name;
+    }
+
+    public boolean getCollidable() {
+        return collidable;
+    }
+
+    public Tile getSample() {
+        return sample;
     }
 
     public static int getCurID() {
-        int id = TileReference.curID;
-        TileReference.curID++;
+        final int id = curID;
+        curID++;
         return id;
     }
 
@@ -73,64 +81,41 @@ public class TileReference implements Comparable<TileReference>, Serializable {
         }
     }
 
-    public static TileReference getRef(String name) {
-        TileReference.sampleRef.name = name;
-        int index = Collections.binarySearch(TileReference.sortedRefs, sampleRef);
+    public static TileReference getRef(final String name) {
+        sampleRef.name = name;
+        final int index = Collections.binarySearch(sortedRefs, sampleRef);
         if (index >= 0) {
-            return TileReference.sortedRefs.get(index);
+            return sortedRefs.get(index);
         }
         return null;
     }
 
-    public static void registerTile(String name, String image, double friction, double elasticity, boolean collidable, Tile tile) {
-        TileReference ref = new TileReference(name, getCurID(), Utilities.loadImage(image), friction, elasticity, collidable, tile);
-        TileReference.refs.add(ref);
-        TileReference.sortedRefs.add(ref);
+    public static void registerTile(final String name, final String image, final double friction, final double elasticity, final boolean collidable, final Tile tile) {
+        final TileReference ref = new TileReference(name, getCurID(), Utilities.loadImage(image), friction, elasticity, collidable, tile);
+        refs.add(ref);
+        sortedRefs.add(ref);
         Collections.sort(sortedRefs);
         tile.setReference(TileReference.getRef(name));
     }
 
-    public static void registerMultiTile(String name, ArrayList<BufferedImage> images, double friction, double elasticity, boolean collidable, int width, int height, Tile tile) {
-        MultiTileReference ref = new MultiTileReference(name, getCurID(), images, friction, elasticity, collidable, width, height, tile);
-        TileReference.refs.add(ref);
-        TileReference.sortedRefs.add(ref);
+    public static void registerMultiTile(String name, ArrayList<BufferedImage> images, double friction, double elasticity, boolean collidable, int width, int height, MultiTile tile) {
+        final MultiTileReference ref = new MultiTileReference(name, getCurID(), images, friction, elasticity, collidable, width, height, tile);
+        refs.add(ref);
+        sortedRefs.add(ref);
         Collections.sort(sortedRefs);
         tile.setReference(TileReference.getRef(name));
-    }
-
-    public static void registerMultiTile(String name, String baseIMGName, double friction, double elasticity, boolean collidable, int width, int height, Tile tile) {
-        ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
-        int dotPos = 0;
-        for (int i = 0; i < baseIMGName.length(); i++) {
-            if (baseIMGName.charAt(i) == '.') {
-                dotPos = i;
-                break;
-            }
-        }
-        for (int i = 1; i <= width * height; i++) {
-            images.add(Utilities.loadImage(baseIMGName.substring(0, dotPos) + i + baseIMGName.substring(dotPos)));
-        }
-        registerMultiTile(name, images, friction, elasticity, collidable, width, height, tile);
     }
 
     public static int getTileQuant() {
-        return TileReference.refs.size();
+        return refs.size();
     }
 
-    public int compareTo(TileReference ref) {
-        return this.name.compareTo(ref.getName());
+    public int compareTo(final TileReference reference) {
+        return name.compareTo(reference.getName());
     }
 
-    public boolean getCollidable() {
-        return this.collidable;
-    }
-
-    public Tile getSample() {
-        return this.tile;
-    }
-
-    public void addImage(BufferedImage image) {
-        this.images.add(image);
+    public void addImage(final BufferedImage image) {
+        images.add(image);
     }
 
 }

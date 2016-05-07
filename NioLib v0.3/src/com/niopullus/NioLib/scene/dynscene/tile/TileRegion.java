@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Created by Owen on 4/13/2016.
  */
-public class TileRegion implements Serializable {
+public class TileRegion {
 
     private int size;
     private Tile[][] grid;
