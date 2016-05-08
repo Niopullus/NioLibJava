@@ -2,7 +2,7 @@ package com.niopullus.NioLib.scene.dynscene;
 
 import java.awt.image.BufferedImage;
 
-/**
+/**Image Node that operates as a Trigger
  * Created by Owen on 4/6/2016.
  */
 public class ImageTrigger extends ImageNode implements Trigger {

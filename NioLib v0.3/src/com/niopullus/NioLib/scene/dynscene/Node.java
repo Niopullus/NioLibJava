@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
+/**Polymorphic sprite designed for a Dynamic Scene
  * Created by Owen on 3/5/2016.
  */
 public class Node implements Comparable<Node>, CollideData {
@@ -678,5 +678,15 @@ public class Node implements Comparable<Node>, CollideData {
         return id.compareTo(node.getId());
     }
 
+    public Node clone() {
+        try {
+            final Class<?> nodeClass = getClass();
+            final Node node = (Node) nodeClass.newInstance();
+            return node;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }
