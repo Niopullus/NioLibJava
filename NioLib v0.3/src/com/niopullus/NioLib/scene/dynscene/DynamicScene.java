@@ -28,10 +28,9 @@ public class DynamicScene extends Scene implements Serializable {
     private Tilemap bgTilemap;
     private Node camera;
 
-    public DynamicScene(World world) {
+    public DynamicScene(final World world) {
         this.name = world.getName();
         this.universe = world.getUniverse();
-        this.world = world.getWorld();
         this.physicsHandler = world.getPhysicsHandler();
         this.background = world.getBackground();
         this.fgTilemap = world.getFgTilemap();
@@ -48,10 +47,10 @@ public class DynamicScene extends Scene implements Serializable {
         this.universe = new Node("universe");
         this.world = new Node("world");
         this.world.markWorld();
-        this.universe.setDynamicScene(this);
+        this.universe.setScene(this);
         this.universe.addChild(world);
         this.universe.markUniverse();
-        this.universe.setDynamicScene(this);
+        this.universe.setScene(this);
         this.background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
         this.fgTilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.FGTILEMAPZ);
         this.bgTilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.BGTILEMAPZ);
@@ -82,6 +81,10 @@ public class DynamicScene extends Scene implements Serializable {
 
     public Node getWorld() {
         return world;
+    }
+
+    public PhysicsHandler getPhysicsHandler() {
+        return physicsHandler;
     }
 
     public Point getMousePosInWorld() {
@@ -223,7 +226,7 @@ public class DynamicScene extends Scene implements Serializable {
         final CollideData victim = collision.getVictim();
         if (victim instanceof Trigger) {
             Trigger trigger = (Trigger) victim;
-            trigger.trigger();
+            trigger.trigger(victim);
         } else {
             victim.victimCollision(collision);
             causer.causerCollision(collision);

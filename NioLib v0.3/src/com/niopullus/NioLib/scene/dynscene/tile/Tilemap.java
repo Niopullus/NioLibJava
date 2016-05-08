@@ -252,7 +252,7 @@ public class Tilemap implements Serializable {
                              }
                          }
                      }
-                     for (int z = 0; z < reg.getMultiTileQuant(); z++) {
+                     for (int z = 0; z < reg.getMultiTileCount(); z++) {
                          final int dir3 = data.addFolder(new DataPath(new int[]{dir1, dir2}));
                          final MultiTile mt = reg.getMultiTile(z);
                          data.addData(1, new DataPath(new int[]{dir1, dir2, dir3}));
@@ -266,7 +266,7 @@ public class Tilemap implements Serializable {
         return data;
      }
 
-     public static Tilemap decompress(final Node world, final DataTree data, final int tileSize) { //Converts a DataTree into a tilemap
+     public static Tilemap decompress(final DataTree data, final Node world, final int tileSize) { //Converts a DataTree into a tilemap
          final int regSize = (Integer) data.get(new DataPath(new int[]{0}));
          final int width = (Integer) data.get(new DataPath(new int[]{1}));
          final int height = (Integer) data.get(new DataPath(new int[]{2}));
@@ -284,7 +284,7 @@ public class Tilemap implements Serializable {
                  final int id = (Integer) data.get(new DataPath(new int[]{i, 2, j, 3, 0}));
                  final ArrayList dataFolder = (ArrayList) data.get(new DataPath(new int[]{i, 2, j, 3, 1}));
                  final DataTree tileData = new DataTree(dataFolder);
-                 final TileReference reference = TileReference.getRef(id);
+                 final TileReference reference = TileReference.getTileRef(id);
                  if (reference != null) {
                      if (tiletype == 0) {
                          final Tile sample = reference.getSample();

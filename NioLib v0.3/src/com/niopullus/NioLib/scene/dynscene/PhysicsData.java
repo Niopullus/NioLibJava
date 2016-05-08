@@ -1,8 +1,11 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import com.niopullus.NioLib.DataPath;
+import com.niopullus.NioLib.DataTree;
+
 import java.io.Serializable;
 
-/**
+/**Stores information regarding the physics of a node
  * Created by Owen on 3/10/2016.
  */
 public class PhysicsData implements Serializable {
@@ -31,6 +34,7 @@ public class PhysicsData implements Serializable {
     private HalfCollision colSouth;
     private boolean collidablein;
     private boolean collidableout;
+    private boolean enablePhysics;
 
     public PhysicsData() {
         this.xv = 0;
@@ -85,144 +89,184 @@ public class PhysicsData implements Serializable {
     }
 
     public boolean getDoGravity() {
-        return this.doGravity;
+        return doGravity;
     }
 
     public double getGravityCoefficient() {
-        return this.gravityCoefficient;
+        return gravityCoefficient;
     }
 
-    public void setXv(double xv) {
+    public HalfCollision getColEast() {
+        return colEast;
+    }
+
+    public HalfCollision getColWest() {
+        return colWest;
+    }
+
+    public HalfCollision getColNorth() {
+        return colNorth;
+    }
+
+    public HalfCollision getColSouth() {
+        return colSouth;
+    }
+
+    public boolean getCollidableIn() {
+        return collidablein;
+    }
+
+    public boolean getEnablePhysics() {
+        return enablePhysics;
+    }
+
+    public void setXv(final double xv) {
         this.xv = xv;
     }
 
-    public void setYv(double yv) {
+    public void setYv(final double yv) {
         this.yv = yv;
     }
 
-    public void setElasticity(double elasticity) {
+    public void setElasticity(final double elasticity) {
         this.elasticity = elasticity;
     }
 
-    public void setFriction(double friction) {
+    public void setFriction(final double friction) {
         this.friction = friction;
     }
 
-    public void setMass(double mass) {
+    public void setMass(final double mass) {
         this.mass = mass;
     }
 
-    public void setxStrength(double xStrength) {
+    public void setxStrength(final double xStrength) {
         this.xStrength = xStrength;
     }
 
-    public void setyStrength(double yStrength) {
+    public void setyStrength(final double yStrength) {
         this.yStrength = yStrength;
     }
 
-    public void setxSpeedLim(double xSpeedLim) {
+    public void setxSpeedLim(final double xSpeedLim) {
         this.xSpeedLim = xSpeedLim;
     }
 
-    public void setySpeedLim(double ySpeedLim) {
+    public void setySpeedLim(final double ySpeedLim) {
         this.ySpeedLim = ySpeedLim;
     }
 
     public void enableGravity() {
-        this.doGravity = true;
+        doGravity = true;
     }
 
     public void disableGravity() {
-        this.doGravity = false;
+        doGravity = false;
     }
 
-    public void setGravityCoefficient(double coefficient) {
-        this.gravityCoefficient = coefficient;
+    public void setGravityCoefficient(final double coefficient) {
+        gravityCoefficient = coefficient;
     }
 
-    public void accelerateX(double acceleration) {
-        if (Math.abs(this.xv + acceleration) <= this.xSpeedLim) {
-            this.xv += acceleration;
-        } else {
-            if (this.xv + acceleration > 0) {
-                this.xv = this.xSpeedLim;
-            } else {
-                this.xv = -this.xSpeedLim;
-            }
-        }
-    }
-
-    public void accelerateY(double acceleration) {
-        if (Math.abs(this.yv + acceleration) <= this.ySpeedLim) {
-            this.yv += acceleration;
-        } else {
-            if (this.yv + acceleration > 0) {
-                this.yv = this.ySpeedLim;
-            } else {
-                this.yv = -this.ySpeedLim;
-            }
-        }
-    }
-
-    public void accelerate(double xacc, double yacc) {
-        this.accelerateX(xacc);
-        this.accelerateY(yacc);
-    }
-
-    public void setColEast(HalfCollision halfCollision) {
+    public void setColEast(final HalfCollision halfCollision) {
         this.colEast = halfCollision;
     }
 
-    public void setColWest(HalfCollision halfCollision) {
+    public void setColWest(final HalfCollision halfCollision) {
         this.colWest = halfCollision;
     }
 
-    public void setColNorth(HalfCollision halfCollision) {
+    public void setColNorth(final HalfCollision halfCollision) {
         this.colNorth = halfCollision;
     }
 
-    public void setColSouth(HalfCollision halfCollision) {
+    public void setColSouth(final HalfCollision halfCollision) {
         this.colSouth = halfCollision;
     }
 
-    public HalfCollision getColEast() {
-        return this.colEast;
-    }
-
-    public HalfCollision getColWest() {
-        return this.colWest;
-    }
-
-    public HalfCollision getColNorth() {
-        return this.colNorth;
-    }
-
-    public HalfCollision getColSouth() {
-        return this.colSouth;
-    }
-
-    public boolean getCollidableIn() {
-        return this.collidablein;
-    }
-
     public void enableCollisionIn() {
-        this.collidablein = true;
+        collidablein = true;
     }
 
     public void disableCollisionIn() {
-        this.collidablein = false;
+        collidablein = false;
     }
 
     public boolean getCollidableOut() {
-        return this.collidableout;
+        return collidableout;
     }
 
     public void enableCollisionOut() {
-        this.collidableout = true;
+        collidableout = true;
     }
 
     public void disableCollisionOut() {
-        this.collidableout = false;
+        collidableout = false;
     }
+
+    public void setEnablePhysics(boolean enablePhysics) {
+        this.enablePhysics = enablePhysics;
+    }
+
+    public void setDoGravity(final boolean doGravity) {
+        this.doGravity = doGravity;
+    }
+
+    public void setCollidablein(final boolean collidablein) {
+        this.collidablein = collidablein;
+    }
+
+    public void setCollidableout(final boolean collidableout) {
+        this.collidableout = collidableout;
+    }
+
+    public void accelerate(final double xacc, final double yacc) {
+        accelerateX(xacc);
+        accelerateY(yacc);
+    }
+
+    public void accelerateX(final double acceleration) {
+        if (Math.abs(xv + acceleration) <= xSpeedLim) {
+            xv += acceleration;
+        } else {
+            if (xv + acceleration > 0) {
+                xv = xSpeedLim;
+            } else {
+                xv = -xSpeedLim;
+            }
+        }
+    }
+
+    public void accelerateY(final double acceleration) {
+        if (Math.abs(yv + acceleration) <= ySpeedLim) {
+            yv += acceleration;
+        } else {
+            if (yv + acceleration > 0) {
+                yv = ySpeedLim;
+            } else {
+                yv = -ySpeedLim;
+            }
+        }
+    }
+
+    public static PhysicsData decompress(DataTree data) {
+        PhysicsData result = new PhysicsData();
+        result.setEnablePhysics((Boolean) data.get(new DataPath(new int[]{0})));
+        result.setXv((Double) data.get(new DataPath(new int[]{1})));
+        result.setYv((Double) data.get(new DataPath(new int[]{2})));
+        result.setElasticity((Double) data.get(new DataPath(new int[]{3})));
+        result.setFriction((Double) data.get(new DataPath(new int[]{4})));
+        result.setMass((Double) data.get(new DataPath(new int[]{5})));
+        result.setxStrength((Double) data.get(new DataPath(new int[]{6})));
+        result.setyStrength((Double) data.get(new DataPath(new int[]{7})));
+        result.setxSpeedLim((Double) data.get(new DataPath(new int[]{8})));
+        result.setySpeedLim((Double) data.get(new DataPath(new int[]{9})));
+        result.setGravityCoefficient((Double) data.get(new DataPath(new int[]{10})));
+        result.setDoGravity((Boolean) data.get(new DataPath(new int[]{11})));
+        result.setCollidablein((Boolean) data.get(new DataPath(new int[]{12})));
+        result.setCollidableout((Boolean) data.get(new DataPath(new int[]{13})));
+        return result;
+    }
+
 
 }

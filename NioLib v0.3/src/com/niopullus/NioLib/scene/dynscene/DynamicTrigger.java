@@ -14,7 +14,7 @@ public class DynamicTrigger extends DynamicImageNode implements Trigger {
         super(name, image);
     }
 
-    public void trigger() {
+    public void trigger(CollideData data) {
         //To be overridden
     }
 

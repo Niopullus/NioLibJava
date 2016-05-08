@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**
+/**Manages gravity, friction, and Node movement
  * Created by Owen on 3/10/2016.
  */
 public class PhysicsHandler implements Serializable {
@@ -30,56 +30,56 @@ public class PhysicsHandler implements Serializable {
         this.partition.setPhysicsHandler(this);
     }
 
-    public void setTilemap(Tilemap tilemap) {
+    public void setTilemap(final Tilemap tilemap) {
         this.tilemap = tilemap;
     }
 
     public void tick() {
         if (!pause) {
-            this.collisions = new ArrayList<Collision>();
-            this.updateNodes();
-            this.executeMoveCalcs();
-            this.gravity();
-            this.friction();
-            this.moveNodes();
+            collisions = new ArrayList<Collision>();
+            updateNodes();
+            executeMoveCalcs();
+            gravity();
+            friction();
+            moveNodes();
         }
     }
 
     public int getPhysicsSize() {
-        return this.nodes.size();
+        return nodes.size();
     }
 
-    public void addPhysicsNode(Node node) {
-        this.nodes.add(node);
-        Collections.sort(this.nodes);
+    public void addPhysicsNode(final Node node) {
+        nodes.add(node);
+        Collections.sort(nodes);
     }
 
-    public void removePhysicsNode(Node node) {
-        this.nodes.remove(Collections.binarySearch(this.nodes, node));
-        Collections.sort(this.nodes);
+    public void removePhysicsNode(final Node node) {
+        nodes.remove(Collections.binarySearch(nodes, node));
+        Collections.sort(nodes);
     }
 
     private void updateNodes() {
-        for (Node node : this.nodes) {
-            this.partition.updateNode(node);
+        for (Node node : nodes) {
+            partition.updateNode(node);
         }
     }
 
     private void executeMoveCalcs() {
-        for (Node node : this.nodes) {
-            node.setColEast(this.calcMoveDist(node, Dir.E));
-            node.setColWest(this.calcMoveDist(node, Dir.W));
-            node.setColNorth(this.calcMoveDist(node, Dir.N));
-            node.setColSouth(this.calcMoveDist(node, Dir.S));
+        for (Node node : nodes) {
+            node.setColEast(calcMoveDist(node, Dir.E));
+            node.setColWest(calcMoveDist(node, Dir.W));
+            node.setColNorth(calcMoveDist(node, Dir.N));
+            node.setColSouth(calcMoveDist(node, Dir.S));
         }
     }
 
     private void moveNodes() {
-        for (Node node : this.nodes) {
+        for (Node node : nodes) {
             if (node.getXv() > 0) {
                 if (node.getCollidableIn()) {
-                    HalfCollision calc = node.getColEast();
-                    int edist = calc.getDist();
+                    final HalfCollision calc = node.getColEast();
+                    final int edist = calc.getDist();
                     if (edist > 0) {
                         if (edist >= Math.abs(node.getXv())) {
                             node.moveX();
@@ -96,8 +96,8 @@ public class PhysicsHandler implements Serializable {
 
             } else if (node.getXv() < 0) {
                 if (node.getCollidableIn()) {
-                    HalfCollision calc = node.getColWest();
-                    int wdist = calc.getDist();
+                    final HalfCollision calc = node.getColWest();
+                    final int wdist = calc.getDist();
                     if (wdist > 0) {
                         if (wdist >= Math.abs(node.getXv())) {
                             node.moveX();
@@ -114,8 +114,8 @@ public class PhysicsHandler implements Serializable {
             }
             if (node.getYv() > 0) {
                 if (node.getCollidableIn()) {
-                    HalfCollision calc = node.getColNorth();
-                    int ndist = calc.getDist();
+                    final HalfCollision calc = node.getColNorth();
+                    final int ndist = calc.getDist();
                     if (ndist > 0) {
                         if (ndist >= Math.abs(node.getYv())) {
                             node.moveY();
@@ -131,8 +131,8 @@ public class PhysicsHandler implements Serializable {
                 }
             } else if (node.getYv() < 0) {
                 if (node.getCollidableIn()) {
-                    HalfCollision calc = node.getColSouth();
-                    int sdist = calc.getDist();
+                    final HalfCollision calc = node.getColSouth();
+                    final int sdist = calc.getDist();
                     if (sdist > 0) {
                         if (sdist >= Math.abs(node.getYv())) {
                             node.moveY();
@@ -150,25 +150,25 @@ public class PhysicsHandler implements Serializable {
         }
     }
 
-    private HalfCollision calcMoveDistTiles(Node node, Dir dir) {
+    private HalfCollision calcMoveDistTiles(final Node node, final Dir dir) {
         HalfCollision col = new HalfCollision(NodePartition.AWARENESS_STANDARD, null);
         if (dir == Dir.E) {
             int awareness = tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getXv());
-            Point p1 = this.tilemap.convertPointToTileLoc(node.getCMaxX(), node.getCMinY());
-            Point p2 = this.tilemap.convertPointToTileLoc(node.getCMaxX() + awareness, node.getCMaxY() - 1);
+            final Point p1 = tilemap.convertPointToTileLoc(node.getCMaxX(), node.getCMinY());
+            final Point p2 = tilemap.convertPointToTileLoc(node.getCMaxX() + awareness, node.getCMaxY() - 1);
             for (int x = p1.x; x <= p2.x && cont; x++) {
                 for (int y = p1.y; y <= p2.y; y++) {
-                    Tile t = this.tilemap.getTile(x, y);
+                    final Tile t = tilemap.getTile(x, y);
                     if (t != null) {
-                        int dist = (int) Math.floor((double) (x * this.tilemap.getTileSize()) - node.getCMaxX());
+                        final int dist = (int) Math.floor((double) (x * tilemap.getTileSize()) - node.getCMaxX());
                         if (t.getCollidable()) {
                             cont = false;
                             col = new HalfCollision(dist, t);
                         }
-                        if (dist <= 0 && (x * this.tilemap.getTileSize()) > node.getMidX()) {
-                            this.collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                        if (dist <= 0 && (x * tilemap.getTileSize()) > node.getMidX()) {
+                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
                         }
                     }
                 }
@@ -177,19 +177,19 @@ public class PhysicsHandler implements Serializable {
             int awareness = -tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getXv());
-            Point p1 = this.tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMinY());
-            Point p2 = this.tilemap.convertPointToTileLoc(node.getCMinX() + awareness, node.getCMaxY() - 1);
+            final Point p1 = tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMinY());
+            final Point p2 = tilemap.convertPointToTileLoc(node.getCMinX() + awareness, node.getCMaxY() - 1);
             for (int x = p1.x; x >= p2.x && cont; x--) {
                 for (int y = p1.y; y <= p2.y; y++) {
-                    Tile t = this.tilemap.getTile(x, y);
+                    final Tile t = tilemap.getTile(x, y);
                     if (t != null) {
-                        int dist = (int) Math.floor(node.getCMinX() - (double) ((x + 1) * this.tilemap.getTileSize()));
+                        final int dist = (int) Math.floor(node.getCMinX() - (double) ((x + 1) * tilemap.getTileSize()));
                         if (t.getCollidable()) {
                             cont = false;
                             col = new HalfCollision(dist, t);
                         }
-                        if (col.getDist() <= 0 && ((x + 1) * this.tilemap.getTileSize()) < node.getMidX()) {
-                            this.collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                        if (col.getDist() <= 0 && ((x + 1) * tilemap.getTileSize()) < node.getMidX()) {
+                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
                         }
                     }
                 }
@@ -198,19 +198,19 @@ public class PhysicsHandler implements Serializable {
             int awareness = tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getYv());
-            Point p1 = this.tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMaxY());
-            Point p2 = this.tilemap.convertPointToTileLoc(node.getCMaxX() - 1, node.getCMaxY() + awareness);
+            final Point p1 = tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMaxY());
+            final Point p2 = tilemap.convertPointToTileLoc(node.getCMaxX() - 1, node.getCMaxY() + awareness);
             for (int y = p1.y; y <= p2.y && cont; y++) {
                 for (int x = p1.x; x <= p2.x; x++) {
-                    Tile t = this.tilemap.getTile(x, y);
+                    final Tile t = tilemap.getTile(x, y);
                     if (t != null) {
-                        int dist = (int) Math.floor((double) (y * this.tilemap.getTileSize()) - node.getCMaxY());
+                        final int dist = (int) Math.floor((double) (y * tilemap.getTileSize()) - node.getCMaxY());
                         if (t.getCollidable()) {
                             cont = false;
                             col = new HalfCollision(dist, t);
                         }
-                        if (col.getDist() <= 0 && (y * this.tilemap.getTileSize()) > node.getMidY()) {
-                            this.collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                        if (col.getDist() <= 0 && (y * tilemap.getTileSize()) > node.getMidY()) {
+                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
                         }
                     }
                 }
@@ -219,19 +219,19 @@ public class PhysicsHandler implements Serializable {
             int awareness = -tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getYv());
-            Point p1 = this.tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMinY());
-            Point p2 = this.tilemap.convertPointToTileLoc(node.getCMaxX() - 1, node.getCMinY() + awareness);
+            final Point p1 = tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMinY());
+            final Point p2 = tilemap.convertPointToTileLoc(node.getCMaxX() - 1, node.getCMinY() + awareness);
             for (int y = p1.y; y >= p2.y && cont; y--) {
                 for (int x = p1.x; x <= p2.x; x++) {
-                    Tile t = this.tilemap.getTile(x, y);
+                    final Tile t = tilemap.getTile(x, y);
                     if (t != null) {
-                        int dist = (int) Math.floor(node.getCMinY() - (double) ((y + 1) * this.tilemap.getTileSize()));
+                        int dist = (int) Math.floor(node.getCMinY() - (double) ((y + 1) * tilemap.getTileSize()));
                         if (t.getCollidable()) {
                             cont = false;
                             col = new HalfCollision(dist, t);
                         }
-                        if (col.getDist() <= 0 && (y + 1) * this.tilemap.getTileSize() < node.getMidY()) {
-                            this.collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                        if (col.getDist() <= 0 && (y + 1) * tilemap.getTileSize() < node.getMidY()) {
+                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
                         }
                     }
                 }
@@ -240,38 +240,39 @@ public class PhysicsHandler implements Serializable {
         return col;
     }
 
-    private HalfCollision calcMoveDistNodes(Node node, Dir dir) {
-        return this.partition.getHalfCollision(node, dir);
+    private HalfCollision calcMoveDistNodes(final Node node, final Dir dir) {
+        return partition.getHalfCollision(node, dir);
     }
 
-    private HalfCollision calcMoveDist(Node node, Dir dir) {
+    private HalfCollision calcMoveDist(final Node node, final Dir dir) {
         return Utilities.lesser(calcMoveDistNodes(node, dir), calcMoveDistTiles(node, dir));
     }
 
     private void gravity() {
-        for (Node node: this.nodes) {
+        for (Node node: nodes) {
             if (node.getDoGravity()) {
                 if (node.getCollidableIn()) {
-                    int dist = node.getColSouth().getDist();
+                    final HalfCollision collision = node.getColSouth();
+                    final int dist = collision.getDist();
                     if (dist > 0) {
-                        node.accelerateY(this.gravitation * node.getGravityCoefficient() / 4);
+                        node.accelerateY(gravitation * node.getGravityCoefficient() / 4);
                     }
                 } else {
-                    node.accelerateY(this.gravitation * node.getGravityCoefficient() / 4);
+                    node.accelerateY(gravitation * node.getGravityCoefficient() / 4);
                 }
             }
         }
     }
 
     private void friction() {
-        for (Node node : this.nodes) {
+        for (Node node : nodes) {
             if (node.getXv() != 0) {
                 if (node.getCollidableIn()) {
-                    HalfCollision nd = node.getColNorth();
-                    HalfCollision sd = node.getColSouth();
+                    final HalfCollision nd = node.getColNorth();
+                    final HalfCollision sd = node.getColSouth();
                     double gravity = 0;
                     if (node.getDoGravity()) {
-                        gravity = node.getMass() * this.gravitation / -20 * -Utilities.absoluteSign(node.getXv());
+                        gravity = node.getMass() * gravitation / -20 * -Utilities.absoluteSign(node.getXv());
                     }
                     if (nd.getDist() == 0) {
                         if (Math.abs(node.getXv()) >= 0.5 * nd.getFriction() + Math.abs(gravity)) {
@@ -291,8 +292,8 @@ public class PhysicsHandler implements Serializable {
             }
             if (node.getYv() != 0) {
                 if (node.getCollidableIn()) {
-                    HalfCollision wd = node.getColWest();
-                    HalfCollision ed = node.getColEast();
+                    final HalfCollision wd = node.getColWest();
+                    final HalfCollision ed = node.getColEast();
                     if (ed.getDist() == 0) {
                         if (Math.abs(node.getYv()) >= 0.5 * ed.getFriction()) {
                             node.accelerateY(0.5 * ed.getFriction() * -Utilities.absoluteSign(node.getYv()));
@@ -312,32 +313,32 @@ public class PhysicsHandler implements Serializable {
         }
     }
 
-    public void setGravitation(double g) {
-        this.gravitation = g;
+    public void setGravitation(final double g) {
+        gravitation = g;
     }
 
     public void pause() {
-        this.pause = true;
+        pause = true;
     }
 
     public void unpause() {
-        this.pause = false;
+        pause = false;
     }
 
     public void togglePause() {
-        this.pause = !this.pause;
+        pause = !pause;
     }
 
     public ArrayList<Collision> getCollisions() {
-        return this.collisions;
+        return collisions;
     }
 
-    public void addCollision(Collision collision) {
-        this.collisions.add(collision);
+    public void addCollision(final Collision collision) {
+        collisions.add(collision);
     }
 
-    public ArrayList<Node> getNodesAt(int x, int y, int width, int height) {
-        return this.partition.getNodesAt(x, y, width, height);
+    public ArrayList<Node> getNodesAt(final int x, final int y, final int width, final int height) {
+        return partition.getNodesAt(x, y, width, height);
     }
 
 }

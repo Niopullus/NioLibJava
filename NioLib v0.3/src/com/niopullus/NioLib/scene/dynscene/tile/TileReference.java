@@ -1,122 +1,60 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
+import com.niopullus.NioLib.scene.dynscene.Node;
+import com.niopullus.NioLib.scene.dynscene.Reference;
 import com.niopullus.NioLib.utilities.Utilities;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/**Stores common data from tiles
+/**
  * Created by Owen on 4/10/2016.
  */
-public class TileReference implements Comparable<TileReference>, Serializable {
+public class TileReference extends Reference {
 
-    private String name;
-    private int id;
     private ArrayList<BufferedImage> images;
     private double friction;
     private double elasticity;
     private boolean collidable;
-    private Tile sample;
-    private static final ArrayList<TileReference> refs = new ArrayList<TileReference>();
-    private static final ArrayList<TileReference> sortedRefs = new ArrayList<TileReference>();
-    private static int curID = 1;
-    private static final TileReference sampleRef = new TileReference(null, 0, null, 0, 0, false, null);
 
-    public TileReference(final String name, final int id, final BufferedImage image, final double friction, final double elasticity, final boolean collidable, final Tile sample) {
-        this.id = id;
+    public TileReference(String name, int id, BufferedImage image, double friction, double elasticity, boolean collidable, Tile tile) {
+        super(name, id, tile);
         this.images = new ArrayList<BufferedImage>();
-        this.name = name;
         this.friction = friction;
         this.elasticity = elasticity;
         this.collidable = collidable;
         this.images.add(image);
-        this.sample = sample;
     }
 
     public double getElasticity() {
-        return elasticity;
+        return this.elasticity;
     }
 
     public double getFriction() {
-        return friction;
-    }
-
-    public int getId() {
-        return id;
+        return this.friction;
     }
 
     public BufferedImage getImage() {
-        return images.get(0);
+        return this.images.get(0);
     }
 
-    public BufferedImage getImage(final int set) {
-        return images.get(set);
-    }
-
-    public String getName() {
-        return name;
+    public BufferedImage getImage(int set) {
+        return this.images.get(set);
     }
 
     public boolean getCollidable() {
-        return collidable;
+        return this.collidable;
+    }
+
+    public void addImage(BufferedImage image) {
+        this.images.add(image);
     }
 
     public Tile getSample() {
-        return sample;
-    }
-
-    public static int getCurID() {
-        final int id = curID;
-        curID++;
-        return id;
-    }
-
-    public static TileReference getRef(int id) {
-        if (id >= 1 && id <= TileReference.getTileCount()) {
-            return TileReference.refs.get(id - 1);
-        } else {
-            return null;
-        }
-    }
-
-    public static TileReference getRef(final String name) {
-        sampleRef.name = name;
-        final int index = Collections.binarySearch(sortedRefs, sampleRef);
-        if (index >= 0) {
-            return sortedRefs.get(index);
-        }
-        return null;
-    }
-
-    public static void registerTile(final String name, final String image, final double friction, final double elasticity, final boolean collidable, final Tile tile) {
-        final TileReference ref = new TileReference(name, getCurID(), Utilities.loadImage(image), friction, elasticity, collidable, tile);
-        refs.add(ref);
-        sortedRefs.add(ref);
-        Collections.sort(sortedRefs);
-        tile.setReference(TileReference.getRef(name));
-    }
-
-    public static void registerMultiTile(String name, ArrayList<BufferedImage> images, double friction, double elasticity, boolean collidable, int width, int height, MultiTile tile) {
-        final MultiTileReference ref = new MultiTileReference(name, getCurID(), images, friction, elasticity, collidable, width, height, tile);
-        refs.add(ref);
-        sortedRefs.add(ref);
-        Collections.sort(sortedRefs);
-        tile.setReference(TileReference.getRef(name));
-    }
-
-    public static int getTileCount() {
-        return refs.size();
-    }
-
-    public int compareTo(final TileReference reference) {
-        final String name = reference.getName();
-        return name.compareTo(name);
-    }
-
-    public void addImage(final BufferedImage image) {
-        images.add(image);
+        return (Tile) super.getSample();
     }
 
 }

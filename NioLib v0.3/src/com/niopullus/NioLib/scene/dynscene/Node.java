@@ -1,5 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import com.niopullus.NioLib.DataPath;
+import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.UUID;
 import com.niopullus.NioLib.utilities.Utilities;
 
@@ -38,7 +40,8 @@ public class Node implements Comparable<Node>, CollideData {
     private Point movePos;
     private int moveSpeed;
     private double angle;
-    private boolean quePhysics;
+    private NodeReference reference;
+    private DataTree data;
 
     public Node() {
         this("unnamedNode");
@@ -86,8 +89,8 @@ public class Node implements Comparable<Node>, CollideData {
         return z;
     }
 
-    public boolean isQuePhysics() {
-        return quePhysics;
+    public boolean isEnablePhysics() {
+        return physicsData.getEnablePhysics();
     }
 
     public double getXv() {
@@ -314,6 +317,10 @@ public class Node implements Comparable<Node>, CollideData {
         return scene;
     }
 
+    public Node getChild(final int index) {
+        return children.get(index);
+    }
+
     public int getTX() {
         if (isUniverse) {
             return x;
@@ -511,6 +518,14 @@ public class Node implements Comparable<Node>, CollideData {
         this.angle = angle;
     }
 
+    public void setReference(final NodeReference reference) {
+        this.reference = reference;
+    }
+
+    public void setName(final String name) {
+        id = new UUID(name);
+    }
+
     public void setXScale(final double xScale) {
         this.xScale = xScale;
         this.width = (int) (this.oWidth * xScale);
@@ -559,7 +574,7 @@ public class Node implements Comparable<Node>, CollideData {
         node.scene = scene;
         children.add(node);
         Collections.sort(children);
-        if (node.quePhysics) {
+        if (node.physicsData.getEnablePhysics()) {
             scene.addPhysicsNode(node);
         }
     }
@@ -577,12 +592,12 @@ public class Node implements Comparable<Node>, CollideData {
         if (scene != null) {
             scene.addPhysicsNode(this);
         }
-        quePhysics = true;
+        physicsData.setEnablePhysics(true);
     }
 
     public void disablePhysics() {
         scene.removePhysicsNode(this);
-        quePhysics = false;
+        physicsData.setEnablePhysics(false);
     }
 
     public void accelerate(final double xacc, final double yacc) {
@@ -687,6 +702,52 @@ public class Node implements Comparable<Node>, CollideData {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Node decompress(DataTree data, DynamicScene scene) {
+        int id = (Integer) data.get(new DataPath(new int[]{0}));
+        DataTree nodeData = new DataTree((ArrayList) data.get(new DataPath(new int[]{1})));
+        int x = (Integer) data.get(new DataPath(new int[]{2, 0}));
+        int y = (Integer) data.get(new DataPath(new int[]{2, 1}));
+        PhysicsData physicsData = PhysicsData.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{2, 2}))));
+        int state = (Integer) data.get(new DataPath(new int[]{2, 3}));
+        ArrayList children = (ArrayList) data.get(new DataPath(new int[]{3}));
+        ArrayList<Node> decompressedChildren = new ArrayList<Node>();
+        for (Object child : children) {
+            Node node = Node.decompress(new DataTree((ArrayList) child), scene);
+            decompressedChildren.add(node);
+            //System.out.println("found child: " + node.getName());
+        }
+        NodeReference ref = NodeReference.getNodeRef(id);
+        Node node;
+        if (ref == null) {
+            node = new Node();
+        } else {
+            node = ref.getSample().clone();
+            node.setXScale(ref.getDefaultXScale());
+            node.setYScale(ref.getDefaultYScale());
+        }
+        node.data = nodeData;
+        node.reference = NodeReference.getNodeRef(id);
+        node.scene = scene;
+        for (Node kid : decompressedChildren) {
+            node.addChild(kid);
+        }
+        node.x = x;
+        node.y = y;
+        switch (state) {
+            case 1: node.markWorld(); node.setName("world"); break;
+            case 2: node.markUniverse(); node.setName("universe"); break;
+        }
+        PhysicsHandler physicsHandler = null;
+        if (scene != null) {
+            physicsHandler = scene.getPhysicsHandler();
+        }
+        System.out.println("decompressing " + node.getName() + " and I found it to have an ID of " + id + " and a pos of " + node.getPosition());
+        if (physicsHandler != null && node.physicsData.getEnablePhysics()) {
+            physicsHandler.addPhysicsNode(node);
+        }
+        return node;
     }
 
 }
