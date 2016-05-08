@@ -1,5 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import java.awt.image.BufferedImage;
+
 /**
  * Created by Owen on 4/6/2016.
  */
@@ -8,30 +10,30 @@ public class ImageTrigger extends ImageNode implements Trigger {
     private int xRad;
     private int yRad;
 
-    public ImageTrigger(String name, String imgDir, int xRad, int yRad) {
-        super(name, imgDir);
+    public ImageTrigger(final String name, final BufferedImage image, final int xRad, final int yRad) {
+        super(name, image);
         this.xRad = xRad;
         this.yRad = yRad;
     }
 
     public void trigger() {
-
+        //To be overridden
     }
 
     public int getCx() {
-        return this.getX() + this.getWidth() - this.xRad;
+        return getX() + getWidth() / 2 - xRad;
     }
 
     public int getCy() {
-        return this.getY() + this.getHeight() - this.yRad;
+        return getY() + getHeight() / 2 - yRad;
     }
 
     public int getCwidth() {
-        return -this.getWidth() + this.xRad * 2;
+        return getWidth() / 2 + xRad;
     }
 
     public int getCheight() {
-        return -this.getHeight() + this.yRad * 2;
+        return getHeight() / 2 + yRad;
     }
 
 }

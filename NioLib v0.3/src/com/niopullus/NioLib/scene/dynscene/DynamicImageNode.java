@@ -47,6 +47,14 @@ public class DynamicImageNode extends ImageNode {
         return animations.get(curAnimation);
     }
 
+    private CollisionOffset getOffset(final Animation animation, final BufferedImage image, final int offsetMode) {
+        final int xDif = (int) ((animation.getWidth() - image.getWidth()) * getXScale());
+        final int yDif = (int) ((animation.getHeight() - image.getHeight()) * getYScale());
+        final int xOff = deriveXOffsetFromMode(offsetMode, xDif);
+        final int yOff = deriveYOffsetFromMode(offsetMode, yDif);
+        return new CollisionOffset(xDif, yDif, xOff, yOff);
+    }
+
     public void addAnimation(final Animation animation) {
         animations.add(animation);
     }
@@ -67,14 +75,6 @@ public class DynamicImageNode extends ImageNode {
         addCY(offset.yOff);
         addCWidth(-offset.xDiff);
         addCHeight(-offset.yDiff);
-    }
-
-    private CollisionOffset getOffset(final Animation animation, final BufferedImage image, final int offsetMode) {
-        final int xDif = (int) ((animation.getWidth() - image.getWidth()) * getXScale());
-        final int yDif = (int) ((animation.getHeight() - image.getHeight()) * getYScale());
-        final int xOff = deriveXOffsetFromMode(offsetMode, xDif);
-        final int yOff = deriveYOffsetFromMode(offsetMode, yDif);
-        return new CollisionOffset(xDif, yDif, xOff, yOff);
     }
 
     public void runAnimation(final int index, final int offsetMode, final boolean modC) {

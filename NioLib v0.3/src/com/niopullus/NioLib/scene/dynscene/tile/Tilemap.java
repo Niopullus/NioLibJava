@@ -68,7 +68,7 @@ public class Tilemap implements Serializable {
         return height;
     }
 
-    private Point getPointInRegion(final int x, final int y) {
+    private Point getPointInRegion(final int x, final int y) { //Range: x - [0-(REGSIZE - 1)], y - [0-(REGSIZE - 1)]
         final int xinReg = Math.abs(x % regSize);
         final int yinReg = Math.abs(y % regSize);
         return new Point(xinReg, yinReg);
@@ -110,6 +110,28 @@ public class Tilemap implements Serializable {
         return this.map.get(xReg, yReg);
     }
 
+    public Tile ogetTile(final int x, final int y) { //Gets a tile, ignoring the MultiTile filter, in tile coordinates
+        final Point pointInRegion = getPointInRegion(x, y);
+        final TileRegion reg = getRegion(x, y);
+        if (reg != null) {
+            return reg.get(pointInRegion.x, pointInRegion.y);
+        } else {
+            return null;
+        }
+    }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    public void setZ(final int z) {
+        this.z = z;
+    }
+
+    private void setRegion(final TileRegion reg, final int x, final int y) {
+        map.set(x, y, reg);
+    }
+
     public void setTile(final Tile tile, final int x, final int y) { //Sets a tile in tile coordinates
         int xReg = x / regSize;
         int yReg = y / regSize;
@@ -138,16 +160,6 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public Tile ogetTile(final int x, final int y) { //Gets a tile and ignores the MultiTile filter in tile coordinates
-        final Point pointInRegion = getPointInRegion(x, y);
-        final TileRegion reg = getRegion(x, y);
-        if (reg != null) {
-            return reg.get(pointInRegion.x, pointInRegion.y);
-        } else {
-            return null;
-        }
-    }
-
     public void setMultiTile(final MultiTile tile, final int x, final int y) { //Sets a MultiTile in tile coordinates
         int part = 0;
         final TileRegion reg = getRegion(x, y);
@@ -162,13 +174,13 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public Point convertPointToTileLoc(final int x, final int y) {
+    public Point convertPointToTileLoc(final int x, final int y) { //Convers a point from world to tile
         final int convertedX = ((int) Math.floor((double) x / tileSize));
         final int convertedY = ((int) Math.floor((double) y / tileSize));
         return new Point(convertedX, convertedY);
     }
 
-    public int convertLengthToTileLength(final int length) {
+    public int convertLengthToTileLength(final int length) { //Converts a magnitude from world to tile
         return (int) Math.floor((double) length / tileSize);
     }
 
@@ -189,19 +201,15 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public void fillTiles(final int x, final int y, final int width, final int height, final Tile t) {
+    public void fillTiles(final int x, final int y, final int width, final int height, final Tile tile) {
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
-                setTile(t.clone(), i, j);
+                setTile(tile.clone(), i, j);
             }
         }
     }
 
-    private void setRegion(final TileRegion reg, final int x, final int y) {
-        map.set(x, y, reg);
-    }
-
-     public DataTree compress() {
+     public DataTree compress() { //Converts this tilemap into a DataTree
      //DATA TREE STRUCTURE:
      // ROOT -[
      //         Integer (Reg Size)
@@ -258,7 +266,7 @@ public class Tilemap implements Serializable {
         return data;
      }
 
-     public static Tilemap decompress(final Node world, final DataTree data, final int tileSize) {
+     public static Tilemap decompress(final Node world, final DataTree data, final int tileSize) { //Converts a DataTree into a tilemap
          final int regSize = (Integer) data.get(new DataPath(new int[]{0}));
          final int width = (Integer) data.get(new DataPath(new int[]{1}));
          final int height = (Integer) data.get(new DataPath(new int[]{2}));

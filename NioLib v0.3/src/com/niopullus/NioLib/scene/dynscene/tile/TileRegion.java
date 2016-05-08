@@ -21,24 +21,24 @@ public class TileRegion {
         return grid[x][y];
     }
 
-    public void set(final Tile tile, final int x, final int y) {
-        grid[x][y] = tile;
-    }
-
     public int getSize() {
         return size;
-    }
-
-    public void addMultiTile(final MultiTile multiTile) {
-        multiTiles.add(multiTile);
     }
 
     public MultiTile getMultiTile(final int index) {
         return multiTiles.get(index);
     }
 
-    public int getMultiTileQuant() {
+    public int getMultiTileCount() {
         return multiTiles.size();
+    }
+
+    public void set(final Tile tile, final int x, final int y) {
+        grid[x][y] = tile;
+    }
+
+    public void addMultiTile(final MultiTile multiTile) {
+        multiTiles.add(multiTile);
     }
 
 }

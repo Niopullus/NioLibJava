@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**A scene varient that is designed to support physics, tilemaps, and nodes
+/**A scene variant that is designed to support physics, tilemaps, and nodes
  * Created by Owen on 3/5/2016.
  */
 public class DynamicScene extends Scene implements Serializable {
@@ -76,20 +76,86 @@ public class DynamicScene extends Scene implements Serializable {
         tock();
     }
 
-    public void tock() {
+    public int getPhysicsSize() {
+        return physicsHandler.getPhysicsSize();
+    }
 
+    public Node getWorld() {
+        return world;
+    }
+
+    public Point getMousePosInWorld() {
+        final Point result = new Point();
+        final Point mousePos = getMousePos();
+        result.x = mousePos.x - world.getX();
+        result.y = mousePos.y - world.getY();
+        return result;
+    }
+
+    public void setGravitationalConstant(final double g) {
+        physicsHandler.setGravitation(g);
+    }
+
+    public void setCamera(final Node node) {
+        camera = node;
+    }
+
+    public void setWorldX(final int x) {
+        world.setX(x);
+    }
+
+    public void setWorldY(final int y) {
+        world.setY(y);
+    }
+
+    public void setBackground(final Background background) {
+        this.background = background;
+    }
+
+    public void setMultiTileFG(final MultiTile multiTile, final int x, final int y) {
+        fgTilemap.setMultiTile(multiTile, x, y);
+    }
+
+    public void setMultiTileBG(final MultiTile multiTile, final int x, final int y) {
+        bgTilemap.setMultiTile(multiTile, x, y);
+    }
+
+    public void setWorldPosition(final int x, final int y) {
+        setWorldX(x);
+        setWorldY(y);
+    }
+
+    public void setBorderColor(final Color color) {
+        if (background instanceof ColorBackground) {
+            ColorBackground colorBackground = (ColorBackground) background;
+            colorBackground.setColor(color);
+        }
+    }
+
+    public void setWorld(final World world) {
+        fgTilemap = world.getFgTilemap();
+        bgTilemap = world.getBgTilemap();
+        fgTilemap.setScene(this);
+        bgTilemap.setScene(this);
+        fgTilemap.setZ(Config.FGTILEMAPZ);
+        bgTilemap.setZ(Config.BGTILEMAPZ);
+        physicsHandler.setTilemap(fgTilemap);
+    }
+
+    public void tock() {
+        //To be overridden
     }
 
     public void keyPress(final KeyEvent key) {
-
+        //To be overridden
     }
 
     public void keyReleased(final KeyEvent key) {
-
+        //To be overridden
     }
 
     public final void draw() {
-        Scene subscene;
+        final Scene subscene;
         background.draw();
         fgTilemap.draw();
         bgTilemap.draw();
@@ -112,23 +178,12 @@ public class DynamicScene extends Scene implements Serializable {
         physicsHandler = new PhysicsHandler();
     }
 
-    public int getPhysicsSize() {
-        return physicsHandler.getPhysicsSize();
-    }
-
     public void addPhysicsNode(final Node node) {
         physicsHandler.addPhysicsNode(node);
     }
 
     public void removePhysicsNode(final Node node) {
         physicsHandler.removePhysicsNode(node);
-    }
-
-    public void setBorderColor(final Color color) {
-        if (background instanceof ColorBackground) {
-            ColorBackground colorBackground = (ColorBackground) background;
-            colorBackground.setColor(color);
-        }
     }
 
     public void fillTilesFG(final Tile t, final int x, final int y, final int width, final int height) {
@@ -151,32 +206,11 @@ public class DynamicScene extends Scene implements Serializable {
         physicsHandler.togglePause();
     }
 
-    public void setBackground(final Background background) {
-        this.background = background;
-    }
-
     public void subSceneUpdate() {
         background.setX(getDx());
         background.setY(getDy());
         background.setWidth(getWidth());
         background.setHeight(getHeight());
-    }
-
-    public void setWorldX(final int x) {
-        world.setX(x);
-    }
-
-    public void setWorldY(final int y) {
-        world.setY(y);
-    }
-
-    public void setWorldPosition(final int x, final int y) {
-        setWorldX(x);
-        setWorldY(y);
-    }
-
-    public Node getWorld() {
-        return world;
     }
 
     public void addChildInWorld(final Node node) {
@@ -196,48 +230,22 @@ public class DynamicScene extends Scene implements Serializable {
         }
     }
 
-    public void setGravitationalConstant(final double g) {
-        physicsHandler.setGravitation(g);
-    }
-
-    public void setCamera(final Node node) {
-        camera = node;
-    }
-
     public void removeCamera() {
         camera = null;
     }
 
-    public void setMultiTileFG(final MultiTile multiTile, final int x, final int y) {
-        fgTilemap.setMultiTile(multiTile, x, y);
-    }
-
-    public void setMultiTileBG(final MultiTile multiTile, final int x, final int y) {
-        bgTilemap.setMultiTile(multiTile, x, y);
-    }
-
     public void mousePress() {
-        final int x = getMousePos().x - world.getX();
-        final Point inWorld = new Point(x, Main.Height() - (this.getMousePos().y + this.world.getY()));
-        ArrayList<Node> nodes = this.physicsHandler.getNodesAt(inWorld.x, inWorld.y, 0, 0);
+        final Point inWorld = getMousePosInWorld();
+        final ArrayList<Node> nodes = physicsHandler.getNodesAt(inWorld.x, inWorld.y, 0, 0);
         if (nodes.size() != 0) {
-            nodes.get(0).clickedOn();
+            final Node node = nodes.get(0);
+            node.clickedOn();
         } else {
-            Tile tile = this.fgTilemap.getTileRC(inWorld.x, inWorld.y);
+            final Tile tile = fgTilemap.getTileRC(inWorld.x, inWorld.y);
             if (tile != null) {
                 tile.clickedOn();
             }
         }
-    }
-
-    public void setWorld(World world) {
-        this.fgTilemap = world.getFgTilemap();
-        this.fgTilemap.setDynamicScene(this);
-        this.physicsHandler.setTilemap(this.fgTilemap);
-        this.bgTilemap = world.getBgTilemap();
-        this.bgTilemap.setDynamicScene(this);
-        this.fgTilemap.setZ(100);
-        this.bgTilemap.setZ(50);
     }
 
 }

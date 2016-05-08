@@ -20,7 +20,7 @@ import java.util.jar.JarFile;
 /**
  * Created by Owen on 4/13/2016.
  */
-public class World implements Serializable {
+public class World {
 
     private String name;
     private Node universe;

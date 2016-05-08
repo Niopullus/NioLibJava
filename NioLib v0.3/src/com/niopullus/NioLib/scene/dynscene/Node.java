@@ -21,7 +21,7 @@ public class Node implements Comparable<Node>, CollideData {
     private Node parent;
     private boolean isUniverse;
     private boolean isWorld;
-    private DynamicScene dynamicScene;
+    private DynamicScene scene;
     private PhysicsData physicsData;
     private int[] partRangeX;
     private int[] partRangeY;
@@ -38,16 +38,17 @@ public class Node implements Comparable<Node>, CollideData {
     private Point movePos;
     private int moveSpeed;
     private double angle;
+    private boolean quePhysics;
 
     public Node() {
         this("unnamedNode");
     }
 
-    public Node(String name) {
+    public Node(final String name) {
         this(name, 0, 0);
     }
 
-    public Node(String name, int width, int height) {
+    public Node(final String name, final int width, final int height) {
         this.children = new ArrayList<Node>();
         this.id = new UUID(name);
         this.physicsData = new PhysicsData();
@@ -61,143 +62,32 @@ public class Node implements Comparable<Node>, CollideData {
         this.cheight = 0;
     }
 
-    public void update() {
-        for (Node node : this.children) {
-            node.update();
-        }
-        if (this.movePos != null) {
-            double angle = Utilities.invtrig(this.movePos.getY() - this.y, this.movePos.getX() - this.x);
-            int newX = (int) (this.x + this.moveSpeed * Math.cos(angle));
-            int newY = (int) (this.y + this.moveSpeed * Math.sin(angle));
-            if (newX < this.x && newX < this.movePos.getX() || newX > this.x && newX > this.movePos.getX()) {
-                this.x = (int) this.movePos.getX();
-            } else {
-                this.x = newX;
-            }
-            if (newY < this.y && newY < this.movePos.getY() || newY > this.y && newY > this.movePos.getY()) {
-                this.y = (int) this.movePos.getY();
-            } else {
-                this.y = newY;
-            }
-        }
-        if (this.getPosition().equals(this.movePos)) {
-            this.movePos = null;
-        }
-    }
-
-    public int compareTo(Node node) {
-        return this.getId().compareTo(node.getId());
-    }
-
-    public void addChild(Node node) {
-        node.setParent(this);
-        node.setDynamicScene(this.dynamicScene);
-        this.children.add(node);
-        Collections.sort(this.children);
-    }
-
-    public void setParent(Node node) {
-        this.parent = node;
-    }
-
     public UUID getId() {
-        return this.id;
+        return id;
     }
 
     public Node getParent() {
-        return this.parent;
+        return parent;
     }
 
-    public void removeChild(Node node) {
-        this.children.remove(Collections.binarySearch(this.children, node));
-    }
-
-    public void removeParent() {
-        this.parent = null;
-    }
-
-    public int getChildrenSize() {
-        return this.children.size();
-    }
-
-    public int getTX() {
-        if (this.isUniverse) {
-            return this.x;
-        } else {
-            return this.x + this.parent.getTX();
-        }
-    }
-
-    public int getTY() {
-        if (this.isUniverse) {
-            return this.y;
-        } else {
-            return this.y + this.parent.getTY();
-        }
+    public int getChildrenCount() {
+        return children.size();
     }
 
     public int getX() {
-        return this.x;
+        return x;
     }
 
     public int getY() {
-        return this.y;
+        return y;
     }
 
     public int getZ() {
         return z;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setZ(int z) {
-        this.z = z;
-    }
-
-    public void markUniverse() {
-        this.isUniverse = true;
-    }
-
-    public void markWorld() {
-        this.isWorld = true;
-    }
-
-    public boolean isUniverse() {
-        return this.isUniverse;
-    }
-
-    public void setDynamicScene(DynamicScene dynamicScene) {
-        this.dynamicScene = dynamicScene;
-    }
-
-    public DynamicScene getDynamicScene() {
-        return this.dynamicScene;
-    }
-
-    public void enablePhysics() {
-        this.dynamicScene.addPhysicsNode(this);
-    }
-
-    public void disablePhysics() {
-        this.dynamicScene.removePhysicsNode(this);
-    }
-
-    public final void drawNode() {
-        this.draw();
-        for (Node node : this.children) {
-            node.drawNode();
-        }
-    }
-
-    public void setPosition(int x, int y) {
-        this.setX(x);
-        this.setY(y);
+    public boolean isQuePhysics() {
+        return quePhysics;
     }
 
     public double getXv() {
@@ -244,397 +134,168 @@ public class Node implements Comparable<Node>, CollideData {
         return this.physicsData.getGravityCoefficient();
     }
 
-    public void setXv(double xv) {
-        this.physicsData.setXv(xv);
-    }
-
-    public void setYv(double yv) {
-        this.physicsData.setYv(yv);
-    }
-
-    public void setElasticity(double elasticity) {
-        this.physicsData.setElasticity(elasticity);
-    }
-
-    public void setFriction(double friction) {
-        this.physicsData.setFriction(friction);
-    }
-
-    public void setMass(double mass) {
-        this.physicsData.setMass(mass);
-    }
-
-    public void setxStrength(double xStrength) {
-        this.physicsData.setxStrength(xStrength);
-    }
-
-    public void setyStrength(double yStrength) {
-        this.physicsData.setyStrength(yStrength);
-    }
-
-    public void setxSpeedLim(double xSpeedLim) {
-        this.physicsData.setxSpeedLim(xSpeedLim);
-    }
-
-    public void setySpeedLim(double ySpeedLim) {
-        this.physicsData.setySpeedLim(ySpeedLim);
-    }
-
-    public void disableGravity() {
-        this.physicsData.disableGravity();
-    }
-
-    public void enableGravity() {
-        this.physicsData.enableGravity();
-    }
-
-    public void setGravityCoefficient(double coefficient) {
-        this.physicsData.setGravityCoefficient(coefficient);
-    }
-
-    public void accelerate(double xacc, double yacc) {
-        this.physicsData.accelerate(xacc, yacc);
-    }
-
-    public void accelerateX(double acceleration) {
-        this.physicsData.accelerateX(acceleration);
-    }
-
-    public void accelerateY(double acceleration) {
-        this.physicsData.accelerateY(acceleration);
-    }
-
-    public void moveX(int deltaX) {
-        this.setX(this.x + deltaX);
-    }
-
-    public void moveX() {
-        this.setX(this.x + (int) this.physicsData.getXv());
-    }
-
-    public void moveY(int deltaY) {
-        this.setY(this.y + deltaY);
-    }
-
-    public void moveY() {
-        this.setY(this.y + (int) this.physicsData.getYv());
-    }
-
-    public void move(int deltaX, int deltaY) {
-        this.moveX(deltaX);
-        this.moveY(deltaY);
-    }
-
-    public void setColEast(HalfCollision halfCollision) {
-        this.physicsData.setColEast(halfCollision);
-    }
-
-    public void setColWest(HalfCollision halfCollision) {
-        this.physicsData.setColWest(halfCollision);
-    }
-
-    public void setColNorth(HalfCollision halfCollision) {
-        this.physicsData.setColNorth(halfCollision);
-    }
-
-    public void setColSouth(HalfCollision halfCollision) {
-        this.physicsData.setColSouth(halfCollision);
-    }
-
     public HalfCollision getColEast() {
-        return this.physicsData.getColEast();
+        return physicsData.getColEast();
     }
 
     public HalfCollision getColWest() {
-        return this.physicsData.getColWest();
+        return physicsData.getColWest();
     }
 
     public HalfCollision getColNorth() {
-        return this.physicsData.getColNorth();
+        return physicsData.getColNorth();
     }
 
     public HalfCollision getColSouth() {
-        return this.physicsData.getColSouth();
+        return physicsData.getColSouth();
     }
 
     public int getMaxX() {
-        return this.getX() + this.getWidth();
+        return getX() + getWidth();
     }
 
     public int getMinX() {
-        return this.getX();
+        return getX();
     }
 
     public int getMaxY() {
-        return this.getY() + this.getHeight();
+        return getY() + getHeight();
     }
 
     public int getMinY() {
-        return this.getY();
+        return getY();
     }
 
     public int getMidX() {
-        return this.getX() + this.getWidth() / 2;
+        return getX() + getWidth() / 2;
     }
 
     public int getMidY() {
-        return this.getY() + this.getHeight() / 2;
+        return getY() + getHeight() / 2;
     }
 
     public int getTMinX() {
-        return this.getTX();
+        return getTX();
     }
 
     public int getTMinY() {
-        return this.getTY();
+        return getTY();
     }
 
     public int getTMaxX() {
-        return this.getTX() + this.getWidth();
+        return getTX() + getWidth();
     }
 
     public int getTMaxY() {
-        return this.getTY() + this.getHeight();
+        return getTY() + getHeight();
     }
 
     public int getTMidX() {
-        return this.getTX() + this.getWidth() / 2;
+        return getTX() + getWidth() / 2;
     }
 
     public int getTMidY() {
-        return this.getTY() + this.getHeight() / 2;
-    }
-
-    public void setPartRangeX(int[] rangeX) {
-        this.partRangeX = rangeX;
-    }
-
-    public void setPartRangeY(int[] rangeY) {
-        this.partRangeY = rangeY;
-    }
-
-    public int[] getPartRangeX() {
-        return this.partRangeX;
-    }
-
-    public int[] getPartRangeY() {
-        return this.partRangeY;
-    }
-
-    public boolean getCollidableIn() {
-        return this.physicsData.getCollidableIn();
-    }
-
-    public void enableCollisionIn() {
-        this.physicsData.enableCollisionIn();
-    }
-
-    public void disableCollisionIn() {
-        this.physicsData.disableCollisionIn();
+        return getTY() + getHeight() / 2;
     }
 
     public boolean getCollidableOut() {
         return physicsData.getCollidableOut();
     }
 
-    public void enableCollisionOut() {
-        this.physicsData.enableCollisionOut();
+    public int[] getPartRangeX() {
+        return partRangeX;
     }
 
-    public void disableCollisionOut() {
-        this.physicsData.disableCollisionOut();
+    public int[] getPartRangeY() {
+        return partRangeY;
     }
 
-    public void setSize(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public void setXScale(double xScale) {
-        this.xScale = xScale;
-        this.width = (int) (this.oWidth * xScale);
-    }
-
-    public void setYScale(double yScale) {
-        this.yScale = yScale;
-        this.height = (int) (this.oHeight * yScale);
-    }
-
-    public void csetXScale(double xScale) {
-        this.xScale = xScale;
-    }
-
-    public void csetYScale(double yScale) {
-        this.yScale = yScale;
+    public boolean getCollidableIn() {
+        return physicsData.getCollidableIn();
     }
 
     public double getXScale() {
-        return this.xScale;
+        return xScale;
     }
 
     public double getYScale() {
-        return this.yScale;
+        return yScale;
     }
 
-    public void osetWidth(int width) {
-        this.oWidth = width;
+    public int getWidth() {
+        return width;
     }
 
-    public void osetHeight(int height) {
-        this.oHeight = height;
+    public int getHeight() {
+        return height;
     }
 
     public int ogetWidth() {
-        return this.oWidth;
+        return oWidth;
     }
 
     public int ogetHeight() {
-        return this.oHeight;
-    }
-
-    public void draw() {
-
+        return oHeight;
     }
 
     public Point getPosition() {
-        return new Point(this.getX(), this.getY());
+        return new Point(getX(), getY());
     }
 
-    public Point getRPosition() {
-        return new Point(this.x, this.y);
+    public Point ogetPosition() {
+        return new Point(x, y);
     }
 
     public String getName() {
-        return this.id.getName();
-    }
-
-    public void setCX(int cx) {
-        this.cx = cx;
-    }
-
-    public void setCY(int cy) {
-        this.cy = cy;
-    }
-
-    public void setCWidth(int cwidth) {
-        this.cwidth = cwidth;
-    }
-
-    public void setCHeight(int cheight) {
-        this.cheight = cheight;
-    }
-
-    public void addCX(int delta) {
-        this.cx += delta;
-    }
-
-    public void addCY(int delta) {
-        this.cy += delta;
-    }
-
-    public void addCWidth(int delta) {
-        this.cwidth += delta;
-    }
-
-    public void addCHeight(int delta) {
-        this.cheight += delta;
+        return id.getName();
     }
 
     public int getCx() {
-        return this.getWX() + this.cx;
+        return getWX() + cx;
     }
 
     public int getCy() {
-        return this.getWY() + this.cy;
+        return getWY() + cy;
     }
 
     public int getCwidth() {
-        return this.width + this.cwidth;
+        return width + cwidth;
     }
 
     public int getCheight() {
-        return this.height + this.cheight;
+        return height + cheight;
     }
 
     public int getCMinX() {
-        return this.getCx();
+        return getCx();
     }
 
     public int getCMinY() {
-        return this.getCy();
+        return getCy();
     }
 
     public int getCMaxX() {
-        return this.getCx() + this.getCwidth();
+        return getCx() + getCwidth();
     }
 
     public int getCMaxY() {
-        return this.getCy() + this.getCheight();
+        return getCy() + getCheight();
     }
 
     public int getCMidX() {
-        return this.getCx() + this.getCwidth() / 2;
+        return getCx() + getCwidth() / 2;
     }
 
     public int getCMidY() {
-        return this.getCy() + this.getCheight() / 2;
-    }
-
-    public void oMoveTo(int x, int y, int speed) {
-        this.movePos = new Point(x, y);
-        this.moveSpeed = speed;
-    }
-
-    public void rotate(double angle) {
-        this.angle = angle;
+        return getCy() + getCheight() / 2;
     }
 
     public double getAngle() {
-        return this.angle;
-    }
-
-    public final void oSetX(int x) {
-        this.x = x;
-    }
-
-    public final void oSetY(int y) {
-        this.y = y;
-    }
-
-    public int getWX() {
-        if (this.isWorld || this.isUniverse()) {
-            return 0;
-        } else {
-            return this.parent.getWX() + this.x;
-        }
-    }
-
-    public int getWY() {
-        if (this.isWorld) {
-            return 0;
-        } else {
-            return this.parent.getWY() + this.y;
-        }
+        return angle;
     }
 
     public Rectangle getRect() {
-        return new Rectangle(this.x, this.y, this.width, this.height);
+        return new Rectangle(x, y, width, height);
     }
 
     public Rectangle getCRect() {
@@ -645,28 +306,377 @@ public class Node implements Comparable<Node>, CollideData {
         return new Rectangle(getWX(), getWY(), getWidth(), getHeight());
     }
 
+    public boolean isUniverse() {
+        return isUniverse;
+    }
+
+    public DynamicScene getDynamicScene() {
+        return scene;
+    }
+
+    public int getTX() {
+        if (isUniverse) {
+            return x;
+        } else {
+            return x + parent.getTX();
+        }
+    }
+
+    public int getTY() {
+        if (isUniverse) {
+            return y;
+        } else {
+            return y + parent.getTY();
+        }
+    }
+
+    public int getWX() {
+        if (isWorld || isUniverse()) {
+            return 0;
+        } else {
+            return parent.getWX() + x;
+        }
+    }
+
+    public int getWY() {
+        if (isWorld) {
+            return 0;
+        } else {
+            return parent.getWY() + y;
+        }
+    }
+
+    public void setCX(final int cx) {
+        this.cx = cx;
+    }
+
+    public void setCY(final int cy) {
+        this.cy = cy;
+    }
+
+    public void setCWidth(final int cwidth) {
+        this.cwidth = cwidth;
+    }
+
+    public void setCHeight(final int cheight) {
+        this.cheight = cheight;
+    }
+
+    public void setX(final int x) {
+        this.x = x;
+    }
+
+    public void setY(final int y) {
+        this.y = y;
+    }
+
+    public void setZ(final int z) {
+        this.z = z;
+    }
+
+    public void setXv(final double xv) {
+        this.physicsData.setXv(xv);
+    }
+
+    public void setYv(final double yv) {
+        this.physicsData.setYv(yv);
+    }
+
+    public void setScene(final DynamicScene scene) {
+        this.scene = scene;
+    }
+
+    public void setGravityCoefficient(final double coefficient) {
+        this.physicsData.setGravityCoefficient(coefficient);
+    }
+
+    public void setElasticity(final double elasticity) {
+        this.physicsData.setElasticity(elasticity);
+    }
+
+    public void setFriction(final double friction) {
+        this.physicsData.setFriction(friction);
+    }
+
+    public void setMass(final double mass) {
+        this.physicsData.setMass(mass);
+    }
+
+    public void setxStrength(final double xStrength) {
+        this.physicsData.setxStrength(xStrength);
+    }
+
+    public void setyStrength(final double yStrength) {
+        this.physicsData.setyStrength(yStrength);
+    }
+
+    public void setxSpeedLim(final double xSpeedLim) {
+        this.physicsData.setxSpeedLim(xSpeedLim);
+    }
+
+    public void setySpeedLim(final double ySpeedLim) {
+        this.physicsData.setySpeedLim(ySpeedLim);
+    }
+
+    public void disableGravity() {
+        physicsData.disableGravity();
+    }
+
+    public void enableGravity() {
+        physicsData.enableGravity();
+    }
+
+    public void setColEast(final HalfCollision halfCollision) {
+        this.physicsData.setColEast(halfCollision);
+    }
+
+    public void setColWest(final HalfCollision halfCollision) {
+        this.physicsData.setColWest(halfCollision);
+    }
+
+    public void setColNorth(final HalfCollision halfCollision) {
+        this.physicsData.setColNorth(halfCollision);
+    }
+
+    public void setColSouth(final HalfCollision halfCollision) {
+        this.physicsData.setColSouth(halfCollision);
+    }
+
+    public void setPartRangeX(final int[] rangeX) {
+        this.partRangeX = rangeX;
+    }
+
+    public void setPartRangeY(final int[] rangeY) {
+        this.partRangeY = rangeY;
+    }
+
+    public void enableCollisionIn() {
+        physicsData.enableCollisionIn();
+    }
+
+    public void disableCollisionIn() {
+        physicsData.disableCollisionIn();
+    }
+
+    public void enableCollisionOut() {
+        physicsData.enableCollisionOut();
+    }
+
+    public void disableCollisionOut() {
+        physicsData.disableCollisionOut();
+    }
+
+    public void setSize(final int width, final int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public void setWidth(final int width) {
+        this.width = width;
+    }
+
+    public void setHeight(final int height) {
+        this.height = height;
+    }
+
+    public void csetXScale(final double xScale) {
+        this.xScale = xScale;
+    }
+
+    public void csetYScale(final double yScale) {
+        this.yScale = yScale;
+    }
+
+    public void osetWidth(final int width) {
+        this.oWidth = width;
+    }
+
+    public void osetHeight(final int height) {
+        this.oHeight = height;
+    }
+
+    public void removeParent() {
+        parent = null;
+    }
+
+    public void markUniverse() {
+        isUniverse = true;
+    }
+
+    public void markWorld() {
+        isWorld = true;
+    }
+
+    public void setRotatation(final double angle) {
+        this.angle = angle;
+    }
+
+    public void setXScale(final double xScale) {
+        this.xScale = xScale;
+        this.width = (int) (this.oWidth * xScale);
+    }
+
+    public void setYScale(final double yScale) {
+        this.yScale = yScale;
+        this.height = (int) (this.oHeight * yScale);
+    }
+
+    public void setPosition(final int x, final int y) {
+        this.setX(x);
+        this.setY(y);
+    }
+
+    public void update() {
+        for (Node node : children) {
+            node.update();
+        }
+        translate();
+    }
+
+    private void translate() {
+        if (movePos != null) {
+            final double angle = Utilities.invtrig(movePos.getY() - y, movePos.getX() - x);
+            int newX = (int) (x + moveSpeed * Math.cos(angle));
+            int newY = (int) (y + moveSpeed * Math.sin(angle));
+            if (newX < x && newX < this.movePos.getX() || newX > x && newX > movePos.getX()) {
+                x = (int) movePos.getX();
+            } else {
+                x = newX;
+            }
+            if (newY < y && newY < movePos.getY() || newY > y && newY > movePos.getY()) {
+                y = (int) movePos.getY();
+            } else {
+                y = newY;
+            }
+        }
+        if (getPosition().equals(movePos)) {
+            movePos = null;
+        }
+    }
+
+    public void addChild(final Node node) {
+        node.parent = this;
+        node.scene = scene;
+        children.add(node);
+        Collections.sort(children);
+        if (node.quePhysics) {
+            scene.addPhysicsNode(node);
+        }
+    }
+
+    public void removeChild(final Node node) {
+        final int index = Collections.binarySearch(children, node);
+        if (index != -1) {
+            children.remove(index);
+        } else {
+            System.out.println("ERROR: TRIED TO REMOVE NODE THAT WAS NOT PRESENT");
+        }
+    }
+
+    public void enablePhysics() {
+        if (scene != null) {
+            scene.addPhysicsNode(this);
+        }
+        quePhysics = true;
+    }
+
+    public void disablePhysics() {
+        scene.removePhysicsNode(this);
+        quePhysics = false;
+    }
+
+    public void accelerate(final double xacc, final double yacc) {
+        physicsData.accelerate(xacc, yacc);
+    }
+
+    public void accelerateX(double acceleration) {
+        physicsData.accelerateX(acceleration);
+    }
+
+    public void accelerateY(double acceleration) {
+        physicsData.accelerateY(acceleration);
+    }
+
+    public void moveX(final int deltaX) {
+        setX(x + deltaX);
+    }
+
+    public void moveX() {
+        setX(x + (int) physicsData.getXv());
+    }
+
+    public void moveY(int deltaY) {
+        setY(y + deltaY);
+    }
+
+    public void moveY() {
+        setY(y + (int) physicsData.getYv());
+    }
+
+    public void move(final int deltaX, final int deltaY) {
+        moveX(deltaX);
+        moveY(deltaY);
+    }
+
+    public void oMoveTo(final int x, final int y, final int speed) {
+        movePos = new Point(x, y);
+        moveSpeed = speed;
+    }
+
+    public void addCX(final int delta) {
+        cx += delta;
+    }
+
+    public void addCY(final int delta) {
+        cy += delta;
+    }
+
+    public void addCWidth(final int delta) {
+        cwidth += delta;
+    }
+
+    public void addCHeight(final int delta) {
+        cheight += delta;
+    }
+
+    public double distanceTo(final Point p) {
+        return Math.sqrt(Math.pow(p.x - (x + width / 2), 2) + Math.pow(p.y - (y + height / 2), 2));
+    }
+
+    public double distanceToW(final Point p) {
+        return Math.sqrt(Math.pow(p.x - (getWX() + width / 2), 2) + Math.pow(p.y - (getWY() + height / 2), 2));
+    }
+
+    public double distanceToW(final Node node) {
+        return Math.sqrt(Math.pow(node.getWX() - (getWX() + width / 2), 2) + Math.pow(node.getWY() - (getWY() + height / 2), 2));
+    }
+
+    public final void drawNode() {
+        draw();
+        for (Node node : children) {
+            node.drawNode();
+        }
+    }
+
+    public void draw() {
+        //To be overridden
+    }
+
     public void clickedOn() {
-
+        //To be overridden
     }
 
-    public double distanceTo(Point p) {
-        return Math.sqrt(Math.pow(p.x - (this.x + this.width / 2), 2) + Math.pow(p.y - (this.y + this.height / 2), 2));
+    public void causerCollision(final Collision collision) {
+        //To be overridden
     }
 
-    public double distanceToW(Point p) {
-        return Math.sqrt(Math.pow(p.x - (this.getWX() + this.width / 2), 2) + Math.pow(p.y - (this.getWY() + this.height / 2), 2));
+    public void victimCollision(final Collision collision) {
+        //To be overridden
     }
 
-    public double distanceToW(Node node) {
-        return Math.sqrt(Math.pow(node.getWX() - (this.getWX() + this.width / 2), 2) + Math.pow(node.getWY() - (this.getWY() + this.height / 2), 2));
+    public int compareTo(final Node node) {
+        return id.compareTo(node.getId());
     }
 
-    public void causerCollision(Collision collision) {
-
-    }
-
-    public void victimCollision(Collision collision) {
-
-    }
 
 }

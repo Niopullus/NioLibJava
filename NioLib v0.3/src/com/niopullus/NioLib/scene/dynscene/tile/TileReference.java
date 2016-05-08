@@ -74,7 +74,7 @@ public class TileReference implements Comparable<TileReference>, Serializable {
     }
 
     public static TileReference getRef(int id) {
-        if (id >= 1 && id <= TileReference.getTileQuant()) {
+        if (id >= 1 && id <= TileReference.getTileCount()) {
             return TileReference.refs.get(id - 1);
         } else {
             return null;
@@ -106,12 +106,13 @@ public class TileReference implements Comparable<TileReference>, Serializable {
         tile.setReference(TileReference.getRef(name));
     }
 
-    public static int getTileQuant() {
+    public static int getTileCount() {
         return refs.size();
     }
 
     public int compareTo(final TileReference reference) {
-        return name.compareTo(reference.getName());
+        final String name = reference.getName();
+        return name.compareTo(name);
     }
 
     public void addImage(final BufferedImage image) {

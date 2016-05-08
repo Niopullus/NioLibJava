@@ -17,6 +17,18 @@ public class Collision {
         this.passive = passive;
     }
 
+    public CollideData getCauser() {
+        return data1;
+    }
+
+    public CollideData getVictim() {
+        return data2;
+    }
+
+    public Dir getDir() {
+        return dir;
+    }
+
     public boolean involves(final String name) {
         final String name1 = data1.getName();
         final String name2 = data2.getName();
@@ -45,18 +57,6 @@ public class Collision {
 
     public boolean isPassive() {
         return passive;
-    }
-
-    public CollideData getCauser() {
-        return data1;
-    }
-
-    public CollideData getVictim() {
-        return data2;
-    }
-
-    public Dir getDir() {
-        return dir;
     }
 
 }

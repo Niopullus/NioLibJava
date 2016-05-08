@@ -84,11 +84,6 @@ public class Tile implements CollideData {
         return result;
     }
 
-    public void setTileMapPos(final Point p) {
-        tileMapPos.x = p.x;
-        tileMapPos.y = p.y;
-    }
-
     public void setTilemap(final Tilemap tilemap) {
         this.tilemap = tilemap;
     }
@@ -97,9 +92,14 @@ public class Tile implements CollideData {
         this.reference = reference;
     }
 
+    public void setTileMapPos(final Point p) {
+        tileMapPos.x = p.x;
+        tileMapPos.y = p.y;
+    }
+
     public Tile clone(final DataTree data) {
         try {
-            Class<?> tileClass = getClass();
+            final Class<?> tileClass = getClass();
             final Tile tile = (Tile) tileClass.newInstance();
             tile.reference = reference;
             tile.tilemap = tilemap;
@@ -124,11 +124,11 @@ public class Tile implements CollideData {
     }
 
     public void clickedOn() {
-
+        //To be overridden
     }
 
     public void victimCollision(Collision collision) {
-
+        //To be overridden
     }
 
     public final void causerCollision(Collision collision) {

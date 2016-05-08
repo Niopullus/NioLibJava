@@ -70,13 +70,13 @@ public class MultiTile extends Tile {
         return result;
     }
 
-    public void addPart(final MultiTilePart part) {
-        parts.add(part);
-    }
-
     public void setRefTilePoint(Point point) {
         refTilePoint.x = point.x;
         refTilePoint.y = point.y;
+    }
+
+    public void addPart(final MultiTilePart part) {
+        parts.add(part);
     }
 
 }
