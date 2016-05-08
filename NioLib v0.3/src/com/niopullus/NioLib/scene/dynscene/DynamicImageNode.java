@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-/**
+/**Image Node that can switch through images and animations
  * Created by Owen on 3/27/2016.
  */
 public class DynamicImageNode extends ImageNode {
@@ -72,8 +72,8 @@ public class DynamicImageNode extends ImageNode {
     private CollisionOffset getOffset(final Animation animation, final BufferedImage image, final int offsetMode) {
         final int xDif = (int) ((animation.getWidth() - image.getWidth()) * getXScale());
         final int yDif = (int) ((animation.getHeight() - image.getHeight()) * getYScale());
-        final int xOff = this.deriveXOffsetFromMode(offsetMode, xDif);
-        final int yOff = this.deriveYOffsetFromMode(offsetMode, yDif);
+        final int xOff = deriveXOffsetFromMode(offsetMode, xDif);
+        final int yOff = deriveYOffsetFromMode(offsetMode, yDif);
         return new CollisionOffset(xDif, yDif, xOff, yOff);
     }
 
@@ -130,7 +130,7 @@ public class DynamicImageNode extends ImageNode {
         }
     }
 
-    private int deriveXOffsetFromMode(int mode, int xDiff) {
+    private int deriveXOffsetFromMode(final int mode, final int xDiff) {
         switch (mode) {
             case OFFSETMODE_BOTTOMLEFT: return 0;
             case OFFSETMODE_LEFTMIDDLE: return 0;
@@ -145,7 +145,7 @@ public class DynamicImageNode extends ImageNode {
         return xDiff / 2;
     }
 
-    private int deriveYOffsetFromMode(int mode, int yDiff) {
+    private int deriveYOffsetFromMode(final int mode, final int yDiff) {
         switch (mode) {
             case OFFSETMODE_TOPLEFT: return yDiff;
             case OFFSETMODE_TOPMIDDLE: return yDiff;

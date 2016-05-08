@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
+/**A scene varient that is designed to support physics, tilemaps, and nodes
  * Created by Owen on 3/5/2016.
  */
 public class DynamicScene extends Scene implements Serializable {
@@ -43,174 +43,182 @@ public class DynamicScene extends Scene implements Serializable {
         this("Unnamed Scene");
     }
 
-    public DynamicScene(String name) {
+    public DynamicScene(final String name) {
         this.name = name;
         this.universe = new Node("universe");
         this.world = new Node("world");
         this.world.markWorld();
         this.universe.setDynamicScene(this);
-        this.universe.addChild(this.world);
+        this.universe.addChild(world);
         this.universe.markUniverse();
         this.universe.setDynamicScene(this);
         this.background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
-        this.fgTilemap = new Tilemap(Config.TILESIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.TILEREGIONSIZE);
-        this.bgTilemap = new Tilemap(Config.TILESIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.TILEREGIONSIZE);
+        this.fgTilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.FGTILEMAPZ);
+        this.bgTilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.BGTILEMAPZ);
         this.physicsHandler = new PhysicsHandler();
-        this.physicsHandler.setTilemap(this.fgTilemap);
-        this.fgTilemap.setDynamicScene(this);
-        this.bgTilemap.setDynamicScene(this);
-        this.fgTilemap.setZ(2);
-        this.bgTilemap.setZ(1);
+        this.physicsHandler.setTilemap(fgTilemap);
     }
 
     public final void tick() {
-        if (this.physicsHandler != null) {
-            this.physicsHandler.tick();
+        if (physicsHandler != null) {
+            physicsHandler.tick();
         }
-        for (Collision collision : this.physicsHandler.getCollisions()) {
-            this.oCollisionHandler(collision);
+        for (Collision collision : physicsHandler.getCollisions()) {
+            oCollisionHandler(collision);
         }
-        this.universe.update();
-        if (this.camera != null) {
-            this.world.setX(-this.camera.getX() + Main.Width() / 2 - this.camera.getWidth() / 2);
-            this.world.setY(-this.camera.getY() + Main.Height() / 2 - this.camera.getHeight() / 2);
+        universe.update();
+        if (camera != null) {
+            final int x = -camera.getX() + Main.Width() / 2 - camera.getWidth() / 2;
+            final int y = -camera.getY() + Main.Height() / 2 - camera.getHeight() / 2;
+            world.setX(x);
+            world.setY(y);
         }
-        this.tock();
+        tock();
     }
 
     public void tock() {
 
     }
 
-    @Override
-    public void keyPress(KeyEvent key) {
+    public void keyPress(final KeyEvent key) {
 
     }
 
-    @Override
-    public void keyReleased(KeyEvent key) {
+    public void keyReleased(final KeyEvent key) {
 
     }
 
     public final void draw() {
-        this.background.draw();
-        this.fgTilemap.draw();
-        this.bgTilemap.draw();
-        this.universe.drawNode();
-        if (this.getSubscene() != null) {
-            this.getSubscene().draw();
+        Scene subscene;
+        background.draw();
+        fgTilemap.draw();
+        bgTilemap.draw();
+        universe.drawNode();
+        subscene = getSubscene();
+        if (subscene != null) {
+            subscene.draw();
         }
     }
 
-    public void addChild(Node node) {
-        this.universe.addChild(node);
+    public void addChild(final Node node) {
+        universe.addChild(node);
     }
 
-    public void removeChild(Node node) {
-        this.universe.removeChild(node);
+    public void removeChild(final Node node) {
+        universe.removeChild(node);
     }
 
     public void enablePhysics() {
-        this.physicsHandler = new PhysicsHandler();
+        physicsHandler = new PhysicsHandler();
     }
 
     public int getPhysicsSize() {
-        return this.physicsHandler.getPhysicsSize();
+        return physicsHandler.getPhysicsSize();
     }
 
-    public void addPhysicsNode(Node node) {
-        this.physicsHandler.addPhysicsNode(node);
+    public void addPhysicsNode(final Node node) {
+        physicsHandler.addPhysicsNode(node);
     }
 
-    public void removePhysicsNode(Node node) {
-        this.physicsHandler.removePhysicsNode(node);
+    public void removePhysicsNode(final Node node) {
+        physicsHandler.removePhysicsNode(node);
     }
 
-    public void setBorderColor(Color color) {
-        if (this.background instanceof ColorBackground) {
-            ColorBackground colorBackground = (ColorBackground) this.background;
+    public void setBorderColor(final Color color) {
+        if (background instanceof ColorBackground) {
+            ColorBackground colorBackground = (ColorBackground) background;
             colorBackground.setColor(color);
         }
     }
 
-    public void fillTilesFG(Tile t, int x, int y, int width, int height) {
-        this.fgTilemap.fillTiles(x, y, width, height, t);
+    public void fillTilesFG(final Tile t, final int x, final int y, final int width, final int height) {
+        fgTilemap.fillTiles(x, y, width, height, t);
     }
 
-    public void fillTilesBG(Tile t, int x, int y, int width, int height) {
-        this.bgTilemap.fillTiles(x, y, width, height, t);
+    public void fillTilesBG(final Tile t, final int x, final int y, final int width, final int height) {
+        bgTilemap.fillTiles(x, y, width, height, t);
     }
 
     public void pause() {
-        this.physicsHandler.pause();
+        physicsHandler.pause();
     }
 
     public void unpause() {
-        this.physicsHandler.unpause();
+        physicsHandler.unpause();
     }
 
     public void togglePause() {
-        this.physicsHandler.togglePause();
+        physicsHandler.togglePause();
     }
 
-    public void setBackground(Background background) {
+    public void setBackground(final Background background) {
         this.background = background;
     }
 
     public void subSceneUpdate() {
-        this.background.setX(this.getDx());
-        this.background.setY(this.getDy());
-        this.background.setWidth(this.getWidth());
-        this.background.setHeight(this.getHeight());
+        background.setX(getDx());
+        background.setY(getDy());
+        background.setWidth(getWidth());
+        background.setHeight(getHeight());
     }
 
-    public void setWorldX(int x) {
-        this.world.setX(x);
+    public void setWorldX(final int x) {
+        world.setX(x);
     }
 
-    public void setWorldY(int y) {
-        this.world.setY(y);
+    public void setWorldY(final int y) {
+        world.setY(y);
+    }
+
+    public void setWorldPosition(final int x, final int y) {
+        setWorldX(x);
+        setWorldY(y);
     }
 
     public Node getWorld() {
-        return this.world;
+        return world;
     }
 
-    public void addChildInWorld(Node node) {
-        this.getWorld().addChild(node);
+    public void addChildInWorld(final Node node) {
+        Node world = getWorld();
+        world.addChild(node);
     }
 
-    private final void oCollisionHandler(Collision collision) {
-        if (collision.getVictim() instanceof Trigger) {
-            ((Trigger) collision.getVictim()).trigger();
+    private void oCollisionHandler(final Collision collision) {
+        final CollideData causer = collision.getCauser();
+        final CollideData victim = collision.getVictim();
+        if (victim instanceof Trigger) {
+            Trigger trigger = (Trigger) victim;
+            trigger.trigger();
         } else {
-            collision.getVictim().victimCollision(collision);
-            ((Node) collision.getCauser()).causerCollision(collision);
+            victim.victimCollision(collision);
+            causer.causerCollision(collision);
         }
     }
 
-    public void setGravitationalConstant(double g) {
-        this.physicsHandler.setGravitation(g);
+    public void setGravitationalConstant(final double g) {
+        physicsHandler.setGravitation(g);
     }
 
-    public void setCamera(Node node) {
-        this.camera = node;
+    public void setCamera(final Node node) {
+        camera = node;
     }
 
     public void removeCamera() {
-        this.camera = null;
+        camera = null;
     }
 
-    public void setMultiTileFG(MultiTile mt, int x, int y) {
-        this.fgTilemap.setMultiTile(mt, x, y);
+    public void setMultiTileFG(final MultiTile multiTile, final int x, final int y) {
+        fgTilemap.setMultiTile(multiTile, x, y);
     }
 
-    public void setMultiTileBG(MultiTile mt, int x, int y) {
-        this.bgTilemap.setMultiTile(mt, x, y);
+    public void setMultiTileBG(final MultiTile multiTile, final int x, final int y) {
+        bgTilemap.setMultiTile(multiTile, x, y);
     }
 
     public void mousePress() {
-        Point inWorld = new Point(getMousePos().x - this.world.getX(), Main.Height() - (this.getMousePos().y + this.world.getY()));
+        final int x = getMousePos().x - world.getX();
+        final Point inWorld = new Point(x, Main.Height() - (this.getMousePos().y + this.world.getY()));
         ArrayList<Node> nodes = this.physicsHandler.getNodesAt(inWorld.x, inWorld.y, 0, 0);
         if (nodes.size() != 0) {
             nodes.get(0).clickedOn();
