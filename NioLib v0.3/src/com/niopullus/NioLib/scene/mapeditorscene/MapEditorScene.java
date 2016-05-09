@@ -48,13 +48,9 @@ public class MapEditorScene extends Scene {
         super();
         this.universe = new Node("universe");
         this.universe.markUniverse();
-        this.fgMap = new Tilemap(Config.TILESIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEREGIONSIZE);
-        this.fgMap.setZ(10);
-        this.bgMap = new Tilemap(Config.TILESIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEREGIONSIZE);
-        this.bgMap.setZ(5);
         this.world = new Node("world");
-        this.bgMap.setWorld(this.world);
-        this.fgMap.setWorld(this.world);
+        this.fgMap = new Tilemap(world, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.FGTILEMAPZ);
+        this.bgMap = new Tilemap(world, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.BGTILEMAPZ);
         this.selectedTile = new Point();
         this.selection = new Point();
         this.cols = Main.Height() / (Main.Width() / 12);

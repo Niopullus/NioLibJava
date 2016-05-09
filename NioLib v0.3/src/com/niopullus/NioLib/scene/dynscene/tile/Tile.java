@@ -19,11 +19,11 @@ public class Tile implements CollideData {
     private Tilemap tilemap;
 
     public Tile(final String refName, final DataTree data) {
+        TileReference ref = null;
         this.data = data;
         this.tileMapPos = new Point();
-        TileReference ref = null;
         if (refName != null) {
-            ref = TileReference.getRef(refName);
+            ref = TileReference.getTileRef(refName);
         }
         this.reference = ref;
     }

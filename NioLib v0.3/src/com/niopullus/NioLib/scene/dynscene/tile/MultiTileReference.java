@@ -12,7 +12,7 @@ public class MultiTileReference extends TileReference {
     private int height;
     private ArrayList<ArrayList<BufferedImage>> images;
 
-    public MultiTileReference(String name, int id, ArrayList<BufferedImage> images, double friction, double elasticity, boolean collidable, int width, int height, Tile tile) {
+    public MultiTileReference(final String name, final int id, ArrayList<BufferedImage> images, final double friction, final double elasticity, final boolean collidable, final int width, final int height, final Tile tile) {
         super(name, id, null, friction, elasticity, collidable, tile);
         this.width = width;
         this.height = height;
@@ -21,23 +21,25 @@ public class MultiTileReference extends TileReference {
     }
 
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
-    public BufferedImage getImage(int index) {
-        return this.images.get(0).get(index);
+    public BufferedImage getImage(final int index) {
+        final ArrayList<BufferedImage> imageSet = images.get(0);
+        return imageSet.get(index);
     }
 
-    public BufferedImage getImage(int set, int index) {
-        return this.images.get(set).get(index);
+    public BufferedImage getImage(final int set, final int index) {
+        final ArrayList<BufferedImage> imageSet = images.get(set);
+        return imageSet.get(index);
     }
 
-    public void addSet(ArrayList<BufferedImage> newSet) {
-        this.images.add(newSet);
+    public void addSet(final ArrayList<BufferedImage> newSet) {
+        images.add(newSet);
     }
 
 }

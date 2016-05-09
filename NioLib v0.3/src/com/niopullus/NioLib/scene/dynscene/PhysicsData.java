@@ -249,6 +249,29 @@ public class PhysicsData implements Serializable {
         }
     }
 
+    public PhysicsData clone() {
+        final PhysicsData result = new PhysicsData();
+        result.xv = xv;
+        result.yv = yv;
+        result.elasticity = elasticity;
+        result.friction = friction;
+        result.mass = mass;
+        result.xStrength = xStrength;
+        result.yStrength = yStrength;
+        result.xSpeedLim = xSpeedLim;
+        result.ySpeedLim = ySpeedLim;
+        result.gravityCoefficient = gravityCoefficient;
+        result.doGravity = doGravity;
+        result.colEast = colEast;
+        result.colWest = colWest;
+        result.colNorth = colNorth;
+        result.colSouth = colSouth;
+        result.collidablein = collidablein;
+        result.collidableout = collidableout;
+        result.enablePhysics = enablePhysics;
+        return result;
+    }
+
     public static PhysicsData decompress(DataTree data) {
         PhysicsData result = new PhysicsData();
         result.setEnablePhysics((Boolean) data.get(new DataPath(new int[]{0})));

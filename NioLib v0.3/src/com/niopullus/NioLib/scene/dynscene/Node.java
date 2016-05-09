@@ -697,6 +697,14 @@ public class Node implements Comparable<Node>, CollideData {
         try {
             final Class<?> nodeClass = getClass();
             final Node node = (Node) nodeClass.newInstance();
+            node.id = new UUID(id.getName());
+            final ArrayList<Node> newChildren = new ArrayList<Node>();
+            for (Node child : children) {
+                newChildren.add(child.clone());
+            }
+            node.children = newChildren;
+            node.physicsData = physicsData.clone();
+            node.data = data.clone();
             return node;
         } catch (Exception e) {
             e.printStackTrace();

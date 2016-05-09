@@ -153,6 +153,10 @@ public class World {
         return result;
     }
 
+    public static World loadWorld(final String fileName) {
+        return loadWorld(fileName, null);
+    }
+
     public static void saveWorld(World world) {
         DataTree data = new DataTree();
         Tilemap fg = world.getFgTilemap();
