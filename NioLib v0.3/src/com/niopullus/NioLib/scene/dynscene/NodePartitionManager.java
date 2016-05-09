@@ -17,7 +17,7 @@ public class NodePartitionManager implements Serializable {
 
     public NodePartitionManager(final int partSize, final int width, final int height) {
         this.size = partSize;
-        this.partitions = new SignedContainer(width, height);
+        this.partitions = new SignedContainer<NodePartition>(width, height);
     }
 
     public void updateNode(final Node node) {
@@ -41,7 +41,7 @@ public class NodePartitionManager implements Serializable {
         for (int i = partPointMin.x; i <= partPointMax.x; i++) {
             for (int j = partPointMin.y; j <= partPointMax.y; j++) {
                 if (partitions.get(i, j) == null) {
-                    NodePartition part = new NodePartition(i, j);
+                    NodePartition part = new NodePartition();
                     part.setPartitionManager(this);
                     partitions.set(i, j, part);;
                 }

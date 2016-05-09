@@ -15,23 +15,22 @@ public class NodePartition {
     private NodePartitionManager partitionManager;
     public static final int AWARENESS_STANDARD = 100; //Making this value too big could result in large amounts of lag
 
-    public NodePartition(final int x, final int y) {
+    public NodePartition() {
         this.nodes = new ArrayList<Node>();
     }
 
-    public void addNode(final Node node) {
-        nodes.add(node);
-        Collections.sort(nodes);
+    public ArrayList<Node> getNodes() {
+        return nodes;
     }
 
-    public void removeNode(final Node node) {
-        final int index = Collections.binarySearch(this.nodes, node);
-        if (index != -1) {
-            nodes.remove(index);
-        } else {
-            System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT");
+    public ArrayList<Node> getNodes(final Rectangle rect) {
+        final ArrayList<Node> nodes = new ArrayList<Node>();
+        for (Node node : nodes) {
+            if (Utilities.rectIntersect(rect, node.getWRect())) {
+                nodes.add(node);
+            }
         }
-        Collections.sort(this.nodes);
+        return nodes;
     }
 
     public HalfCollision getHalfCollision(final Node node1, final Dir dir) {
@@ -130,18 +129,19 @@ public class NodePartition {
         this.partitionManager = partitionManager;
     }
 
-    public ArrayList<Node> getNodes() {
-        return nodes;
+    public void addNode(final Node node) {
+        nodes.add(node);
+        Collections.sort(nodes);
     }
 
-    public ArrayList<Node> getNodes(final Rectangle rect) {
-        final ArrayList<Node> nodes = new ArrayList<Node>();
-        for (Node node : nodes) {
-            if (Utilities.rectIntersect(rect, node.getWRect())) {
-                nodes.add(node);
-            }
+    public void removeNode(final Node node) {
+        final int index = Collections.binarySearch(nodes, node);
+        if (index != -1) {
+            nodes.remove(index);
+        } else {
+            System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT");
         }
-        return nodes;
+        Collections.sort(nodes);
     }
 
 }
