@@ -29,7 +29,6 @@ public class GUIElement {
     private int borderWidth;
     private int fontSize;
     private boolean drawBG;
-    private int index;
 
     public GUIElement() {
         this("");
