@@ -28,6 +28,8 @@ public class Tilemap implements Serializable {
     private Node world;
 
     private Tilemap(final Scene scene, final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
+        final int xRegions;
+        final int yRegions;
         this.tileSize = tileSize;
         this.width = width;
         this.height = height;
@@ -35,8 +37,8 @@ public class Tilemap implements Serializable {
         this.world = world;
         this.scene = scene;
         this.z = z;
-        int xRegions = (int) Math.ceil((double) width / this.regSize) + 3;
-        int yRegions = (int) Math.ceil((double) height / this.regSize) + 3;
+        xRegions = (int) Math.ceil((double) width / regSize) + 3;
+        yRegions = (int) Math.ceil((double) height / regSize) + 3;
         this.map = new SignedContainer<TileRegion>(xRegions, yRegions);
     }
 
@@ -80,7 +82,7 @@ public class Tilemap implements Serializable {
         if (reg != null) {
             final Tile tile = reg.get(pointInRegion.x, pointInRegion.y);
             if (tile instanceof MultiTilePart) {
-                MultiTilePart multiTilePart = (MultiTilePart) tile;
+                final MultiTilePart multiTilePart = (MultiTilePart) tile;
                 return multiTilePart.get();
             }
             return tile;
@@ -120,7 +122,7 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public void setScene(Scene scene) {
+    public void setScene(final Scene scene) {
         this.scene = scene;
     }
 

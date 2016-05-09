@@ -45,12 +45,12 @@ public class Collision {
         return match1 || match2;
     }
 
-    public boolean causedBy(String name) {
+    public boolean causedBy(final String name) {
         final String name1 = data1.getName();
         return name1.equals(name);
     }
 
-    public boolean isVictim(String name) {
+    public boolean isVictim(final String name) {
         final String name2 = data2.getName();
         return name2.equals(name);
     }

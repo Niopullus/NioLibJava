@@ -28,7 +28,33 @@ public class DynamicScene extends Scene implements Serializable {
     private Tilemap bgTilemap;
     private Node camera;
 
-    public DynamicScene(final World world) {
+    public DynamicScene() {
+        this("Unnamed Scene");
+    }
+
+    public DynamicScene(final String name) {
+        final Node world = new Node("world");
+        final Node universe = new Node("universe");
+        final PhysicsHandler physicsHandler = new PhysicsHandler();
+        final Background background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
+        final Tilemap fgtilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.FGTILEMAPZ);
+        final Tilemap bgtilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.BGTILEMAPZ);
+        final World storedWorld = new World();
+        physicsHandler.setTilemap(fgtilemap);
+        universe.setScene(this);
+        universe.addChild(world);
+        universe.markUniverse();
+        universe.setScene(this);
+        world.markWorld();
+        storedWorld.setName(name);
+        storedWorld.setUniverse(universe);
+        storedWorld.setPhysicsHandler(physicsHandler);
+        storedWorld.setBackground(background);
+        storedWorld.setFgTilemap(fgtilemap);
+        storedWorld.setBgTilemap(bgtilemap);
+    }
+
+    private DynamicScene(final World world) {
         this.name = world.getName();
         this.universe = world.getUniverse();
         this.physicsHandler = world.getPhysicsHandler();
@@ -36,26 +62,6 @@ public class DynamicScene extends Scene implements Serializable {
         this.fgTilemap = world.getFgTilemap();
         this.bgTilemap = world.getBgTilemap();
         this.camera = world.getCamera();
-    }
-
-    public DynamicScene() {
-        this("Unnamed Scene");
-    }
-
-    public DynamicScene(final String name) {
-        this.name = name;
-        this.universe = new Node("universe");
-        this.world = new Node("world");
-        this.world.markWorld();
-        this.universe.setScene(this);
-        this.universe.addChild(world);
-        this.universe.markUniverse();
-        this.universe.setScene(this);
-        this.background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
-        this.fgTilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.FGTILEMAPZ);
-        this.bgTilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.BGTILEMAPZ);
-        this.physicsHandler = new PhysicsHandler();
-        this.physicsHandler.setTilemap(fgTilemap);
     }
 
     public final void tick() {
@@ -85,6 +91,10 @@ public class DynamicScene extends Scene implements Serializable {
 
     public PhysicsHandler getPhysicsHandler() {
         return physicsHandler;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Point getMousePosInWorld() {
@@ -177,10 +187,6 @@ public class DynamicScene extends Scene implements Serializable {
         universe.removeChild(node);
     }
 
-    public void enablePhysics() {
-        physicsHandler = new PhysicsHandler();
-    }
-
     public void addPhysicsNode(final Node node) {
         physicsHandler.addPhysicsNode(node);
     }
@@ -217,7 +223,7 @@ public class DynamicScene extends Scene implements Serializable {
     }
 
     public void addChildInWorld(final Node node) {
-        Node world = getWorld();
+        final Node world = getWorld();
         world.addChild(node);
     }
 
@@ -225,7 +231,7 @@ public class DynamicScene extends Scene implements Serializable {
         final CollideData causer = collision.getCauser();
         final CollideData victim = collision.getVictim();
         if (victim instanceof Trigger) {
-            Trigger trigger = (Trigger) victim;
+            final Trigger trigger = (Trigger) victim;
             trigger.trigger(victim);
         } else {
             victim.victimCollision(collision);

@@ -20,7 +20,7 @@ public class TileReference extends Reference {
     private double elasticity;
     private boolean collidable;
 
-    public TileReference(String name, int id, BufferedImage image, double friction, double elasticity, boolean collidable, Tile tile) {
+    public TileReference(final String name, final int id, BufferedImage image, final double friction, final double elasticity, final boolean collidable, final Tile tile) {
         super(name, id, tile);
         this.images = new ArrayList<BufferedImage>();
         this.friction = friction;
@@ -30,31 +30,31 @@ public class TileReference extends Reference {
     }
 
     public double getElasticity() {
-        return this.elasticity;
+        return elasticity;
     }
 
     public double getFriction() {
-        return this.friction;
+        return friction;
     }
 
     public BufferedImage getImage() {
-        return this.images.get(0);
+        return images.get(0);
     }
 
-    public BufferedImage getImage(int set) {
-        return this.images.get(set);
+    public BufferedImage getImage(final int set) {
+        return images.get(set);
     }
 
     public boolean getCollidable() {
         return this.collidable;
     }
 
-    public void addImage(BufferedImage image) {
-        this.images.add(image);
-    }
-
     public Tile getSample() {
         return (Tile) super.getSample();
+    }
+
+    public void addImage(final BufferedImage image) {
+        this.images.add(image);
     }
 
 }

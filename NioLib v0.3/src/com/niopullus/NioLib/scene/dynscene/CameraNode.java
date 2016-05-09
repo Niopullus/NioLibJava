@@ -27,21 +27,21 @@ public class CameraNode extends Node {
 
     public void setX(final int x) {
         if (x > xMax) {
-            oSetX(xMax);
+            super.setX(xMax);
         } else if (x < xMin) {
-            oSetX(xMin);
+            super.setX(xMin);
         } else {
-            oSetX(x);
+            super.setX(x);
         }
     }
 
     public void setY(int y) {
         if (y > this.yMax) {
-            this.oSetY(this.yMax);
+            super.setY(this.yMax);
         } else if (y < this.yMin) {
-            this.oSetY(this.yMin);
+            super.setY(this.yMin);
         } else {
-            this.oSetY(y);
+            super.setY(y);
         }
     }
 

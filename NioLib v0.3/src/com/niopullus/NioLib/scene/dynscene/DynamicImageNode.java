@@ -60,7 +60,7 @@ public class DynamicImageNode extends ImageNode {
     }
 
     private void modCollisionBox(final Animation animation, final BufferedImage image, final int offsetMode) {
-        CollisionOffset offset = getOffset(animation, image, offsetMode);
+        final CollisionOffset offset = getOffset(animation, image, offsetMode);
         mod = true;
         addCX(-offset.xOff);
         addCY(-offset.yOff);
@@ -69,7 +69,7 @@ public class DynamicImageNode extends ImageNode {
     }
 
     private void unmodCollisionBox(final Animation animation, final BufferedImage image, final int offsetMode) {
-        CollisionOffset offset = getOffset(animation, image, offsetMode);
+        final CollisionOffset offset = getOffset(animation, image, offsetMode);
         mod = false;
         addCX(offset.xOff);
         addCY(offset.yOff);
@@ -97,8 +97,8 @@ public class DynamicImageNode extends ImageNode {
     }
 
     public void cancelAnimation() {
-        this.animationTimer = 0;
-        this.indefTimer = false;
+        animationTimer = 0;
+        indefTimer = false;
         if (mod) {
             unmodCollisionBox(getAnimation(), getImage(), currentOffsetMode);
         }
@@ -110,7 +110,7 @@ public class DynamicImageNode extends ImageNode {
             unmodCollisionBox(getAnimation(), getImage(), currentOffsetMode);
             reset = false;
         }
-        if (animationTimer > 0 || this.indefTimer) {
+        if (animationTimer > 0 || indefTimer) {
             if (animationTimer == 1) {
                 reset = true;
             }
@@ -119,8 +119,8 @@ public class DynamicImageNode extends ImageNode {
             final int yDif = (int) ((animation.getHeight() - image.getHeight()) * getYScale());
             final int scaledAWidth = (int) (animation.getWidth() * getXScale());
             final int scaledAHeight = (int) (animation.getHeight() * getYScale());
-            final int xOff = this.deriveXOffsetFromMode(currentOffsetMode, xDif);
-            final int yOff = this.deriveYOffsetFromMode(currentOffsetMode, yDif);
+            final int xOff = deriveXOffsetFromMode(currentOffsetMode, xDif);
+            final int yOff = deriveYOffsetFromMode(currentOffsetMode, yDif);
             final int x = getTX() - xOff;
             final int y = getTY() - yOff;
             animation.draw(x, y, scaledAWidth, scaledAHeight, getZ(), getAngle());
