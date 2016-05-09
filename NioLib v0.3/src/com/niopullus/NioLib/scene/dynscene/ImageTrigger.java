@@ -16,7 +16,7 @@ public class ImageTrigger extends ImageNode implements Trigger {
         this.yRad = yRad;
     }
 
-    public void trigger(CollideData data) {
+    public void trigger(final CollideData data) {
         //To be overridden
     }
 

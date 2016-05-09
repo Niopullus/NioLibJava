@@ -28,8 +28,14 @@ public class DynamicScene extends Scene implements Serializable {
     private Tilemap bgTilemap;
     private Node camera;
 
-    public DynamicScene() {
-        this("Unnamed Scene");
+    public DynamicScene(final World world) {
+        this.name = world.getName();
+        this.universe = world.getUniverse();
+        this.physicsHandler = world.getPhysicsHandler();
+        this.background = world.getBackground();
+        this.fgTilemap = world.getFgTilemap();
+        this.bgTilemap = world.getBgTilemap();
+        this.camera = world.getCamera();
     }
 
     public DynamicScene(final String name) {
@@ -54,14 +60,8 @@ public class DynamicScene extends Scene implements Serializable {
         storedWorld.setBgTilemap(bgtilemap);
     }
 
-    private DynamicScene(final World world) {
-        this.name = world.getName();
-        this.universe = world.getUniverse();
-        this.physicsHandler = world.getPhysicsHandler();
-        this.background = world.getBackground();
-        this.fgTilemap = world.getFgTilemap();
-        this.bgTilemap = world.getBgTilemap();
-        this.camera = world.getCamera();
+    public DynamicScene() {
+        this("Unnamed Scene");
     }
 
     public final void tick() {

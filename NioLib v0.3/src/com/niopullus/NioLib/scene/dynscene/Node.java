@@ -94,47 +94,47 @@ public class Node implements Comparable<Node>, CollideData {
     }
 
     public double getXv() {
-        return this.physicsData.getXv();
+        return physicsData.getXv();
     }
 
     public double getYv() {
-        return this.physicsData.getYv();
+        return physicsData.getYv();
     }
 
     public double getElasticity() {
-        return this.physicsData.getElasticity();
+        return physicsData.getElasticity();
     }
 
     public double getFriction() {
-        return this.physicsData.getFriction();
+        return physicsData.getFriction();
     }
 
     public double getMass() {
-        return this.physicsData.getMass();
+        return physicsData.getMass();
     }
 
     public double getxStrength() {
-        return this.physicsData.getxStrength();
+        return physicsData.getxStrength();
     }
 
     public double getyStrength() {
-        return this.physicsData.getyStrength();
+        return physicsData.getyStrength();
     }
 
     public double getxSpeedLim() {
-        return this.physicsData.getxSpeedLim();
+        return physicsData.getxSpeedLim();
     }
 
     public double getySpeedLim() {
-        return this.physicsData.getySpeedLim();
+        return physicsData.getySpeedLim();
     }
 
     public boolean getDoGravity() {
-        return this.physicsData.getDoGravity();
+        return physicsData.getDoGravity();
     }
 
     public double getGravityCoefficient() {
-        return this.physicsData.getGravityCoefficient();
+        return physicsData.getGravityCoefficient();
     }
 
     public HalfCollision getColEast() {
@@ -473,11 +473,6 @@ public class Node implements Comparable<Node>, CollideData {
         physicsData.disableCollisionOut();
     }
 
-    public void setSize(final int width, final int height) {
-        this.width = width;
-        this.height = height;
-    }
-
     public void setWidth(final int width) {
         this.width = width;
     }
@@ -526,6 +521,11 @@ public class Node implements Comparable<Node>, CollideData {
         id = new UUID(name);
     }
 
+    public void setSize(final int width, final int height) {
+        this.width = width;
+        this.height = height;
+    }
+
     public void setXScale(final double xScale) {
         this.xScale = xScale;
         this.width = (int) (this.oWidth * xScale);
@@ -551,8 +551,8 @@ public class Node implements Comparable<Node>, CollideData {
     private void translate() {
         if (movePos != null) {
             final double angle = Utilities.invtrig(movePos.getY() - y, movePos.getX() - x);
-            int newX = (int) (x + moveSpeed * Math.cos(angle));
-            int newY = (int) (y + moveSpeed * Math.sin(angle));
+            final int newX = (int) (x + moveSpeed * Math.cos(angle));
+            final int newY = (int) (y + moveSpeed * Math.sin(angle));
             if (newX < x && newX < this.movePos.getX() || newX > x && newX > movePos.getX()) {
                 x = (int) movePos.getX();
             } else {
@@ -697,11 +697,11 @@ public class Node implements Comparable<Node>, CollideData {
         try {
             final Class<?> nodeClass = getClass();
             final Node node = (Node) nodeClass.newInstance();
-            node.id = new UUID(id.getName());
             final ArrayList<Node> newChildren = new ArrayList<Node>();
             for (Node child : children) {
                 newChildren.add(child.clone());
             }
+            node.id = new UUID(id.getName());
             node.children = newChildren;
             node.physicsData = physicsData.clone();
             node.data = data.clone();
@@ -712,22 +712,22 @@ public class Node implements Comparable<Node>, CollideData {
         return null;
     }
 
-    public static Node decompress(DataTree data, DynamicScene scene) {
-        int id = (Integer) data.get(new DataPath(new int[]{0}));
-        DataTree nodeData = new DataTree((ArrayList) data.get(new DataPath(new int[]{1})));
-        int x = (Integer) data.get(new DataPath(new int[]{2, 0}));
-        int y = (Integer) data.get(new DataPath(new int[]{2, 1}));
-        PhysicsData physicsData = PhysicsData.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{2, 2}))));
-        int state = (Integer) data.get(new DataPath(new int[]{2, 3}));
-        ArrayList children = (ArrayList) data.get(new DataPath(new int[]{3}));
-        ArrayList<Node> decompressedChildren = new ArrayList<Node>();
+    public static Node decompress(final DataTree data, final DynamicScene scene) {
+        final int id = (Integer) data.get(new DataPath(new int[]{0}));
+        final DataTree nodeData = new DataTree((ArrayList) data.get(new DataPath(new int[]{1})));
+        final int x = (Integer) data.get(new DataPath(new int[]{2, 0}));
+        final int y = (Integer) data.get(new DataPath(new int[]{2, 1}));
+        final PhysicsData physicsData = PhysicsData.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{2, 2}))));
+        final int state = (Integer) data.get(new DataPath(new int[]{2, 3}));
+        final ArrayList children = (ArrayList) data.get(new DataPath(new int[]{3}));
+        final ArrayList<Node> decompressedChildren = new ArrayList<Node>();
+        final NodeReference ref = NodeReference.getNodeRef(id);
+        final Node node;
+        PhysicsHandler physicsHandler;
         for (Object child : children) {
-            Node node = Node.decompress(new DataTree((ArrayList) child), scene);
-            decompressedChildren.add(node);
-            //System.out.println("found child: " + node.getName());
+            final Node kid = Node.decompress(new DataTree((ArrayList) child), scene);
+            decompressedChildren.add(kid);
         }
-        NodeReference ref = NodeReference.getNodeRef(id);
-        Node node;
         if (ref == null) {
             node = new Node();
         } else {
@@ -738,6 +738,7 @@ public class Node implements Comparable<Node>, CollideData {
         node.data = nodeData;
         node.reference = NodeReference.getNodeRef(id);
         node.scene = scene;
+        node.physicsData = physicsData;
         for (Node kid : decompressedChildren) {
             node.addChild(kid);
         }
@@ -747,11 +748,10 @@ public class Node implements Comparable<Node>, CollideData {
             case 1: node.markWorld(); node.setName("world"); break;
             case 2: node.markUniverse(); node.setName("universe"); break;
         }
-        PhysicsHandler physicsHandler = null;
+        physicsHandler = null;
         if (scene != null) {
             physicsHandler = scene.getPhysicsHandler();
         }
-        System.out.println("decompressing " + node.getName() + " and I found it to have an ID of " + id + " and a pos of " + node.getPosition());
         if (physicsHandler != null && node.physicsData.getEnablePhysics()) {
             physicsHandler.addPhysicsNode(node);
         }

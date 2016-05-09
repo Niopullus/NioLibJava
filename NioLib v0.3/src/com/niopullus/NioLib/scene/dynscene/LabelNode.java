@@ -57,7 +57,7 @@ public class LabelNode extends Node {
     }
 
     public void draw() {
-        final Font font = new Font(this.fontName, Font.BOLD, this.fontSize);
+        final Font font = new Font(fontName, Font.BOLD, fontSize);
         Draw.text(getX(), getY(), getZ(), content.get(), font, color, DrawElement.MODE_TEXT);
     }
 
