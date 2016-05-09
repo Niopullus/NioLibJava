@@ -9,12 +9,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-/**
+/**Image Node that can switch through images and animations
  * Created by Owen on 3/27/2016.
  */
-public class DynamicImageNode extends Node {
+public class DynamicImageNode extends ImageNode {
 
-    private BufferedImage image;
     private ArrayList<Animation> animations;
     private int curAnimation;
     private int animationTimer;
@@ -32,115 +31,106 @@ public class DynamicImageNode extends Node {
     public static final int OFFSETMODE_RIGHTMIDDLE = 7;
     public static final int OFFSETMODE_BOTTOMMIDDLE = 8;
 
-    public DynamicImageNode(String name, String imgDir) {
-        this(name, imgDir, Utilities.loadImage(imgDir).getWidth(), Utilities.loadImage(imgDir).getHeight());
+    public DynamicImageNode(final String name, final BufferedImage image) {
+        this(name, image, image.getWidth(), image.getHeight());
     }
 
-    public DynamicImageNode(String name, String imgDir, int width, int height) {
-        super(name, width, height);
-        this.image = Utilities.loadImage(imgDir);
+    public DynamicImageNode(final String name, final BufferedImage image, final int width, final int height) {
+        super(name, image, width, height);
         this.animations = new ArrayList<Animation>();
         this.curAnimation = 0;
         this.animationTimer = 0;
-        this.setOWidth(this.image.getWidth());
-        this.setOHeight(this.image.getHeight());
-        this.csetXScale((double) width / this.getOWidth());
-        this.csetYScale((double) height / this.getOHeight());
         this.indefTimer = false;
     }
 
-    public void addAnimation(Animation animation) {
-        this.animations.add(animation);
+    public Animation getAnimation() {
+        return animations.get(curAnimation);
     }
 
-    public void runAnimation(int index, int offsetMode, boolean modC) {
-        this.curAnimation = index;
-        this.currentOffsetMode = offsetMode;
-        this.indefTimer = true;
+    private CollisionOffset getOffset(final Animation animation, final BufferedImage image, final int offsetMode) {
+        final int xDif = (int) ((animation.getWidth() - image.getWidth()) * getXScale());
+        final int yDif = (int) ((animation.getHeight() - image.getHeight()) * getYScale());
+        final int xOff = deriveXOffsetFromMode(offsetMode, xDif);
+        final int yOff = deriveYOffsetFromMode(offsetMode, yDif);
+        return new CollisionOffset(xDif, yDif, xOff, yOff);
+    }
+
+    public void addAnimation(final Animation animation) {
+        animations.add(animation);
+    }
+
+    private void modCollisionBox(final Animation animation, final BufferedImage image, final int offsetMode) {
+        final CollisionOffset offset = getOffset(animation, image, offsetMode);
+        mod = true;
+        addCX(-offset.xOff);
+        addCY(-offset.yOff);
+        addCWidth(offset.xDiff);
+        addCHeight(offset.yDiff);
+    }
+
+    private void unmodCollisionBox(final Animation animation, final BufferedImage image, final int offsetMode) {
+        final CollisionOffset offset = getOffset(animation, image, offsetMode);
+        mod = false;
+        addCX(offset.xOff);
+        addCY(offset.yOff);
+        addCWidth(-offset.xDiff);
+        addCHeight(-offset.yDiff);
+    }
+
+    public void runAnimation(final int index, final int offsetMode, final boolean modC) {
+        indefTimer = true;
+        runAnimation(index, 0, offsetMode, modC);
+    }
+
+    public void runAnimation(final int index, final int duration, final int offsetMode, final boolean modC) {
+        curAnimation = index;
+        animationTimer = duration;
+        currentOffsetMode = offsetMode;
         if (modC) {
-            this.mod = true;
-            Animation animation = this.animations.get(this.curAnimation);
-            int xDif = (int) ((animation.getWidth() - this.image.getWidth()) * getXScale());
-            int yDif = (int) ((animation.getHeight() - this.image.getHeight()) * getYScale());
-            int xOff = this.deriveXOffsetFromMode(this.currentOffsetMode, xDif);
-            int yOff = this.deriveYOffsetFromMode(this.currentOffsetMode, yDif);
-            int scaledAWidth = (int) (animation.getWidth() * this.getXScale());
-            int scaledAHeight = (int) (animation.getHeight() * this.getYScale());
-            this.addCX(-xOff);
-            this.addCY(-yOff);
-            this.addCWidth(xDif);
-            this.addCHeight(yDif);
+            modCollisionBox(getAnimation(), getImage(), offsetMode);
         }
     }
 
-    public void runAnimation(int index, int duration, int offsetMode, boolean modC) {
-        System.out.println(duration);
-        this.curAnimation = index;
-        this.animationTimer = duration;
-        this.currentOffsetMode = offsetMode;
-        if (modC) {
-            this.mod = true;
-            Animation animation = this.animations.get(this.curAnimation);
-            int xDif = (int) ((animation.getWidth() - this.image.getWidth()) * getXScale());
-            int yDif = (int) ((animation.getHeight() - this.image.getHeight()) * getYScale());
-            int xOff = this.deriveXOffsetFromMode(this.currentOffsetMode, xDif);
-            int yOff = this.deriveYOffsetFromMode(this.currentOffsetMode, yDif);
-            this.addCX(-xOff);
-            this.addCY(-yOff);
-            this.addCWidth(xDif);
-            this.addCHeight(yDif);
-        }
-    }
-
-    public void runAnimationOnce(int index, int offsetMode, boolean modC) {
-        this.runAnimation(index, this.animations.get(index).calcRunOnceTime(), offsetMode, modC);
+    public void runAnimationOnce(final int index, final int offsetMode, final boolean modC) {
+        final Animation animation = animations.get(index);
+        runAnimation(index, animation.calcRunOnceTime(), offsetMode, modC);
     }
 
     public void cancelAnimation() {
-        this.animationTimer = 0;
-        this.indefTimer = false;
-        if (this.mod) {
-            this.resetCOffset();
+        animationTimer = 0;
+        indefTimer = false;
+        if (mod) {
+            unmodCollisionBox(getAnimation(), getImage(), currentOffsetMode);
         }
-    }
-
-    private void resetCOffset() {
-        Animation animation = this.animations.get(this.curAnimation);
-        int xDif = (int) ((animation.getWidth() - this.image.getWidth()) * getXScale());
-        int yDif = (int) ((animation.getHeight() - this.image.getHeight()) * getYScale());
-        int xOff = this.deriveXOffsetFromMode(this.currentOffsetMode, xDif);
-        int yOff = this.deriveYOffsetFromMode(this.currentOffsetMode, yDif);
-        this.addCX(xOff);
-        this.addCY(yOff);
-        this.addCWidth(-xDif);
-        this.addCHeight(-yDif);
-        this.mod = false;
     }
 
     public void draw() {
-        if (this.reset && this.mod) {
-            resetCOffset();
-            this.reset = false;
+        final BufferedImage image = getImage();
+        if (reset && mod) {
+            unmodCollisionBox(getAnimation(), getImage(), currentOffsetMode);
+            reset = false;
         }
-        if (this.animationTimer > 0 || this.indefTimer) {
-            if (this.animationTimer == 1) {
-                this.reset = true;
+        if (animationTimer > 0 || indefTimer) {
+            if (animationTimer == 1) {
+                reset = true;
             }
-            Animation animation = this.animations.get(this.curAnimation);
-            int xDif = (int) ((animation.getWidth() - this.image.getWidth()) * getXScale());
-            int yDif = (int) ((animation.getHeight() - this.image.getHeight()) * getYScale());
-            int scaledAWidth = (int) (animation.getWidth() * this.getXScale());
-            int scaledAHeight = (int) (animation.getHeight() * this.getYScale());
-            int xOff = this.deriveXOffsetFromMode(this.currentOffsetMode, xDif);
-            int yOff = this.deriveYOffsetFromMode(this.currentOffsetMode, yDif);
-            animation.draw(this.getTX() - xOff, Main.Height() - yOff - this.getHeight() - this.getTY(), scaledAWidth + this.getTX() - xOff, -yOff + Main.Height() - this.getTY() - this.getHeight() + scaledAHeight, this.getZ(), this.getAngle());
-            this.animationTimer--;
+            final Animation animation = getAnimation();
+            final int xDif = (int) ((animation.getWidth() - image.getWidth()) * getXScale());
+            final int yDif = (int) ((animation.getHeight() - image.getHeight()) * getYScale());
+            final int scaledAWidth = (int) (animation.getWidth() * getXScale());
+            final int scaledAHeight = (int) (animation.getHeight() * getYScale());
+            final int xOff = deriveXOffsetFromMode(currentOffsetMode, xDif);
+            final int yOff = deriveYOffsetFromMode(currentOffsetMode, yDif);
+            final int x = getTX() - xOff;
+            final int y = getTY() - yOff;
+            animation.draw(x, y, scaledAWidth, scaledAHeight, getZ(), getAngle());
+            animationTimer--;
         } else {
-            Draw.image(this.getTX(), Main.Height() - this.getTY() - this.getHeight(), this.getTX() + this.getWidth(), Main.Height() - this.getTY() - this.getHeight() + this.getHeight(), 0, 0, this.image.getWidth(), this.image.getHeight(), this.getZ(), this.getAngle(), this.image);
+            Draw.image(getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle(), image);
         }
     }
 
-    private int deriveXOffsetFromMode(int mode, int xDiff) {
+    private int deriveXOffsetFromMode(final int mode, final int xDiff) {
         switch (mode) {
             case OFFSETMODE_BOTTOMLEFT: return 0;
             case OFFSETMODE_LEFTMIDDLE: return 0;
@@ -155,7 +145,7 @@ public class DynamicImageNode extends Node {
         return xDiff / 2;
     }
 
-    private int deriveYOffsetFromMode(int mode, int yDiff) {
+    private int deriveYOffsetFromMode(final int mode, final int yDiff) {
         switch (mode) {
             case OFFSETMODE_TOPLEFT: return yDiff;
             case OFFSETMODE_TOPMIDDLE: return yDiff;
@@ -168,6 +158,22 @@ public class DynamicImageNode extends Node {
             case OFFSETMODE_BOTTOMRIGHT: return 0;
         }
         return yDiff / 2;
+    }
+
+    private class CollisionOffset {
+
+        public int xDiff;
+        public int yDiff;
+        public int xOff;
+        public int yOff;
+
+        public CollisionOffset(final int xDiff, final int yDiff, final int xOff, final int yOff) {
+            this.xDiff = xDiff;
+            this.yDiff = yDiff;
+            this.xOff = xOff;
+            this.yOff = yOff;
+        }
+
     }
 
 }

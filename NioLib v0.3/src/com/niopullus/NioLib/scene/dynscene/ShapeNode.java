@@ -14,15 +14,15 @@ public class ShapeNode extends Node {
 
     private Color color;
 
-    public ShapeNode(String name, int width, int height, Color color) {
+    public ShapeNode(final String name, final int width, final int height, final Color color) {
         super(name, width, height);
-        this.setOWidth(width);
-        this.setOHeight(height);
+        osetWidth(width);
+        osetHeight(height);
         this.color = color;
     }
 
     public void draw() {
-        Draw.rect(this.getTX(), Main.Height() - this.getTY() - this.getHeight(), this.getWidth(), this.getHeight(), this.getZ(), this.getAngle(), this.color);
+        Draw.rect(getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle(), color);
     }
 
 }

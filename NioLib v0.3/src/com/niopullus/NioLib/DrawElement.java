@@ -68,9 +68,9 @@ public class DrawElement implements Comparable<DrawElement> {
 
     public DrawElement(int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, int z, double angle, BufferedImage image) {
         this.dx1 = dx1;
-        this.dy1 = dy1;
+        this.dy1 = Main.Height() - dy1 - dy2;
         this.dx2 = dx2;
-        this.dy2 = dy2;
+        this.dy2 = Main.Height() - dy1;
         this.sx1 = sx1;
         this.sy1 = sy1;
         this.sx2 = sx2;

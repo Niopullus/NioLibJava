@@ -9,8 +9,8 @@ import java.util.ArrayList;
  */
 public class MultiTile extends Tile {
 
-    private final ArrayList<MultiTilePart> parts;
-    private final Point refTilePoint;
+    private ArrayList<MultiTilePart> parts;
+    private Point refTilePoint;
 
     public MultiTile(final String refName, final Point refTP) {
         super(refName);
@@ -70,13 +70,13 @@ public class MultiTile extends Tile {
         return result;
     }
 
-    public void addPart(final MultiTilePart part) {
-        parts.add(part);
-    }
-
     public void setRefTilePoint(Point point) {
         refTilePoint.x = point.x;
         refTilePoint.y = point.y;
+    }
+
+    public void addPart(final MultiTilePart part) {
+        parts.add(part);
     }
 
 }

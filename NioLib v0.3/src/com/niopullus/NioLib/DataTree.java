@@ -203,4 +203,20 @@ public class DataTree {
         return this.data.size();
     }
 
+    private ArrayList clone(final ArrayList data) {
+        final ArrayList copy = new ArrayList();
+        for (Object o : data) {
+            if (o instanceof ArrayList) {
+                copy.add(clone((ArrayList) o));
+            } else {
+                copy.add(o);
+            }
+        }
+        return copy;
+    }
+
+    public DataTree clone() {
+        return new DataTree(clone(data));
+    }
+
 }

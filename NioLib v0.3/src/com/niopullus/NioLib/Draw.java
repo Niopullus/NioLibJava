@@ -47,11 +47,11 @@ public class Draw {
         add(new DrawElement(x, y, z, angle, image));
     }
 
-    public static void image(int x, int y, int z, int width, int height, BufferedImage image) {
+    public static void image(int x, int y, int width, int height, int z, BufferedImage image) {
         add(new DrawElement(x, y, z, width, height, image));
     }
 
-    public static void image(int x, int y, int z, double angle, int width, int height, BufferedImage image) {
+    public static void image(int x, int y, int width, int height, int z, double angle, BufferedImage image) {
         add(new DrawElement(x, y, z, angle, width, height, image));
     }
 
@@ -74,12 +74,13 @@ public class Draw {
     public static void display(Graphics2D g) {
         Collections.sort(Draw.elements);
         g.setColor(Color.WHITE);
-        //g.fillRect(0, 0, (int) (Main.WIDTH * Main.SCALE), (int) (Main.HEIGHT * Main.SCALE));
         for (DrawElement element : Draw.elements) {
-            AffineTransform old = g.getTransform();
-            g.translate(element.getDx1() + element.getWidth() / 2, element.getDy1() + element.getHeight() / 2);
+            final AffineTransform old = g.getTransform();
+            final int transx = element.getDx1() + element.getWidth() / 2;
+            final int transy = element.getDy1() + element.getHeight() / 2;
+            g.translate(transx, transy);
             g.rotate(element.getAngle());
-            g.translate(-(element.getDx1() + element.getWidth() / 2), -(element.getDy1() + element.getHeight() / 2));
+            g.translate(-transx, -transy);
             if (element.getMode() == DrawElement.MODE_RECT) {
                 g.setColor(element.getColor());
                 g.fillRect(element.getDx1(), element.getDy1(), element.getWidth(), element.getHeight());

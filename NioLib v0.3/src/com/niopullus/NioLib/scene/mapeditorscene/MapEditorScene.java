@@ -4,8 +4,7 @@ import com.niopullus.NioLib.Draw;
 import com.niopullus.NioLib.DrawElement;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.Scene;
-import com.niopullus.NioLib.scene.dynscene.Node;
-import com.niopullus.NioLib.scene.dynscene.World;
+import com.niopullus.NioLib.scene.dynscene.*;
 import com.niopullus.NioLib.scene.dynscene.tile.*;
 import com.niopullus.NioLib.utilities.Utilities;
 import com.niopullus.app.Config;
@@ -13,7 +12,9 @@ import com.niopullus.app.InitScene;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  * Created by Owen on 4/7/2016.
@@ -39,24 +40,28 @@ public class MapEditorScene extends Scene {
     private int mm;
     private String fileName;
     private int loadMode;
+    private int selectionType;
+    private NodeReference node;
+    private Node universe;
 
     public MapEditorScene() {
         super();
-        this.fgMap = new Tilemap(Config.TILESIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEREGIONSIZE);
-        this.fgMap.setZ(10);
-        this.bgMap = new Tilemap(Config.TILESIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEREGIONSIZE);
-        this.bgMap.setZ(5);
-        this.world = new Node();
-        this.bgMap.setWorld(this.world);
-        this.fgMap.setWorld(this.world);
+        this.universe = new Node("universe");
+        this.universe.markUniverse();
+        this.world = new Node("world");
+        this.fgMap = new Tilemap(world, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.FGTILEMAPZ);
+        this.bgMap = new Tilemap(world, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.BGTILEMAPZ);
         this.selectedTile = new Point();
         this.selection = new Point();
         this.cols = Main.Height() / (Main.Width() / 12);
-        this.pages = (int) Math.ceil((double) TileReference.getTileQuant() / ((cols - 2) * 2));
+        this.pages = (int) Math.ceil((double) (Reference.getTileQuant() + Reference.getNodeQuant()) / ((cols - 2) * 2));
         this.commitPoint = new Point();
         this.page = 0;
         this.mm = 0;
         this.loadMode = 0;
+        this.selectionType = 0;
+        this.world.markWorld();
+        this.universe.addChild(this.world);
     }
 
     public MapEditorScene(String worldFileName) {
@@ -64,9 +69,12 @@ public class MapEditorScene extends Scene {
         World world = World.loadWorld(worldFileName);
         this.bgMap = world.getBgTilemap();
         this.fgMap = world.getFgTilemap();
+        this.fileName = worldFileName;
+        this.universe = world.getUniverse();
+        this.world = this.universe.getChild(0);
         this.bgMap.setWorld(this.world);
         this.fgMap.setWorld(this.world);
-        this.fileName = worldFileName;
+        System.out.println("chicken");
     }
 
     @Override
@@ -89,19 +97,26 @@ public class MapEditorScene extends Scene {
             } else {
                 int x1 = this.fillingAnchor.x, x2 = this.fillingAnchor.x;
                 int y1 = this.fillingAnchor.y, y2 = this.fillingAnchor.y;
-                if (this.fillingAnchor.x > this.selectedTile.x) {
-                    x1 = this.selectedTile.x;
-                    x2 = this.fillingAnchor.x;
-                } else if (this.fillingAnchor.x < this.selectedTile.x) {
+                if (this.selectionType == 0) {
+                    if (this.fillingAnchor.x > this.selectedTile.x) {
+                        x1 = this.selectedTile.x;
+                        x2 = this.fillingAnchor.x;
+                    } else if (this.fillingAnchor.x < this.selectedTile.x) {
+                        x1 = this.fillingAnchor.x;
+                        x2 = this.selectedTile.x;
+                    }
+                    if (this.fillingAnchor.y > this.selectedTile.y) {
+                        y1 = this.selectedTile.y;
+                        y2 = this.fillingAnchor.y;
+                    } else if (this.fillingAnchor.y < this.selectedTile.y) {
+                        y1 = this.fillingAnchor.y;
+                        y2 = this.selectedTile.y;
+                    }
+                } else if (this.selectionType == 1) {
                     x1 = this.fillingAnchor.x;
-                    x2 = this.selectedTile.x;
-                }
-                if (this.fillingAnchor.y > this.selectedTile.y) {
-                    y1 = this.selectedTile.y;
-                    y2 = this.fillingAnchor.y;
-                } else if (this.fillingAnchor.y < this.selectedTile.y) {
+                    x2 = this.fillingAnchor.x;
                     y1 = this.fillingAnchor.y;
-                    y2 = this.selectedTile.y;
+                    y2 = this.fillingAnchor.y;
                 }
                 Draw.rect(x1 * this.fgMap.getTileSize() + this.world.getX(), Main.Height() - ((y1) * this.fgMap.getTileSize()) - this.world.getY() - (this.fgMap.getTileSize() * (y2 - y1 + 1)), this.fgMap.getTileSize() * (x2 - x1 + 1), this.fgMap.getTileSize() * (y2 - y1 + 1), 200, new Color(52, 240, 255, 100));
             }
@@ -109,10 +124,12 @@ public class MapEditorScene extends Scene {
             Draw.rect(this.selection.x * Main.Width() / 12 + Main.Width() * 5 / 6 - 50, this.selection.y * Main.Width() / 12, Main.Width() / 12, Main.Width() / 12, 500, new Color(74, 255, 64, 100));
         }
         int id = this.page * 16;
+        //System.out.println("t" + TileReference.getTileQuant());
+        //System.out.println("n" + TileReference.getNodeQuant());
         for (int y = 1; y <= this.cols - 2; y++) {
             for  (int x = 1; x <= 2; x++) {
                 if (id <= TileReference.getTileQuant()) {
-                    TileReference tile = TileReference.getRef(id);
+                    TileReference tile = Reference.getTileRef(id);
                     if (tile != null) {
                         if (!(tile instanceof MultiTileReference)) {
                             Draw.image((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50, (int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()), 300, Main.Width() / 16, Main.Width() / 16, tile.getImage());
@@ -132,8 +149,32 @@ public class MapEditorScene extends Scene {
                         }
                     }
                     id++;
+                } else if (id - TileReference.getTileQuant() - 1 < NodeReference.getNodeQuant()) {
+                    NodeReference node = Reference.getNodeRef(id - TileReference.getTileQuant() - 1);
+                    if (node != null) {
+                        if (node.getSample() instanceof ImageNode || node.getSample() instanceof DynamicImageNode) {
+                            BufferedImage image = null;
+                            if (node.getSample() instanceof ImageNode) {
+                                ImageNode imageNode = (ImageNode) node.getSample();
+                                image = imageNode.getImage();
+                            } else if (node.getSample() instanceof DynamicImageNode) {
+                                DynamicImageNode imageNode = (DynamicImageNode) node.getSample();
+                                image = imageNode.getImage();
+                            }
+                            double drawScale = (double) (Main.Width() / 16) / Utilities.greater(image.getWidth(), image.getHeight());
+                            int scaledWidth = (int) (drawScale * image.getWidth());
+                            int scaledHeight = (int) (drawScale * image.getHeight());
+                            int xrest = ((Main.Width() / 16) - scaledWidth) / 2;
+                            int yrest = ((Main.Width() / 16) - scaledHeight) / 2;
+                            //System.out.println("x" + ((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50 + xrest) + "y" + ((int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()) + yrest));
+                            //System.out.println("width" + scaledWidth + "hegith" + scaledHeight);
+                            Draw.image((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50 + xrest, (int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()) + yrest, 300, scaledWidth, scaledHeight, image);
+                        }
+                    }
+                    id++;
                 }
             }
+            this.world.drawNode();
         }
         Draw.rect(this.world.getX() - 50, Main.Height() - (this.world.getY() - 50), 100, 100, 500, Color.RED);
         this.bgMap.draw();
@@ -190,6 +231,7 @@ public class MapEditorScene extends Scene {
         world.setName(name);
         world.setFgTilemap(this.fgMap);
         world.setBgTilemap(this.bgMap);
+        world.setUniverse(this.universe);
         World.saveWorld(world);
         presentScene(new InitScene());
     }
@@ -212,12 +254,21 @@ public class MapEditorScene extends Scene {
     }
 
     public void mousePress() {
-        if (this.getMousePos().x < Main.Width() * 5 / 6 - 50 || this.getMousePos().x > Main.Width() - 50) {
+        if (this.getMousePos().x < Main.Width() * 5 / 6 - 50 || this.getMousePos().x > Main.Width() - 50) { // Mouse in world
             this.fillingAnchor = new Point(this.selectedTile);
-        } else if (TileReference.getRef(this.selection.y * 2 + this.selection.x) != null || this.selection.y * 2 + this.selection.x == 0) {
-            this.tile = TileReference.getRef(this.selection.y * 2 + this.selection.x);
+        } else if (Reference.getTileRef(this.cols * 2 * this.page + this.selection.y * 2 + this.selection.x) != null) { //Selection tiles
+            this.tile = Reference.getTileRef(this.selection.y * 2 + this.selection.x);
             this.commitPoint = new Point(this.selection);
-        } else if (this.selection.y >= this.cols - 2) {
+            this.selectionType = 0;
+        } else if (this.selection.y * 2 + this.selection.x == 0) {
+            this.tile = null;
+            this.commitPoint = new Point(this.selection);
+            this.selectionType = 0;
+        } else if (Reference.getNodeRef((this.selection.y * 2 + this.selection.x - TileReference.getTileQuant() - 1) + this.cols * 2 * this.page) != null) {
+            this.commitPoint = new Point(this.selection);
+            this.selectionType = 1;
+            this.node = Reference.getNodeRef((this.selection.y * 2 + this.selection.x - TileReference.getTileQuant() - 1) + this.cols * 2 * this.page);
+        } else if (this.selection.y >= this.cols - 2) { //Pages and stuffs
             if (this.selection.x == 0 && this.selection.y == this.cols - 2) {
                 if (this.page - 1 >= 0) {
                     this.page--;
@@ -236,47 +287,52 @@ public class MapEditorScene extends Scene {
 
     public void mouseRelease() {
         if (this.fillingAnchor != null) {
-            Tilemap map = null;
-            if (this.mm == 0) {
-                map = this.fgMap;
-            } else if (this.mm == 1) {
-                map = this.bgMap;
-            }
-            int x1 = this.fillingAnchor.x, x2 = this.fillingAnchor.x;
-            int y1 = this.fillingAnchor.y, y2 = this.fillingAnchor.y;
-            if (this.fillingAnchor.x > this.selectedTile.x) {
-                x1 = this.selectedTile.x;
-                x2 = this.fillingAnchor.x;
-            } else if (this.fillingAnchor.x < this.selectedTile.x) {
-                x1 = this.fillingAnchor.x;
-                x2 = this.selectedTile.x;
-            }
-            if (this.fillingAnchor.y > this.selectedTile.y) {
-                y1 = this.selectedTile.y;
-                y2 = this.fillingAnchor.y;
-            } else if (this.fillingAnchor.y < this.selectedTile.y) {
-                y1 = this.fillingAnchor.y;
-                y2 = this.selectedTile.y;
-            }
-            for (int i = x1; i <= x2; i++) {
-                for (int j = y1; j <= y2; j++) {
-                    if (this.tile != null) {
-                        if (!(this.tile instanceof MultiTileReference)) {
-                            map.setTile(this.tile.getSample().clone(), i, j);
+            if (this.selectionType == 0) {
+                Tilemap map = null;
+                if (this.mm == 0) {
+                    map = this.fgMap;
+                } else if (this.mm == 1) {
+                    map = this.bgMap;
+                }
+                int x1 = this.fillingAnchor.x, x2 = this.fillingAnchor.x;
+                int y1 = this.fillingAnchor.y, y2 = this.fillingAnchor.y;
+                if (this.fillingAnchor.x > this.selectedTile.x) {
+                    x1 = this.selectedTile.x;
+                    x2 = this.fillingAnchor.x;
+                } else if (this.fillingAnchor.x < this.selectedTile.x) {
+                    x1 = this.fillingAnchor.x;
+                    x2 = this.selectedTile.x;
+                }
+                if (this.fillingAnchor.y > this.selectedTile.y) {
+                    y1 = this.selectedTile.y;
+                    y2 = this.fillingAnchor.y;
+                } else if (this.fillingAnchor.y < this.selectedTile.y) {
+                    y1 = this.fillingAnchor.y;
+                    y2 = this.selectedTile.y;
+                }
+                for (int i = x1; i <= x2; i++) {
+                    for (int j = y1; j <= y2; j++) {
+                        if (this.tile != null) {
+                            if (!(this.tile instanceof MultiTileReference)) {
+                                map.setTile(this.tile.getSample().clone(), i, j);
+                            } else {
+                                MultiTileReference mtr = (MultiTileReference) this.tile;
+                                map.setMultiTile((MultiTile) mtr.getSample().clone(), i, j);
+                            }
                         } else {
-                            MultiTileReference mtr = (MultiTileReference) this.tile;
-                            map.setMultiTile((MultiTile) mtr.getSample().clone(), i, j);
+                            map.setTile(null, i, j);
                         }
-                    } else {
-                        map.setTile(null, i, j);
                     }
                 }
+            } else if (this.selectionType == 1) {
+                Node node = this.node.getSample().clone();
+                node.setPosition(this.getMousePos().x - this.world.getPosition().x, Main.Height() - this.getMousePos().y - this.world.getPosition().y);
+                node.setXScale(this.node.getDefaultXScale());
+                node.setYScale(this.node.getDefaultYScale());
+                this.world.addChild(node);
             }
             this.fillingAnchor = null;
         }
     }
-
-    //TODO:
-    //ANIMATIONS THAT RUN ONCE
 
 }

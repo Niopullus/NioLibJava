@@ -20,11 +20,10 @@ import java.util.jar.JarFile;
 /**
  * Created by Owen on 4/13/2016.
  */
-public class World implements Serializable {
+public class World {
 
     private String name;
     private Node universe;
-    private Node world;
     private PhysicsHandler physicsHandler;
     private Background background;
     private Tilemap fgTilemap;
@@ -50,10 +49,6 @@ public class World implements Serializable {
 
     public Node getUniverse() {
         return universe;
-    }
-
-    public Node getWorld() {
-        return world;
     }
 
     public PhysicsHandler getPhysicsHandler() {
@@ -84,10 +79,6 @@ public class World implements Serializable {
         this.universe = universe;
     }
 
-    public void setWorld(Node world) {
-        this.world = world;
-    }
-
     public void setPhysicsHandler(PhysicsHandler physicsHandler) {
         this.physicsHandler = physicsHandler;
     }
@@ -108,7 +99,7 @@ public class World implements Serializable {
         this.camera = camera;
     }
 
-    public static World loadWorld(String fileName) {
+    public static World loadWorld(String fileName, DynamicScene scene) {
         World result = new World();
         String textData = "";
         File worldFile = new File("C:\\" + Config.DIRNAME + "\\worlds\\" + fileName);
@@ -154,11 +145,16 @@ public class World implements Serializable {
                 e.printStackTrace();
             }
         }
-
-        DataTree data = DataTree.decompress(textData);
-        result.setFgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{0}))), Config.TILESIZE));
-        result.setBgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{1}))), Config.TILESIZE));
+        final DataTree data = DataTree.decompress(textData);
+        final Node universe = Node.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{2}))), scene);
+        result.setUniverse(universe);
+        result.setFgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{0}))), universe.getChild(0), Config.TILESIZE));
+        result.setBgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{1}))), universe.getChild(0), Config.TILESIZE));
         return result;
+    }
+
+    public static World loadWorld(final String fileName) {
+        return loadWorld(fileName, null);
     }
 
     public static void saveWorld(World world) {

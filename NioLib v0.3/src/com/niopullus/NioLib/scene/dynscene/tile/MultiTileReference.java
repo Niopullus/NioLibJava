@@ -3,16 +3,16 @@ package com.niopullus.NioLib.scene.dynscene.tile;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-/**Reference for a MultiTile
+/**
  * Created by Owen on 4/11/2016.
  */
 public class MultiTileReference extends TileReference {
 
-    private final int width;
-    private final int height;
-    private final ArrayList<ArrayList<BufferedImage>> images;
+    private int width;
+    private int height;
+    private ArrayList<ArrayList<BufferedImage>> images;
 
-    public MultiTileReference(final String name, final int id, final ArrayList<BufferedImage> images, final double friction, final double elasticity, final boolean collidable, final int width, final int height, final MultiTile tile) {
+    public MultiTileReference(final String name, final int id, ArrayList<BufferedImage> images, final double friction, final double elasticity, final boolean collidable, final int width, final int height, final Tile tile) {
         super(name, id, null, friction, elasticity, collidable, tile);
         this.width = width;
         this.height = height;
@@ -20,16 +20,17 @@ public class MultiTileReference extends TileReference {
         this.images.add(images);
     }
 
-    public int getWidth() { //Gets the width of MultiTile in terms of tiles
+    public int getWidth() {
         return width;
     }
 
-    public int getHeight() { //Gets the height of MultiTile in terms of tiles
+    public int getHeight() {
         return height;
     }
 
     public BufferedImage getImage(final int index) {
-        return getImage(0, index);
+        final ArrayList<BufferedImage> imageSet = images.get(0);
+        return imageSet.get(index);
     }
 
     public BufferedImage getImage(final int set, final int index) {
@@ -37,8 +38,8 @@ public class MultiTileReference extends TileReference {
         return imageSet.get(index);
     }
 
-    public void addSet(final ArrayList<BufferedImage> set) {
-        images.add(set);
+    public void addSet(final ArrayList<BufferedImage> newSet) {
+        images.add(newSet);
     }
 
 }

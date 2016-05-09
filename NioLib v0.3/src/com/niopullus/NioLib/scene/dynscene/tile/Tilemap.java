@@ -18,16 +18,18 @@ import java.util.ArrayList;
  */
 public class Tilemap implements Serializable {
 
-    private final int tileSize;
-    private final int width;
-    private final int height;
-    private final int z;
-    private final int regSize;
-    private final SignedContainer<TileRegion> map;
-    private final Scene scene;
-    private final Node world;
+    private int tileSize;
+    private int width;
+    private int height;
+    private int z;
+    private int regSize;
+    private SignedContainer<TileRegion> map;
+    private Scene scene;
+    private Node world;
 
     private Tilemap(final Scene scene, final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
+        final int xRegions;
+        final int yRegions;
         this.tileSize = tileSize;
         this.width = width;
         this.height = height;
@@ -35,8 +37,8 @@ public class Tilemap implements Serializable {
         this.world = world;
         this.scene = scene;
         this.z = z;
-        int xRegions = (int) Math.ceil((double) width / this.regSize) + 3;
-        int yRegions = (int) Math.ceil((double) height / this.regSize) + 3;
+        xRegions = (int) Math.ceil((double) width / regSize) + 3;
+        yRegions = (int) Math.ceil((double) height / regSize) + 3;
         this.map = new SignedContainer<TileRegion>(xRegions, yRegions);
     }
 
@@ -68,7 +70,7 @@ public class Tilemap implements Serializable {
         return height;
     }
 
-    private Point getPointInRegion(final int x, final int y) {
+    private Point getPointInRegion(final int x, final int y) { //Range: x - [0-(REGSIZE - 1)], y - [0-(REGSIZE - 1)]
         final int xinReg = Math.abs(x % regSize);
         final int yinReg = Math.abs(y % regSize);
         return new Point(xinReg, yinReg);
@@ -80,7 +82,7 @@ public class Tilemap implements Serializable {
         if (reg != null) {
             final Tile tile = reg.get(pointInRegion.x, pointInRegion.y);
             if (tile instanceof MultiTilePart) {
-                MultiTilePart multiTilePart = (MultiTilePart) tile;
+                final MultiTilePart multiTilePart = (MultiTilePart) tile;
                 return multiTilePart.get();
             }
             return tile;
@@ -108,6 +110,28 @@ public class Tilemap implements Serializable {
             yReg--;
         }
         return this.map.get(xReg, yReg);
+    }
+
+    public Tile ogetTile(final int x, final int y) { //Gets a tile, ignoring the MultiTile filter, in tile coordinates
+        final Point pointInRegion = getPointInRegion(x, y);
+        final TileRegion reg = getRegion(x, y);
+        if (reg != null) {
+            return reg.get(pointInRegion.x, pointInRegion.y);
+        } else {
+            return null;
+        }
+    }
+
+    public void setScene(final Scene scene) {
+        this.scene = scene;
+    }
+
+    public void setZ(final int z) {
+        this.z = z;
+    }
+
+    private void setRegion(final TileRegion reg, final int x, final int y) {
+        map.set(x, y, reg);
     }
 
     public void setTile(final Tile tile, final int x, final int y) { //Sets a tile in tile coordinates
@@ -138,16 +162,6 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public Tile getOTile(final int x, final int y) { //Gets a tile and ignores the MultiTile filter in tile coordinates
-        final Point pointInRegion = getPointInRegion(x, y);
-        TileRegion reg = getRegion(x, y);
-        if (reg != null) {
-            return reg.get(pointInRegion.x, pointInRegion.y);
-        } else {
-            return null;
-        }
-    }
-
     public void setMultiTile(final MultiTile tile, final int x, final int y) { //Sets a MultiTile in tile coordinates
         int part = 0;
         final TileRegion reg = getRegion(x, y);
@@ -162,13 +176,13 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public Point convertPointToTileLoc(final int x, final int y) {
+    public Point convertPointToTileLoc(final int x, final int y) { //Convers a point from world to tile
         final int convertedX = ((int) Math.floor((double) x / tileSize));
         final int convertedY = ((int) Math.floor((double) y / tileSize));
         return new Point(convertedX, convertedY);
     }
 
-    public int convertLengthToTileLength(final int length) {
+    public int convertLengthToTileLength(final int length) { //Converts a magnitude from world to tile
         return (int) Math.floor((double) length / tileSize);
     }
 
@@ -179,7 +193,7 @@ public class Tilemap implements Serializable {
         final int yMax = (int) Math.ceil((double) (-world.getY() + Main.Height()) / tileSize) + 1;
         for (int i = xMin; i < xMax ; i++) {
             for (int j = yMin; j < yMax; j++) {
-                final Tile tile = getOTile(i, j);
+                final Tile tile = ogetTile(i, j);
                 if (tile != null && tile.getImage() != null) {
                     final int x = i * tileSize + world.getX();
                     final int y = Main.Height() - ((j + 1) * tileSize) - world.getY();
@@ -189,19 +203,15 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public void fillTiles(final int x, final int y, final int width, final int height, final Tile t) {
+    public void fillTiles(final int x, final int y, final int width, final int height, final Tile tile) {
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
-                setTile(t.clone(), i, j);
+                setTile(tile.clone(), i, j);
             }
         }
     }
 
-    private void setRegion(final TileRegion reg, final int x, final int y) {
-        map.set(x, y, reg);
-    }
-
-     public DataTree compress() {
+     public DataTree compress() { //Converts this tilemap into a DataTree
      //DATA TREE STRUCTURE:
      // ROOT -[
      //         Integer (Reg Size)
@@ -244,7 +254,7 @@ public class Tilemap implements Serializable {
                              }
                          }
                      }
-                     for (int z = 0; z < reg.getMultiTileQuant(); z++) {
+                     for (int z = 0; z < reg.getMultiTileCount(); z++) {
                          final int dir3 = data.addFolder(new DataPath(new int[]{dir1, dir2}));
                          final MultiTile mt = reg.getMultiTile(z);
                          data.addData(1, new DataPath(new int[]{dir1, dir2, dir3}));
@@ -258,7 +268,7 @@ public class Tilemap implements Serializable {
         return data;
      }
 
-     public static Tilemap decompress(final Node world, final DataTree data, final int tileSize) {
+     public static Tilemap decompress(final DataTree data, final Node world, final int tileSize) { //Converts a DataTree into a tilemap
          final int regSize = (Integer) data.get(new DataPath(new int[]{0}));
          final int width = (Integer) data.get(new DataPath(new int[]{1}));
          final int height = (Integer) data.get(new DataPath(new int[]{2}));
@@ -276,7 +286,7 @@ public class Tilemap implements Serializable {
                  final int id = (Integer) data.get(new DataPath(new int[]{i, 2, j, 3, 0}));
                  final ArrayList dataFolder = (ArrayList) data.get(new DataPath(new int[]{i, 2, j, 3, 1}));
                  final DataTree tileData = new DataTree(dataFolder);
-                 final TileReference reference = TileReference.getRef(id);
+                 final TileReference reference = TileReference.getTileRef(id);
                  if (reference != null) {
                      if (tiletype == 0) {
                          final Tile sample = reference.getSample();

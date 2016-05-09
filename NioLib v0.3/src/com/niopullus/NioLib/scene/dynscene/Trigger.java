@@ -5,6 +5,6 @@ package com.niopullus.NioLib.scene.dynscene;
  */
 public interface Trigger {
 
-    void trigger();
+    void trigger(CollideData data);
 
 }

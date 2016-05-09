@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Config {
 
-    public static final String NIOLIBVERSION = "v0.03";
+    public static final String NIOLIBVERSION = "v0.04";
     public static final int IMGWIDTH = 1920;
     public static final int IMGHEIGHT = 1080;
     public static final double WINDOWSCALE = 0.5;
@@ -25,6 +25,8 @@ public class Config {
     public static final int NODEPARTRAD = 100;
     public static final int TILEREGIONSIZE = 100;
     public static final String DIRNAME = "Default Dir";
+    public static final int FGTILEMAPZ = 50;
+    public static final int BGTILEMAPZ = 25;
 
     public static void init() {
 

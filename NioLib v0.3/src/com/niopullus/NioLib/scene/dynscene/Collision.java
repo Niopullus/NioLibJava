@@ -10,31 +10,11 @@ public class Collision {
     private boolean passive;
     private Dir dir;
 
-    public Collision(CollideData data1, CollideData data2, Dir dir, boolean passive) {
+    public Collision(final CollideData data1, final CollideData data2, final Dir dir, final boolean passive) {
         this.data1 = data1;
         this.data2 = data2;
         this.dir = dir;
         this.passive = passive;
-    }
-
-    public boolean involves(String name) {
-        return data1.getName().equals(name);
-    }
-
-    public boolean involves(String name1, String name2) {
-        return data1.getName().equals(name1) && data2.getName().equals(name2) || data2.getName().equals(name1) && data1.getName().equals(name2);
-    }
-
-    public boolean causedBy(String name) {
-        return data1.getName().equals(name);
-    }
-
-    public boolean isVictim(String name) {
-        return data2.getName().equals(name);
-    }
-
-    public boolean isPassive() {
-        return this.passive;
     }
 
     public CollideData getCauser() {
@@ -46,7 +26,37 @@ public class Collision {
     }
 
     public Dir getDir() {
-        return this.dir;
+        return dir;
+    }
+
+    public boolean involves(final String name) {
+        final String name1 = data1.getName();
+        final String name2 = data2.getName();
+        final boolean name1Match = name1.equals(name);
+        final boolean name2Match = name2.equals(name);
+        return name1Match || name2Match;
+    }
+
+    public boolean involves(final String name1, final String name2) {
+        final String dataName1 = data1.getName();
+        final String dataName2 = data2.getName();
+        final boolean match1 = name1.equals(dataName1) && name2.equals(dataName2);
+        final boolean match2 = name1.equals(dataName2) && name1.equals(dataName1);
+        return match1 || match2;
+    }
+
+    public boolean causedBy(final String name) {
+        final String name1 = data1.getName();
+        return name1.equals(name);
+    }
+
+    public boolean isVictim(final String name) {
+        final String name2 = data2.getName();
+        return name2.equals(name);
+    }
+
+    public boolean isPassive() {
+        return passive;
     }
 
 }
