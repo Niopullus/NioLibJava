@@ -3,6 +3,7 @@ package com.niopullus.NioLib.scene.dynscene;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
+import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.tile.MultiTile;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
@@ -11,13 +12,12 @@ import com.niopullus.app.Config;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**A scene variant that is designed to support physics, tilemaps, and nodes
  * Created by Owen on 3/5/2016.
  */
-public class DynamicScene extends Scene implements Serializable {
+public class DynamicScene extends Scene implements NodeHandler {
 
     private String name;
     private Node universe;
@@ -28,8 +28,8 @@ public class DynamicScene extends Scene implements Serializable {
     private Tilemap bgTilemap;
     private Node camera;
 
-    public DynamicScene(final World world) {
-        this.name = world.getName();
+    public DynamicScene(final String name, final World world) {
+        this.name = name;
         this.universe = world.getUniverse();
         this.physicsHandler = world.getPhysicsHandler();
         this.background = world.getBackground();
@@ -38,47 +38,8 @@ public class DynamicScene extends Scene implements Serializable {
         this.camera = world.getCamera();
     }
 
-    public DynamicScene(final String name) {
-        final Node world = new Node("world");
-        final Node universe = new Node("universe");
-        final PhysicsHandler physicsHandler = new PhysicsHandler();
-        final Background background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
-        final Tilemap fgtilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.FGTILEMAPZ);
-        final Tilemap bgtilemap = new Tilemap(this, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD, Config.BGTILEMAPZ);
-        final World storedWorld = new World();
-        physicsHandler.setTilemap(fgtilemap);
-        universe.setScene(this);
-        universe.addChild(world);
-        universe.markUniverse();
-        universe.setScene(this);
-        world.markWorld();
-        storedWorld.setName(name);
-        storedWorld.setUniverse(universe);
-        storedWorld.setPhysicsHandler(physicsHandler);
-        storedWorld.setBackground(background);
-        storedWorld.setFgTilemap(fgtilemap);
-        storedWorld.setBgTilemap(bgtilemap);
-    }
-
-    public DynamicScene() {
-        this("Unnamed Scene");
-    }
-
-    public final void tick() {
-        if (physicsHandler != null) {
-            physicsHandler.tick();
-        }
-        for (Collision collision : physicsHandler.getCollisions()) {
-            oCollisionHandler(collision);
-        }
-        universe.update();
-        if (camera != null) {
-            final int x = -camera.getX() + Main.Width() / 2 - camera.getWidth() / 2;
-            final int y = -camera.getY() + Main.Height() / 2 - camera.getHeight() / 2;
-            world.setX(x);
-            world.setY(y);
-        }
-        tock();
+    public DynamicScene(final World world) {
+        this(world.getName(), world);
     }
 
     public int getPhysicsSize() {
@@ -95,6 +56,10 @@ public class DynamicScene extends Scene implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public int getNodeCount() {
+        return universe.getChildCount();
     }
 
     public Point getMousePosInWorld() {
@@ -153,6 +118,24 @@ public class DynamicScene extends Scene implements Serializable {
         fgTilemap.setZ(Config.FGTILEMAPZ);
         bgTilemap.setZ(Config.BGTILEMAPZ);
         physicsHandler.setTilemap(fgTilemap);
+    }
+
+    public final void tick() { //Called at the same rate that the game loop runs
+        final ArrayList<Collision> collisions = physicsHandler.getCollisions();
+        if (physicsHandler != null) {
+            physicsHandler.tick();
+        }
+        for (Collision collision : collisions) {
+            oCollisionHandler(collision);
+        }
+        universe.update();
+        if (camera != null) {
+            final int x = -camera.getX() + Main.Width() / 2 - camera.getWidth() / 2;
+            final int y = -camera.getY() + Main.Height() / 2 - camera.getHeight() / 2;
+            world.setX(x);
+            world.setY(y);
+        }
+        tock();
     }
 
     public void tock() {

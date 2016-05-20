@@ -99,4 +99,24 @@ public abstract class Utilities {
         return images;
     }
 
+    public ArrayList<BufferedImage> getImageSet(final String baseIMG, final int setCount) {
+        final ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+        for (int i = 0; i < setCount; i++) {
+            images.add(Utilities.loadImage(baseIMG + "s" + i));
+        }
+        return images;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getImageGroup(final String baseIMG, final int groupCount, final int setCount) {
+        final ArrayList<ArrayList<BufferedImage>> images = new ArrayList<ArrayList<BufferedImage>>();
+        for (int g = 0; g < groupCount; g++) {
+            final ArrayList<BufferedImage> set = new ArrayList<>();
+            for (int s = 0; s < groupCount; s++) {
+                set.add(Utilities.loadImage(baseIMG + "g" + g + "s" + s));
+            }
+            images.add(set);
+        }
+        return images;
+    }
+
 }

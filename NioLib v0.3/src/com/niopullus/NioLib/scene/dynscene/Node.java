@@ -1,8 +1,10 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import com.niopullus.NioLib.Boundable;
 import com.niopullus.NioLib.DataPath;
 import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.UUID;
+import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
@@ -13,7 +15,7 @@ import java.util.Collections;
 /**Polymorphic sprite designed for a Dynamic Scene
  * Created by Owen on 3/5/2016.
  */
-public class Node implements Comparable<Node>, CollideData {
+public class Node implements Comparable<Node>, CollideData, Boundable {
 
     private UUID id;
     private int x;
@@ -23,7 +25,7 @@ public class Node implements Comparable<Node>, CollideData {
     private Node parent;
     private boolean isUniverse;
     private boolean isWorld;
-    private DynamicScene scene;
+    private NodeHandler scene;
     private PhysicsData physicsData;
     private int[] partRangeX;
     private int[] partRangeY;
@@ -73,7 +75,7 @@ public class Node implements Comparable<Node>, CollideData {
         return parent;
     }
 
-    public int getChildrenCount() {
+    public int ogetChildrenCount() {
         return children.size();
     }
 
@@ -151,30 +153,6 @@ public class Node implements Comparable<Node>, CollideData {
 
     public HalfCollision getColSouth() {
         return physicsData.getColSouth();
-    }
-
-    public int getMaxX() {
-        return getX() + getWidth();
-    }
-
-    public int getMinX() {
-        return getX();
-    }
-
-    public int getMaxY() {
-        return getY() + getHeight();
-    }
-
-    public int getMinY() {
-        return getY();
-    }
-
-    public int getMidX() {
-        return getX() + getWidth() / 2;
-    }
-
-    public int getMidY() {
-        return getY() + getHeight() / 2;
     }
 
     public int getTMinX() {
@@ -313,12 +291,21 @@ public class Node implements Comparable<Node>, CollideData {
         return isUniverse;
     }
 
-    public DynamicScene getDynamicScene() {
+    public NodeHandler getScene() {
         return scene;
     }
 
     public Node getChild(final int index) {
         return children.get(index);
+    }
+
+    public int getChildCount() {
+        int count = 0;
+        for (Node child : children) {
+            count++;
+            count += child.getChildCount();
+        }
+        return count;
     }
 
     public int getTX() {
@@ -389,7 +376,7 @@ public class Node implements Comparable<Node>, CollideData {
         this.physicsData.setYv(yv);
     }
 
-    public void setScene(final DynamicScene scene) {
+    public void setScene(final NodeHandler scene) {
         this.scene = scene;
     }
 
@@ -574,8 +561,9 @@ public class Node implements Comparable<Node>, CollideData {
         node.scene = scene;
         children.add(node);
         Collections.sort(children);
-        if (node.physicsData.getEnablePhysics()) {
-            scene.addPhysicsNode(node);
+        if (node.physicsData.getEnablePhysics() && scene != null && scene instanceof DynamicScene) {
+            final DynamicScene dynamicScene = (DynamicScene) scene;
+            dynamicScene.addPhysicsNode(node);
         }
     }
 
@@ -589,14 +577,18 @@ public class Node implements Comparable<Node>, CollideData {
     }
 
     public void enablePhysics() {
-        if (scene != null) {
-            scene.addPhysicsNode(this);
+        if (scene != null && scene instanceof DynamicScene) {
+            final DynamicScene dynamicScene = (DynamicScene) scene;
+            dynamicScene.addPhysicsNode(this);
         }
         physicsData.setEnablePhysics(true);
     }
 
     public void disablePhysics() {
-        scene.removePhysicsNode(this);
+        if (scene != null && scene instanceof DynamicScene) {
+            final DynamicScene dynamicScene = (DynamicScene) scene;
+            dynamicScene.removePhysicsNode(this);
+        }
         physicsData.setEnablePhysics(false);
     }
 

@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
  */
 public class MultiTilePart extends Tile {
 
-    private MultiTile multiTile;
     private int part;
+    private MultiTile multiTile;
 
     public MultiTilePart(final MultiTile multiTile, final int part) { //part: Index of part in the MultiTile
         super(multiTile.getName());

@@ -16,11 +16,11 @@ import java.util.Collections;
 public class PhysicsHandler implements Serializable {
 
     private ArrayList<Node> nodes;
-    private double gravitation;
+    private ArrayList<Collision> collisions;
     private Tilemap tilemap;
     private NodePartitionManager partition;
+    private double gravitation;
     private boolean pause;
-    private ArrayList<Collision> collisions;
 
     public PhysicsHandler() {
         this.nodes = new ArrayList<Node>();
@@ -30,8 +30,50 @@ public class PhysicsHandler implements Serializable {
         this.partition.setPhysicsHandler(this);
     }
 
+    public int getPhysicsSize() {
+        return nodes.size();
+    }
+
+    public ArrayList<Collision> getCollisions() {
+        return collisions;
+    }
+
+    public ArrayList<Node> getNodesAt(final int x, final int y, final int width, final int height) {
+        return partition.getNodesAt(x, y, width, height);
+    }
+
     public void setTilemap(final Tilemap tilemap) {
         this.tilemap = tilemap;
+    }
+
+    public void setGravitation(final double g) {
+        gravitation = g;
+    }
+
+    public void addPhysicsNode(final Node node) {
+        nodes.add(node);
+        Collections.sort(nodes);
+    }
+
+    public void addCollision(final Collision collision) {
+        collisions.add(collision);
+    }
+
+    public void removePhysicsNode(final Node node) {
+        nodes.remove(node);
+        Collections.sort(nodes);
+    }
+
+    public void pause() {
+        pause = true;
+    }
+
+    public void unpause() {
+        pause = false;
+    }
+
+    public void togglePause() {
+        pause = !pause;
     }
 
     public void tick() {
@@ -45,24 +87,18 @@ public class PhysicsHandler implements Serializable {
         }
     }
 
-    public int getPhysicsSize() {
-        return nodes.size();
-    }
-
-    public void addPhysicsNode(final Node node) {
-        nodes.add(node);
-        Collections.sort(nodes);
-    }
-
-    public void removePhysicsNode(final Node node) {
-        nodes.remove(Collections.binarySearch(nodes, node));
-        Collections.sort(nodes);
-    }
-
     private void updateNodes() {
         for (Node node : nodes) {
             partition.updateNode(node);
         }
+    }
+
+    private HalfCollision calcMoveDistNodes(final Node node, final Dir dir) {
+        return partition.getHalfCollision(node, dir);
+    }
+
+    private HalfCollision calcMoveDist(final Node node, final Dir dir) {
+        return Utilities.lesser(calcMoveDistNodes(node, dir), calcMoveDistTiles(node, dir));
     }
 
     private void executeMoveCalcs() {
@@ -93,7 +129,6 @@ public class PhysicsHandler implements Serializable {
                 } else {
                     node.moveX();
                 }
-
             } else if (node.getXv() < 0) {
                 if (node.getCollidableIn()) {
                     final HalfCollision calc = node.getColWest();
@@ -153,43 +188,47 @@ public class PhysicsHandler implements Serializable {
     private HalfCollision calcMoveDistTiles(final Node node, final Dir dir) {
         HalfCollision col = new HalfCollision(NodePartition.AWARENESS_STANDARD, null);
         if (dir == Dir.E) {
+            final Point p1;
+            final Point p2;
             int awareness = tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getXv());
-            final Point p1 = tilemap.convertPointToTileLoc(node.getCMaxX(), node.getCMinY());
-            final Point p2 = tilemap.convertPointToTileLoc(node.getCMaxX() + awareness, node.getCMaxY() - 1);
+            p1 = tilemap.convertPointToTileLoc(node.getCMaxX(), node.getCMinY());
+            p2 = tilemap.convertPointToTileLoc(node.getCMaxX() + awareness, node.getCMaxY() - 1);
             for (int x = p1.x; x <= p2.x && cont; x++) {
                 for (int y = p1.y; y <= p2.y; y++) {
-                    final Tile t = tilemap.getTile(x, y);
-                    if (t != null) {
+                    final Tile tile = tilemap.getTile(x, y);
+                    if (tile != null) {
                         final int dist = (int) Math.floor((double) (x * tilemap.getTileSize()) - node.getCMaxX());
-                        if (t.getCollidable()) {
+                        if (tile.getCollidable()) {
                             cont = false;
-                            col = new HalfCollision(dist, t);
+                            col = new HalfCollision(dist, tile);
                         }
                         if (dist <= 0 && (x * tilemap.getTileSize()) > node.getMidX()) {
-                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                            collisions.add(new Collision(node, tile, dir, !tile.getCollidable()));
                         }
                     }
                 }
             }
         } else if (dir == Dir.W) {
+            final Point p1;
+            final Point p2;
             int awareness = -tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getXv());
-            final Point p1 = tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMinY());
-            final Point p2 = tilemap.convertPointToTileLoc(node.getCMinX() + awareness, node.getCMaxY() - 1);
+            p1 = tilemap.convertPointToTileLoc(node.getCMinX(), node.getCMinY());
+            p2 = tilemap.convertPointToTileLoc(node.getCMinX() + awareness, node.getCMaxY() - 1);
             for (int x = p1.x; x >= p2.x && cont; x--) {
                 for (int y = p1.y; y <= p2.y; y++) {
-                    final Tile t = tilemap.getTile(x, y);
-                    if (t != null) {
+                    final Tile tile = tilemap.getTile(x, y);
+                    if (tile != null) {
                         final int dist = (int) Math.floor(node.getCMinX() - (double) ((x + 1) * tilemap.getTileSize()));
-                        if (t.getCollidable()) {
+                        if (tile.getCollidable()) {
                             cont = false;
-                            col = new HalfCollision(dist, t);
+                            col = new HalfCollision(dist, tile);
                         }
                         if (col.getDist() <= 0 && ((x + 1) * tilemap.getTileSize()) < node.getMidX()) {
-                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                            collisions.add(new Collision(node, tile, dir, !tile.getCollidable()));
                         }
                     }
                 }
@@ -202,15 +241,15 @@ public class PhysicsHandler implements Serializable {
             final Point p2 = tilemap.convertPointToTileLoc(node.getCMaxX() - 1, node.getCMaxY() + awareness);
             for (int y = p1.y; y <= p2.y && cont; y++) {
                 for (int x = p1.x; x <= p2.x; x++) {
-                    final Tile t = tilemap.getTile(x, y);
-                    if (t != null) {
+                    final Tile tile = tilemap.getTile(x, y);
+                    if (tile != null) {
                         final int dist = (int) Math.floor((double) (y * tilemap.getTileSize()) - node.getCMaxY());
-                        if (t.getCollidable()) {
+                        if (tile.getCollidable()) {
                             cont = false;
-                            col = new HalfCollision(dist, t);
+                            col = new HalfCollision(dist, tile);
                         }
                         if (col.getDist() <= 0 && (y * tilemap.getTileSize()) > node.getMidY()) {
-                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                            collisions.add(new Collision(node, tile, dir, !tile.getCollidable()));
                         }
                     }
                 }
@@ -223,29 +262,21 @@ public class PhysicsHandler implements Serializable {
             final Point p2 = tilemap.convertPointToTileLoc(node.getCMaxX() - 1, node.getCMinY() + awareness);
             for (int y = p1.y; y >= p2.y && cont; y--) {
                 for (int x = p1.x; x <= p2.x; x++) {
-                    final Tile t = tilemap.getTile(x, y);
-                    if (t != null) {
+                    final Tile tile = tilemap.getTile(x, y);
+                    if (tile != null) {
                         int dist = (int) Math.floor(node.getCMinY() - (double) ((y + 1) * tilemap.getTileSize()));
-                        if (t.getCollidable()) {
+                        if (tile.getCollidable()) {
                             cont = false;
-                            col = new HalfCollision(dist, t);
+                            col = new HalfCollision(dist, tile);
                         }
                         if (col.getDist() <= 0 && (y + 1) * tilemap.getTileSize() < node.getMidY()) {
-                            collisions.add(new Collision(node, t, dir, !t.getCollidable()));
+                            collisions.add(new Collision(node, tile, dir, !tile.getCollidable()));
                         }
                     }
                 }
             }
         }
         return col;
-    }
-
-    private HalfCollision calcMoveDistNodes(final Node node, final Dir dir) {
-        return partition.getHalfCollision(node, dir);
-    }
-
-    private HalfCollision calcMoveDist(final Node node, final Dir dir) {
-        return Utilities.lesser(calcMoveDistNodes(node, dir), calcMoveDistTiles(node, dir));
     }
 
     private void gravity() {
@@ -311,34 +342,6 @@ public class PhysicsHandler implements Serializable {
                 }
             }
         }
-    }
-
-    public void setGravitation(final double g) {
-        gravitation = g;
-    }
-
-    public void pause() {
-        pause = true;
-    }
-
-    public void unpause() {
-        pause = false;
-    }
-
-    public void togglePause() {
-        pause = !pause;
-    }
-
-    public ArrayList<Collision> getCollisions() {
-        return collisions;
-    }
-
-    public void addCollision(final Collision collision) {
-        collisions.add(collision);
-    }
-
-    public ArrayList<Node> getNodesAt(final int x, final int y, final int width, final int height) {
-        return partition.getNodesAt(x, y, width, height);
     }
 
 }

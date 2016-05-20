@@ -13,10 +13,10 @@ import java.util.ArrayList;
  */
 public class Tile implements CollideData {
 
-    private TileReference reference;
     private DataTree data;
     private Point tileMapPos;
     private Tilemap tilemap;
+    private TileReference reference;
 
     public Tile(final String refName, final DataTree data) {
         TileReference ref = null;
@@ -92,9 +92,8 @@ public class Tile implements CollideData {
         this.reference = reference;
     }
 
-    public void setTileMapPos(final Point p) {
-        tileMapPos.x = p.x;
-        tileMapPos.y = p.y;
+    public void setTileMapPos(final Point point) {
+        tileMapPos = point;
     }
 
     public Tile clone(final DataTree data) {
@@ -112,7 +111,7 @@ public class Tile implements CollideData {
         return null;
     }
 
-    public Tile clone() {
+    public Tile copy() {
         return clone(data);
     }
 

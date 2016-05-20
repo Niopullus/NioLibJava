@@ -3,6 +3,7 @@ package com.niopullus.NioLib.scene.mapeditorscene;
 import com.niopullus.NioLib.Draw;
 import com.niopullus.NioLib.DrawElement;
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.*;
 import com.niopullus.NioLib.scene.dynscene.tile.*;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by Owen on 4/7/2016.
  */
-public class MapEditorScene extends Scene {
+public class MapEditorScene extends Scene implements NodeHandler {
 
     private Tilemap fgMap;
     private Tilemap bgMap;
@@ -77,7 +78,18 @@ public class MapEditorScene extends Scene {
         System.out.println("chicken");
     }
 
-    @Override
+    public void addChild(final Node node) {
+        universe.addChild(node);
+    }
+
+    public void removeChild(final Node node) {
+        universe.removeChild(node);
+    }
+
+    public int getNodeCount() {
+        return universe.getChildCount();
+    }
+
     public void draw() {
         Draw.rect(0, 0, Main.Width(), Main.Height(), 0, new Color(172, 172, 172));
         Draw.rect(Main.Width() * 5 / 6 - 50, 0, Main.Width() / 6, Main.Height(), 100, new Color(0, 0, 0, 127));

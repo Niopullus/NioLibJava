@@ -8,13 +8,13 @@ import java.util.ArrayList;
 public class TileRegion {
 
     private int size;
-    private Tile[][] grid;
     private ArrayList<MultiTile> multiTiles;
+    private Tile[][] grid;
 
     public TileRegion(final int regSize) {
         this.size = regSize;
         this.grid = new Tile[regSize][regSize];
-        this.multiTiles = new ArrayList<MultiTile>();
+        this.multiTiles = new ArrayList<>();
     }
 
     public Tile get(final int x, final int y) {

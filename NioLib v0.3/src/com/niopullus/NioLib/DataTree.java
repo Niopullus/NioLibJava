@@ -1,105 +1,130 @@
 package com.niopullus.NioLib;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/**
+/**Handles Integers, Doubles, Strings and Booleans
+ * Used to transform a network of data into a text file
  * Created by Owen on 4/12/2016.
  */
 public class DataTree {
 
-    private ArrayList data;
+    private List data;
 
     public DataTree() {
         this.data = new ArrayList();
     }
 
-    public DataTree(ArrayList data) {
+    public DataTree(final List data) {
         this.data = data;
     }
 
-    public void setData(ArrayList data) {
+    public void setData(final List data) {
         this.data = data;
     }
 
-    private int addData(Object o, DataPath path, ArrayList folder) {
+    public void setData(final Crushable crushable) {
+        final DataTree data = crushable.crush();
+        this.data = data.get();
+    }
+
+    private int addData(final Object object, final DataPath path, final List folder) {
         if (path.count() == 0) {
-            folder.add(o);
+            folder.add(object);
             return folder.size() - 1;
         } else {
             int folderDir = path.get();
             if (!(folder.get(folderDir) instanceof ArrayList)) {
-                System.out.println("FAILED TO ACCESS FOLDER IN DATA TREE");
+                complain();
                 return -1;
             }
-            return addData(o, path, (ArrayList) folder.get(folderDir));
+            return addData(object, path, (ArrayList) folder.get(folderDir));
         }
     }
 
-    public int addData(Integer i, DataPath path) {
-        return addData(i, path, this.data);
+    public int addData(final Integer i, final int... pathContent) {
+        final DataPath path = new DataPath(pathContent);
+        return addData(i, path, data);
     }
 
-    public int addData(Integer i) {
-        this.data.add(i);
-        return this.data.size() - 1;
+    public int addData(final Integer i) {
+        data.add(i);
+        return data.size() - 1;
     }
 
-    public int addData(Double d, DataPath path) {
-        return addData(d, path, this.data);
+    public int addData(final Double d, final int...pathContent) {
+        final DataPath path = new DataPath(pathContent);
+        return addData(d, path, data);
     }
 
-    public int addData(Double d) {
-        this.data.add(d);
-        return this.data.size() - 1;
+    public int addData(final Double d) {
+        data.add(d);
+        return data.size() - 1;
     }
 
-    public int addData(String s, DataPath path) {
-        return addData(s, path, this.data);
+    public int addData(final String s, final int... pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
+        return addData(s, path, data);
     }
 
-    public int addData(String s) {
-        this.data.add(s);
-        return this.data.size() - 1;
+    public int addData(final String s) {
+        data.add(s);
+        return data.size() - 1;
     }
 
-    public int addData(ArrayList f, DataPath path) {
-        return addData(f, path, this.data);
+    public int addData(final List f, final int...pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
+        return addData(f, path, data);
     }
 
-    public int addData(ArrayList f) {
-        this.data.add(f);
-        return this.data.size() - 1;
+    public int addData(final List f) {
+        data.add(f);
+        return data.size() - 1;
     }
 
-    public int addFolder(DataPath path) {
-        return addData(new ArrayList(), path, this.data);
+    public int addFolder(final DataPath path) {
+        return addData(new ArrayList(), path, data);
     }
 
     public int addFolder() {
-        this.data.add(new ArrayList());
+        data.add(new ArrayList());
+        return data.size() - 1;
+    }
+
+    public int addObject(final Crushable object, final int... pathcontent) {
+        final DataTree data = object.crush();
+        final List folderContent = data.get();
+        return addData(folderContent, pathcontent);
+    }
+
+    public int addObject(final Crushable object) {
+        final DataTree data = object.crush();
+        final List folderContent = data.get();
+        data.addData(folderContent);
         return this.data.size() - 1;
     }
 
-    private Object get(DataPath path, ArrayList folder) {
+    private Object get(final DataPath path, final List folder) {
         if (path.count() == 0) {
-            return this.data;
+            return data;
         } else if (path.count() == 1) {
             return folder.get(path.get());
         } else {
-            int folderDir = path.get();
+            final int folderDir = path.get();
             return get(path, (ArrayList) folder.get(folderDir));
         }
     }
 
-    public Object get(DataPath path) {
-        return get(path, this.data);
+    public Object get(final int... pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
+        return get(path, data);
     }
 
-    public Object get() {
-        return this.data;
+    public List get() {
+        return data;
     }
 
-    private String compress(ArrayList folder) {
+    private String compress(final List folder) {
         String data = "";
         for (Object o : folder) {
             if (o instanceof ArrayList) {
@@ -118,10 +143,10 @@ public class DataTree {
     }
 
     public String compress() {
-        return compress(this.data);
+        return compress(data);
     }
 
-    private static int endFinder(String input, int start) {
+    private static int endFinder(final String input, final int start) {
         int end = -1;
         int open = 0;
         for (int i = start; i < input.length(); i++) {
@@ -137,40 +162,40 @@ public class DataTree {
             }
         }
         if (end == -1) {
-            System.out.println("ERROR LOADING DATA (COULD NOT MATCH PARENTHESIS)");
+            complainParenthesis();
         }
         return end;
     }
 
-    private static ArrayList decompresshelper(String input) {
+    private static List decompresshelper(final String input) {
         int pos = 0;
-        ArrayList result = new ArrayList();
+        final List result = new ArrayList();
         while (pos < input.length()) {
-             char currentChar = input.charAt(pos);
+             final char currentChar = input.charAt(pos);
              if (currentChar == ',') {
                  pos++;
              } else if (currentChar == 'f') {
-                 int startPos = pos + 2;
-                 int endPos = endFinder(input, startPos);
+                 final int startPos = pos + 2;
+                 final int endPos = endFinder(input, startPos);
                  result.add(decompresshelper(input.substring(startPos, endPos)));
                  pos = endPos + 1;
              } else if (currentChar == 'i') {
-                 int startPos = pos + 2;
-                 int endPos = endFinder(input, startPos);
+                 final int startPos = pos + 2;
+                 final int endPos = endFinder(input, startPos);
                  result.add(Integer.parseInt(input.substring(startPos, endPos)));
                  pos = endPos + 1;
              } else if (currentChar == 'd') {
-                 int startPos = pos + 2;
-                 int endPos = endFinder(input, startPos);
+                 final int startPos = pos + 2;
+                 final int endPos = endFinder(input, startPos);
                  result.add(Double.parseDouble(input.substring(startPos, endPos)));
                  pos = endPos + 1;
              } else if (currentChar == 's') {
-                 int startPos = pos + 2;
-                 int endPos = endFinder(input, startPos);
+                 final int startPos = pos + 2;
+                 final int endPos = endFinder(input, startPos);
                  result.add(input.substring(startPos, endPos));
                  pos = endPos + 1;
              } else {
-                 System.out.println("ERROR LOADING DATA (UNIDENTIFIED SYMBOL)");
+                 complainUSymbol();
                  break;
              }
         }
@@ -178,32 +203,32 @@ public class DataTree {
     }
 
     public static DataTree decompress(String input) {
-        DataTree result = new DataTree();
+        final DataTree result = new DataTree();
         result.setData(decompresshelper(input));
         return result;
     }
 
-    private int getSize(DataPath path, ArrayList folder) {
+    private int getSize(DataPath path, List folder) {
         if (path.count() == 0) {
             return folder.size();
         } else {
             int folderDir = path.get();
             if (!(folder.get(folderDir) instanceof ArrayList)) {
-                System.out.println("FAILED TO ACCESS FOLDER IN DATA TREE");
+                complain();
             }
             return getSize(path, (ArrayList) folder.get(folderDir));
         }
     }
 
     public int getSize(DataPath path) {
-        return getSize(path, this.data);
+        return getSize(path, data);
     }
 
     public int getSize() {
-        return this.data.size();
+        return data.size();
     }
 
-    private ArrayList clone(final ArrayList data) {
+    private ArrayList clone(final List data) {
         final ArrayList copy = new ArrayList();
         for (Object o : data) {
             if (o instanceof ArrayList) {
@@ -215,8 +240,20 @@ public class DataTree {
         return copy;
     }
 
-    public DataTree clone() {
+    public DataTree copy() {
         return new DataTree(clone(data));
+    }
+
+    private void complain() {
+        Log.doc("FAILED TO ACCESS OR SET WITHIN DATATREE", "NioLib", LogManager.LogType.ERROR);
+    }
+
+    private static void complainParenthesis() {
+        Log.doc("COULD NOT MATCH PARENTHESIS", "NioLib", LogManager.LogType.ERROR);
+    }
+
+    private static void complainUSymbol() {
+        Log.doc("FOUND UNIDENTIFIED SYMBOL", "NioLib", LogManager.LogType.ERROR);
     }
 
 }

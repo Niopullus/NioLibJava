@@ -2,10 +2,7 @@ package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Animation;
 import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.Main;
-import com.niopullus.NioLib.utilities.Utilities;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -37,7 +34,7 @@ public class DynamicImageNode extends ImageNode {
 
     public DynamicImageNode(final String name, final BufferedImage image, final int width, final int height) {
         super(name, image, width, height);
-        this.animations = new ArrayList<Animation>();
+        this.animations = new ArrayList<>();
         this.curAnimation = 0;
         this.animationTimer = 0;
         this.indefTimer = false;

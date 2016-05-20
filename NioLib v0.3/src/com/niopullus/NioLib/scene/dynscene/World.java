@@ -2,11 +2,15 @@ package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.DataPath;
 import com.niopullus.NioLib.DataTree;
+import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.Background;
+import com.niopullus.NioLib.scene.ColorBackground;
+import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.tile.Tilemap;
 import com.niopullus.app.Config;
 import com.sun.javaws.Launcher;
 
+import java.awt.*;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,7 +21,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/**
+/**General container for DynamicScene related instance variables
  * Created by Owen on 4/13/2016.
  */
 public class World {
@@ -29,23 +33,6 @@ public class World {
     private Tilemap fgTilemap;
     private Tilemap bgTilemap;
     private Node camera;
-    private int loadMode;
-
-    public World() {
-
-    }
-
-    public String getName() {
-        if (this.name == null) {
-            return "Unnamed World";
-        } else {
-            return name;
-        }
-    }
-
-    public int getLoadMode() {
-        return this.loadMode;
-    }
 
     public Node getUniverse() {
         return universe;
@@ -71,38 +58,47 @@ public class World {
         return camera;
     }
 
-    public void setName(String name) {
+    public String getName() {
+        if (name == null) {
+            return "Unnamed World";
+        } else {
+            return name;
+        }
+    }
+
+    public void setName(final String name) {
         this.name = name;
     }
 
-    public void setUniverse(Node universe) {
+    public void setUniverse(final Node universe) {
         this.universe = universe;
     }
 
-    public void setPhysicsHandler(PhysicsHandler physicsHandler) {
+    public void setPhysicsHandler(final PhysicsHandler physicsHandler) {
         this.physicsHandler = physicsHandler;
     }
 
-    public void setBackground(Background background) {
+    public void setBackground(final Background background) {
         this.background = background;
     }
 
-    public void setFgTilemap(Tilemap fgTilemap) {
+    public void setFgTilemap(final Tilemap fgTilemap) {
         this.fgTilemap = fgTilemap;
     }
 
-    public void setBgTilemap(Tilemap bgTilemap) {
+    public void setBgTilemap(final Tilemap bgTilemap) {
         this.bgTilemap = bgTilemap;
     }
 
-    public void setCamera(Node camera) {
+    public void setCamera(final Node camera) {
         this.camera = camera;
     }
 
-    public static World loadWorld(String fileName, DynamicScene scene) {
-        World result = new World();
+    public static World loadWorld(final String fileName, final DynamicScene scene) {
+        final World result = new World();
+        File worldFile;
         String textData = "";
-        File worldFile = new File("C:\\" + Config.DIRNAME + "\\worlds\\" + fileName);
+        worldFile = new File("C:\\" + Config.DIRNAME + "\\worlds\\" + fileName);
         if (!worldFile.exists()) {
             try {
                 final String path = "builtinworlds";
@@ -173,6 +169,31 @@ public class World {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static World generateWorld(final String name, final Scene scene) {
+        final Node world = new Node("world");
+        final Node universe = new Node("universe");
+        final PhysicsHandler physicsHandler = new PhysicsHandler();
+        final Background background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
+        final Tilemap fgtilemap = new Tilemap(Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD);
+        final Tilemap bgtilemap = new Tilemap(Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD);
+        final World storedWorld = new World();
+        fgtilemap.setZ(Config.FGTILEMAPZ);
+        bgtilemap.setZ(Config.BGTILEMAPZ);
+        physicsHandler.setTilemap(fgtilemap);
+        universe.setScene(scene);
+        universe.addChild(world);
+        universe.markUniverse();
+        universe.setScene(scene);
+        world.markWorld();
+        storedWorld.setName(name);
+        storedWorld.setUniverse(universe);
+        storedWorld.setPhysicsHandler(physicsHandler);
+        storedWorld.setBackground(background);
+        storedWorld.setFgTilemap(fgtilemap);
+        storedWorld.setBgTilemap(bgtilemap);
+        return storedWorld;
     }
 
 }

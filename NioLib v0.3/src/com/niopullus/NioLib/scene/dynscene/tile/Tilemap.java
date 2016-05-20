@@ -1,11 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
-import com.niopullus.NioLib.DataPath;
-import com.niopullus.NioLib.DataTree;
-import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.Scene;
-import com.niopullus.NioLib.scene.dynscene.DynamicScene;
 import com.niopullus.NioLib.scene.dynscene.Node;
 import com.niopullus.NioLib.utilities.SignedContainer;
 
@@ -23,11 +19,11 @@ public class Tilemap implements Serializable {
     private int height;
     private int z;
     private int regSize;
-    private SignedContainer<TileRegion> map;
-    private Scene scene;
     private Node world;
+    private Scene scene;
+    private SignedContainer<TileRegion> map;
 
-    private Tilemap(final Scene scene, final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
+    public Tilemap(final Node world, final int tileSize, final int regSize, final int width, final int height) {
         final int xRegions;
         final int yRegions;
         this.tileSize = tileSize;
@@ -35,23 +31,13 @@ public class Tilemap implements Serializable {
         this.height = height;
         this.regSize = regSize;
         this.world = world;
-        this.scene = scene;
-        this.z = z;
         xRegions = (int) Math.ceil((double) width / regSize) + 3;
         yRegions = (int) Math.ceil((double) height / regSize) + 3;
-        this.map = new SignedContainer<TileRegion>(xRegions, yRegions);
+        this.map = new SignedContainer<>(xRegions, yRegions);
     }
 
-    public Tilemap(final DynamicScene scene, final int tileSize, final int regSize, final int width, final int height, final int z) {
-        this(scene, scene.getWorld(), tileSize, regSize, width, height, z);
-    }
-
-    public Tilemap(final Scene scene, final int tileSize, final int regSize, final int width, final int height, final int z) {
-        this(scene, new Node(), tileSize, regSize, width, height, z);
-    }
-
-    public Tilemap(final Node world, final int tileSize, final int regSize, final int width, final int height, final int z) {
-        this(null, world, tileSize, regSize, width, height, z);
+    public Tilemap(final int tileSize, final int regSize, final int width, final int height) {
+        this(null, tileSize, regSize, width, height);
     }
 
     public Scene getScene() {
@@ -134,6 +120,10 @@ public class Tilemap implements Serializable {
         map.set(x, y, reg);
     }
 
+    public void setWorld(final Node world) {
+        this.world = world;
+    }
+
     public void setTile(final Tile tile, final int x, final int y) { //Sets a tile in tile coordinates
         int xReg = x / regSize;
         int yReg = y / regSize;
@@ -206,12 +196,12 @@ public class Tilemap implements Serializable {
     public void fillTiles(final int x, final int y, final int width, final int height, final Tile tile) {
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
-                setTile(tile.clone(), i, j);
+                setTile(tile.copy(), i, j);
             }
         }
     }
 
-     public DataTree compress() { //Converts this tilemap into a DataTree
+    public DataTree compress() { //Converts this tilemap into a DataTree
      //DATA TREE STRUCTURE:
      // ROOT -[
      //         Integer (Reg Size)
@@ -266,15 +256,17 @@ public class Tilemap implements Serializable {
              }
         }
         return data;
-     }
+    }
 
      public static Tilemap decompress(final DataTree data, final Node world, final int tileSize) { //Converts a DataTree into a tilemap
          final int regSize = (Integer) data.get(new DataPath(new int[]{0}));
          final int width = (Integer) data.get(new DataPath(new int[]{1}));
          final int height = (Integer) data.get(new DataPath(new int[]{2}));
          final int dataSize = data.getSize();
-         final Tilemap map = new Tilemap(world, tileSize, regSize, width, height, world.getZ());
-         final ArrayList<MultiTile> multiTiles = new ArrayList<MultiTile>();
+         final Tilemap map = new Tilemap(tileSize, regSize, width, height);
+         final ArrayList<MultiTile> multiTiles = new ArrayList<>();
+         map.setZ(world.getZ());
+         map.setWorld(world);
          for (int i = 3; i < dataSize; i++) {
              final int regx = (Integer) data.get(new DataPath(new int[]{i, 0}));
              final int regy = (Integer) data.get(new DataPath(new int[]{i, 1}));
@@ -299,7 +291,7 @@ public class Tilemap implements Serializable {
                          multiTiles.add(multiTile);
                      }
                  } else {
-                    System.out.println("ERROR LOADING TILE: UNRECOGNIZED REFERENCE NAME");
+                     Log.doc("LOADING TILE: UNRECOGNIZED REFERENCE NAME", "NioLib", LogManager.LogType.ERROR);
                  }
              }
              map.setRegion(reg, regx, regy);

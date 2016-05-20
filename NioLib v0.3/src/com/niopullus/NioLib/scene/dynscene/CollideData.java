@@ -8,7 +8,7 @@ public interface CollideData {
     double getElasticity();
     double getFriction();
     String getName();
-    void victimCollision(Collision collision);
-    void causerCollision(Collision collision);
+    void victimCollision(final Collision collision);
+    void causerCollision(final Collision collision);
 
 }

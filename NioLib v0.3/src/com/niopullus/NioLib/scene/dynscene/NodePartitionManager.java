@@ -53,8 +53,8 @@ public class NodePartitionManager implements Serializable {
     }
 
     private void removeNode(final Node node) {
-        for (int i = node.getPartRangeX()[0]; i < node.getPartRangeX()[1]; i++) {
-            for (int j = node.getPartRangeY()[0]; j < node.getPartRangeY()[1]; j++) {
+        for (int i = node.getPartRangeX()[0]; i <= node.getPartRangeX()[1]; i++) {
+            for (int j = node.getPartRangeY()[0]; j <= node.getPartRangeY()[1]; j++) {
                 if (partitions.isValidLoc(i, j)) {
                     partitions.get(i, j).removeNode(node);
                 }

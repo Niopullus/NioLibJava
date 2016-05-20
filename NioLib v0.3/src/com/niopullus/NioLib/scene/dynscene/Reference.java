@@ -25,91 +25,98 @@ public class Reference implements Comparable<Reference> {
     private static int curIDNode = 0;
     private static Reference sampleRef = new TileReference(null, 0, null, 0, 0, false, null);
 
-    public Reference(String name, int id, Object sample) {
+    public Reference(final String name, final int id, final Object sample) {
         this.name = name;
         this.sample = sample;
         this.id = id;
     }
 
-    public static int getCurIDTile() {
-        int id = Reference.curIDTile;
-        Reference.curIDTile++;
+    public Object getSample() {
+        return sample;
+    }
+
+    public int getNode() {
         return id;
     }
 
-    public static int getCurIDNode() {
-        int id = Reference.curIDNode;
-        Reference.curIDNode++;
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public static TileReference getTileRef(int id) {
-        if (id >= 1 && id <= Reference.getTileQuant()) {
-            return Reference.tilerefs.get(id - 1);
+    public int compareTo(final Reference ref) {
+        return name.compareTo(ref.name);
+    }
+
+    private static int getCurIDTile() {
+        final int id = curIDTile;
+        curIDTile++;
+        return id;
+    }
+
+    private static int getCurIDNode() {
+        final int id = curIDNode;
+        curIDNode++;
+        return id;
+    }
+
+    public static TileReference getTileRef(final int id) {
+        if (id >= 1 && id <= getTileQuant()) {
+            return tilerefs.get(id - 1);
         } else {
             return null;
         }
     }
 
-    public static NodeReference getNodeRef(int id) {
-        if (id < Reference.getNodeQuant() && id >= 0) {
-            return Reference.noderefs.get(id);
+    public static NodeReference getNodeRef(final int id) {
+        if (id < getNodeQuant() && id >= 0) {
+            return noderefs.get(id);
         } else {
             return null;
         }
     }
 
-    public static TileReference getTileRef(String name) {
-        Reference.sampleRef.name = name;
-        int index = Collections.binarySearch(Reference.sortedTileRefs, sampleRef);
+    public static TileReference getTileRef(final String name) {
+        final int index;
+        sampleRef.name = name;
+        index = Collections.binarySearch(sortedTileRefs, sampleRef);
         if (index >= 0) {
-            return Reference.sortedTileRefs.get(index);
+            return sortedTileRefs.get(index);
         }
         return null;
     }
 
-    public static NodeReference getNodeRef(String name) {
-        Reference.sampleRef.name = name;
-        int index = Collections.binarySearch(Reference.sortedNodeRefs, sampleRef);
+    public static NodeReference getNodeRef(final String name) {
+        final int index;
+        sampleRef.name = name;
+        index = Collections.binarySearch(sortedNodeRefs, sampleRef);
         if (index >= 0) {
-            return Reference.sortedNodeRefs.get(index);
+            return sortedNodeRefs.get(index);
         }
         return null;
     }
 
-    public static void registerTile(String name, String image, double friction, double elasticity, boolean collidable, Tile tile) {
-        TileReference ref = new TileReference(name, getCurIDTile(), Utilities.loadImage(image), friction, elasticity, collidable, tile);
+    public static void registerTile(final String name, final String image, final double friction, final double elasticity, final boolean collidable, final Tile tile) {
+        final TileReference ref = new TileReference(name, getCurIDTile(), Utilities.loadImage(image), friction, elasticity, collidable, tile);
+        tilerefs.add(ref);
+        sortedTileRefs.add(ref);
+        Collections.sort(sortedTileRefs);
+        tile.setReference(getTileRef(name));
+    }
+
+    public static void registerMultiTile(final String name, final ArrayList<BufferedImage> images, final double friction, final double elasticity, final boolean collidable, final int width, final int height, final Tile tile) {
+        final MultiTileReference ref = new MultiTileReference(name, getCurIDTile(), images, friction, elasticity, collidable, width, height, tile);
         Reference.tilerefs.add(ref);
         Reference.sortedTileRefs.add(ref);
         Collections.sort(sortedTileRefs);
         tile.setReference(Reference.getTileRef(name));
-    }
-
-    public static void registerMultiTile(String name, ArrayList<BufferedImage> images, double friction, double elasticity, boolean collidable, int width, int height, Tile tile) {
-        MultiTileReference ref = new MultiTileReference(name, getCurIDTile(), images, friction, elasticity, collidable, width, height, tile);
-        Reference.tilerefs.add(ref);
-        Reference.sortedTileRefs.add(ref);
-        Collections.sort(sortedTileRefs);
-        tile.setReference(Reference.getTileRef(name));
-    }
-
-    public static void registerMultiTile(String name, String baseIMGName, double friction, double elasticity, boolean collidable, int width, int height, Tile tile) {
-        ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
-        int dotPos = 0;
-        for (int i = 0; i < baseIMGName.length(); i++) {
-            if (baseIMGName.charAt(i) == '.') {
-                dotPos = i;
-                break;
-            }
-        }
-        for (int i = 1; i <= width * height; i++) {
-            images.add(Utilities.loadImage(baseIMGName.substring(0, dotPos) + i + baseIMGName.substring(dotPos)));
-        }
-        registerMultiTile(name, images, friction, elasticity, collidable, width, height, tile);
     }
 
     public static void registerNode(String name, double defaultXScale, double defaultYScale, Node sample) {
-        NodeReference ref = new NodeReference(name, defaultXScale, defaultYScale, getCurIDNode(), sample);
+        final NodeReference ref = new NodeReference(name, defaultXScale, defaultYScale, getCurIDNode(), sample);
         Reference.noderefs.add(ref);
         Reference.sortedNodeRefs.add(ref);
         Collections.sort(sortedNodeRefs);
@@ -122,26 +129,6 @@ public class Reference implements Comparable<Reference> {
 
     public static int getNodeQuant() {
         return Reference.noderefs.size();
-    }
-
-    public Object getSample() {
-        return this.sample;
-    }
-
-    public int compareTo(Reference ref) {
-        return this.name.compareTo(ref.name);
-    }
-
-    public int getNode() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getId() {
-        return this.id;
     }
 
 }

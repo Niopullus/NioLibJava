@@ -3,18 +3,19 @@ package com.niopullus.NioLib.scene.dynscene.tile;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
-/**Tile thats takes up multiple tilemap spaces
+/**Tile that takes up multiple tilemap spaces
  * Created by Owen on 4/11/2016.
  */
 public class MultiTile extends Tile {
 
-    private ArrayList<MultiTilePart> parts;
+    private List<MultiTilePart> parts;
     private Point refTilePoint;
 
     public MultiTile(final String refName, final Point refTP) {
         super(refName);
-        this.parts = new ArrayList<MultiTilePart>();
+        this.parts = new ArrayList<>();
         this.refTilePoint = new Point();
     }
 
@@ -61,8 +62,6 @@ public class MultiTile extends Tile {
     public Point getTileMapPos() {
         final Point result = new Point();
         final MultiTileReference ref = getReference();
-        final Tilemap tilemap = getTilemap();
-        final int tileSize = tilemap.getTileSize();
         final int x = refTilePoint.x + ref.getWidth() / 2;
         final int y = refTilePoint.y + ref.getHeight() / 2;
         result.x = x;
@@ -70,9 +69,8 @@ public class MultiTile extends Tile {
         return result;
     }
 
-    public void setRefTilePoint(Point point) {
-        refTilePoint.x = point.x;
-        refTilePoint.y = point.y;
+    public void setRefTilePoint(final Point point) {
+        refTilePoint = point;
     }
 
     public void addPart(final MultiTilePart part) {

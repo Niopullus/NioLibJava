@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-/**
+/**Keeps track of the two objects involved in the collision and other aspects
  * Created by Owen on 4/3/2016.
  */
 public class Collision {
