@@ -6,7 +6,7 @@ package com.niopullus.NioLib.scene.guiscene;
  */
 public class Button extends SelectableGUIElement {
 
-    public Button(String content, int x, int y, int width, int height) {
+    public Button(final String content, final int x, final int y, final int width, final int height) {
         super(content, x, y, width, height);
     }
 

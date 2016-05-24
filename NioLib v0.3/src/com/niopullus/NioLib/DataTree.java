@@ -7,7 +7,7 @@ import java.util.List;
  * Used to transform a network of data into a text file
  * Created by Owen on 4/12/2016.
  */
-public class DataTree {
+public class DataTree implements Crushable {
 
     private List data;
 
@@ -42,8 +42,8 @@ public class DataTree {
         }
     }
 
-    public int addData(final Integer i, final int... pathContent) {
-        final DataPath path = new DataPath(pathContent);
+    public int addData(final Integer i, final int... pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
         return addData(i, path, data);
     }
 
@@ -52,13 +52,23 @@ public class DataTree {
         return data.size() - 1;
     }
 
-    public int addData(final Double d, final int...pathContent) {
-        final DataPath path = new DataPath(pathContent);
+    public int addData(final Double d, final int... pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
         return addData(d, path, data);
     }
 
     public int addData(final Double d) {
         data.add(d);
+        return data.size() - 1;
+    }
+
+    public int addData(final Boolean b, final int... pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
+        return addData(b, path, data);
+    }
+
+    public int addData(final Boolean b) {
+        data.add(b);
         return data.size() - 1;
     }
 
@@ -72,17 +82,26 @@ public class DataTree {
         return data.size() - 1;
     }
 
-    public int addData(final List f, final int...pathcontent) {
+    public int addData(final List<? extends Crushable> f, final int... pathcontent) {
+        final List list = new ArrayList<>();
         final DataPath path = new DataPath(pathcontent);
-        return addData(f, path, data);
+        for (Crushable object : f) {
+            list.add(object.crush());
+        }
+        return addData(list, path, data);
     }
 
-    public int addData(final List f) {
-        data.add(f);
+    public int addData(final List<? extends Crushable> f) {
+        final List list = new ArrayList<>();
+        for (Crushable object : f) {
+            list.add(object.crush());
+        }
+        data.add(list);
         return data.size() - 1;
     }
 
-    public int addFolder(final DataPath path) {
+    public int addFolder(final int... pathcontent) {
+        final DataPath path = new DataPath(pathcontent);
         return addData(new ArrayList(), path, data);
     }
 
@@ -91,10 +110,11 @@ public class DataTree {
         return data.size() - 1;
     }
 
-    public int addObject(final Crushable object, final int... pathcontent) {
+    public int addData(final Crushable object, final int... pathcontent) {
         final DataTree data = object.crush();
         final List folderContent = data.get();
-        return addData(folderContent, pathcontent);
+        final DataPath path = new DataPath(pathcontent);
+        return addData(folderContent, path, this.data);
     }
 
     public int addObject(final Crushable object) {
@@ -120,6 +140,55 @@ public class DataTree {
         return get(path, data);
     }
 
+    public Integer getI(final int... pathcontent) {
+        try {
+            return (Integer) get(pathcontent);
+        } catch (final ClassCastException e) {
+            complainType();
+        }
+        return null;
+    }
+
+    public Double getD(final int... pathcontents) {
+        try {
+            return (Double) get(pathcontents);
+        } catch (final ClassCastException e) {
+            complainType();
+        }
+        return null;
+    }
+
+    public String getS(final int... pathcontents) {
+        try {
+            return (String) get(pathcontents);
+        } catch (final ClassCastException e) {
+            complainType();
+        }
+        return null;
+    }
+
+    public Boolean getB(final int... pathcontents) {
+        try {
+            return (Boolean) get(pathcontents);
+        } catch (final ClassCastException e) {
+            complainType();
+        }
+        return null;
+    }
+
+    public List getF(final int... pathcontents) {
+        try {
+            return (List) get(pathcontents);
+        } catch (final ClassCastException e) {
+            complainType();
+        }
+        return null;
+    }
+
+    private void complainType() {
+        Log.doc("AN ATTEMPT WAS MADE TO TYPE-CALL AN OBJECT NOT OF THE SPECIFIED TYPE", "NioLib", LogManager.LogType.ERROR);
+    }
+
     public List get() {
         return data;
     }
@@ -133,6 +202,8 @@ public class DataTree {
                 char type = 'i';
                 if (o instanceof Double) {
                     type = 'd';
+                } else if (o instanceof Boolean) {
+                    type = 'b';
                 } else if (o instanceof String) {
                     type = 's';
                 }
@@ -189,6 +260,11 @@ public class DataTree {
                  final int endPos = endFinder(input, startPos);
                  result.add(Double.parseDouble(input.substring(startPos, endPos)));
                  pos = endPos + 1;
+             } else if (currentChar == 'b') {
+                 final int startPos = pos + 2;
+                 final int endPos = endFinder(input, startPos);
+                 result.add(Boolean.parseBoolean(input.substring(startPos, endPos)));
+                 pos = endPos + 1;
              } else if (currentChar == 's') {
                  final int startPos = pos + 2;
                  final int endPos = endFinder(input, startPos);
@@ -202,13 +278,13 @@ public class DataTree {
         return result;
     }
 
-    public static DataTree decompress(String input) {
+    public static DataTree decompress(final String input) {
         final DataTree result = new DataTree();
         result.setData(decompresshelper(input));
         return result;
     }
 
-    private int getSize(DataPath path, List folder) {
+    private int getSize(final DataPath path, List folder) {
         if (path.count() == 0) {
             return folder.size();
         } else {
@@ -220,7 +296,8 @@ public class DataTree {
         }
     }
 
-    public int getSize(DataPath path) {
+    public int getSize(final int... pathcontents) {
+        final DataPath path = new DataPath(pathcontents);
         return getSize(path, data);
     }
 
@@ -228,11 +305,11 @@ public class DataTree {
         return data.size();
     }
 
-    private ArrayList clone(final List data) {
-        final ArrayList copy = new ArrayList();
+    private List copy(final List data) {
+        final List copy = new ArrayList();
         for (Object o : data) {
-            if (o instanceof ArrayList) {
-                copy.add(clone((ArrayList) o));
+            if (o instanceof List) {
+                copy.add(copy((List) o));
             } else {
                 copy.add(o);
             }
@@ -241,7 +318,11 @@ public class DataTree {
     }
 
     public DataTree copy() {
-        return new DataTree(clone(data));
+        return new DataTree(copy(data));
+    }
+
+    public DataTree crush() {
+        return this;
     }
 
     private void complain() {

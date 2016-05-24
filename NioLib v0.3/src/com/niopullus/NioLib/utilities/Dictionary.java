@@ -2,13 +2,14 @@ package com.niopullus.NioLib.utilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Owen on 3/5/2016.
  */
 public class Dictionary<T> {
 
-    ArrayList elements;
+    private List elements;
 
     public Dictionary() {
         this.elements = new ArrayList<DictionaryElement<T>>();

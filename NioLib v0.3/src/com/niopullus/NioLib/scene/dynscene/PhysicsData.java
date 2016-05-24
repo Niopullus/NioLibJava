@@ -1,14 +1,13 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.DataPath;
+import com.niopullus.NioLib.Crushable;
 import com.niopullus.NioLib.DataTree;
 
-import java.io.Serializable;
 
 /**Stores information regarding the physics of a node
  * Created by Owen on 3/10/2016.
  */
-public class PhysicsData implements Serializable {
+public class PhysicsData implements Crushable {
 
     public static final double DEFAULT_ELASTICITY = 0.0;
     public static final double DEFAULT_FRICTION = 0.2;
@@ -249,7 +248,7 @@ public class PhysicsData implements Serializable {
         }
     }
 
-    public PhysicsData clone() {
+    public PhysicsData copy() {
         final PhysicsData result = new PhysicsData();
         result.xv = xv;
         result.yv = yv;
@@ -272,22 +271,61 @@ public class PhysicsData implements Serializable {
         return result;
     }
 
-    public static PhysicsData decompress(DataTree data) {
-        PhysicsData result = new PhysicsData();
-        result.setEnablePhysics((Boolean) data.get(new DataPath(new int[]{0})));
-        result.setXv((Double) data.get(new DataPath(new int[]{1})));
-        result.setYv((Double) data.get(new DataPath(new int[]{2})));
-        result.setElasticity((Double) data.get(new DataPath(new int[]{3})));
-        result.setFriction((Double) data.get(new DataPath(new int[]{4})));
-        result.setMass((Double) data.get(new DataPath(new int[]{5})));
-        result.setxStrength((Double) data.get(new DataPath(new int[]{6})));
-        result.setyStrength((Double) data.get(new DataPath(new int[]{7})));
-        result.setxSpeedLim((Double) data.get(new DataPath(new int[]{8})));
-        result.setySpeedLim((Double) data.get(new DataPath(new int[]{9})));
-        result.setGravityCoefficient((Double) data.get(new DataPath(new int[]{10})));
-        result.setDoGravity((Boolean) data.get(new DataPath(new int[]{11})));
-        result.setCollidablein((Boolean) data.get(new DataPath(new int[]{12})));
-        result.setCollidableout((Boolean) data.get(new DataPath(new int[]{13})));
+    /**Crush Diagram:
+     * root {
+     *      b - enablephysics
+     *      d - x velocity
+     *      d - y velocity
+     *      d - elasticity
+     *      d - friction
+     *      d - mass
+     *      d - xStrength
+     *      d - yStrength
+     *      d - xSpeedLimit
+     *      d - ySpeedLimit
+     *      d - gravityCoefficient
+     *      b - doGravity
+     *      b - collidablein
+     *      b - collidableout
+     * }
+     * @see Crushable
+     */
+
+    public DataTree crush() {
+        final DataTree result = new DataTree();
+        result.addData(enablePhysics);
+        result.addData(xv);
+        result.addData(yv);
+        result.addData(elasticity);
+        result.addData(friction);
+        result.addData(mass);
+        result.addData(xStrength);
+        result.addData(yStrength);
+        result.addData(xSpeedLim);
+        result.addData(ySpeedLim);
+        result.addData(gravityCoefficient);
+        result.addData(doGravity);
+        result.addData(collidablein);
+        result.addData(collidableout);
+        return result;
+    }
+
+    public static PhysicsData uncrush(final DataTree data) {
+        final PhysicsData result = new PhysicsData();
+        result.setEnablePhysics(data.getB(0));
+        result.setXv(data.getD(1));
+        result.setYv(data.getD(2));
+        result.setElasticity(data.getD(3));
+        result.setFriction(data.getD(4));
+        result.setMass(data.getD(5));
+        result.setxStrength(data.getD(6));
+        result.setyStrength(data.getD(7));
+        result.setxSpeedLim(data.getD(8));
+        result.setySpeedLim(data.getD(9));
+        result.setGravityCoefficient(data.getD(10));
+        result.setDoGravity(data.getB(11));
+        result.setCollidablein(data.getB(12));
+        result.setCollidableout(data.getB(13));
         return result;
     }
 

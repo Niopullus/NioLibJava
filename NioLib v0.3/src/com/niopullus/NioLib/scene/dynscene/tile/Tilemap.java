@@ -8,11 +8,12 @@ import com.niopullus.NioLib.utilities.SignedContainer;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**Keeps track of tile regions
  * Created by Owen on 3/23/2016.
  */
-public class Tilemap implements Serializable {
+public class Tilemap implements Crushable {
 
     private int tileSize;
     private int width;
@@ -56,13 +57,30 @@ public class Tilemap implements Serializable {
         return height;
     }
 
-    private Point getPointInRegion(final int x, final int y) { //Range: x - [0-(REGSIZE - 1)], y - [0-(REGSIZE - 1)]
+    public int getRegSize() {
+        return regSize;
+    }
+
+    /**
+     * Precondition: x - [0-(REGSIZE - 1)], y - [0-(REGSIZE - 1)]
+     * @param x in Tile coordinates
+     * @param y in Tile coordinates
+     * @return a Point in Region coordinates
+     */
+
+    private Point getPointInRegion(final int x, final int y) {
         final int xinReg = Math.abs(x % regSize);
         final int yinReg = Math.abs(y % regSize);
         return new Point(xinReg, yinReg);
     }
 
-    public Tile getTile(final int x, final int y) { //Gets a tile from the map in tile coordinates
+    /**
+     * @param x in tile-coordinates
+     * @param y in tile-coordinates
+     * @return a tile from the map
+     */
+
+    public Tile getTile(final int x, final int y) {
         final Point pointInRegion = getPointInRegion(x, y);
         final TileRegion reg = getRegion(x, y);
         if (reg != null) {
@@ -75,6 +93,13 @@ public class Tilemap implements Serializable {
         }
         return null;
     }
+
+    /**
+     * Gets a Tile in World coordinates
+     * @param x in World coordinates
+     * @param y in World coordinates
+     * @return the requested Tile
+     */
 
     public Tile getTileRC(final int x, final int y) { //Gets a tile in world coordinates
         final TileRegion region = getRegion(x, y);
@@ -124,7 +149,13 @@ public class Tilemap implements Serializable {
         this.world = world;
     }
 
-    public void setTile(final Tile tile, final int x, final int y) { //Sets a tile in tile coordinates
+    /**
+     * @param tile is the tile to be placed into the tilemap
+     * @param x is the x tile coordinate
+     * @param y is the y tile coordainte
+     */
+
+    public void setTile(final Tile tile, final int x, final int y) {
         int xReg = x / regSize;
         int yReg = y / regSize;
         final Point pointInRegion = getPointInRegion(x, y);
@@ -152,6 +183,14 @@ public class Tilemap implements Serializable {
         }
     }
 
+    /**
+     * @param tile is the tile to be placed into the tilemap
+     * @param x is the x tile coordinate of where the bottom left of the
+     *          MultiTile
+     * @param y is the y tile coordainte of where the bottom left of the
+     *          MultiTile
+     */
+
     public void setMultiTile(final MultiTile tile, final int x, final int y) { //Sets a MultiTile in tile coordinates
         int part = 0;
         final TileRegion reg = getRegion(x, y);
@@ -166,7 +205,14 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public Point convertPointToTileLoc(final int x, final int y) { //Convers a point from world to tile
+    /**
+     * Converts a Point from World coordinates to Tile coordinates
+     * @param x in World coordinates
+     * @param y in World coordinates
+     * @return a Point in Tile coordinates
+     */
+
+    public Point convertPointToTileLoc(final int x, final int y) {
         final int convertedX = ((int) Math.floor((double) x / tileSize));
         final int convertedY = ((int) Math.floor((double) y / tileSize));
         return new Point(convertedX, convertedY);
@@ -193,6 +239,15 @@ public class Tilemap implements Serializable {
         }
     }
 
+    /**
+     * Fills tiles from a point outward
+     * @param x of the bottom left point of where to fill
+     * @param y of the bottom left point of where to fill
+     * @param width of the rectangle to fill
+     * @param height of the rectangle to fill
+     * @param tile to fill
+     */
+
     public void fillTiles(final int x, final int y, final int width, final int height, final Tile tile) {
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
@@ -201,24 +256,19 @@ public class Tilemap implements Serializable {
         }
     }
 
-    public DataTree compress() { //Converts this tilemap into a DataTree
-     //DATA TREE STRUCTURE:
-     // ROOT -[
-     //         Integer (Reg Size)
-     //         Integer (Width)
-     //         Integer (Height)
-     //         Region - [
-     //                      Integer regx
-     //                      Integer regy
-     //                      Tile Data - [
-     //                              Integer (0 if single, 1 if multi)
-     //                              Integer (x)
-     //                              Integer (y)
-     //                              Tile - [
-     //                                      Integer (id)
-     //                                      Data - [ STORED TILE DATA ]
-     //         Region - [...]
-     //         ...
+    /**
+     * Crush Diagram:
+     * root {
+     *     i - region size
+     *     i - width
+     *     i - height
+     *     f - region
+     *     ...
+     * }
+     * @see Crushable
+     */
+
+    public DataTree crush() {
          final DataTree data = new DataTree();
          data.addData(regSize);
          data.addData(width);
@@ -227,76 +277,38 @@ public class Tilemap implements Serializable {
              for (int j = -map.getHeight(); j < map.getHeight(); j++) {
                  final TileRegion reg = map.get(i, j);
                  if (reg != null) {
-                     final int dir1 = data.addFolder(); //REG FOLDER
-                     final int dir2;
-                     data.addData(i, new DataPath(new int[]{dir1}));
-                     data.addData(j, new DataPath(new int[]{dir1}));
-                     dir2 = data.addFolder(new DataPath(new int[]{dir1})); //TILES FOLDER
-                     for (int x = 0; x < reg.getSize(); x++) {
-                         for (int y = 0; y < reg.getSize(); y++) {
-                             final Tile tile = reg.get(x, y);
-                             if (tile != null && !(tile instanceof MultiTilePart)) {
-                                 final int dir3 = data.addFolder(new DataPath(new int[]{dir1, dir2})); //INDIVIDUAL TILE FOLDER
-                                 data.addData(0, new DataPath(new int[]{dir1, dir2, dir3}));
-                                 data.addData(x, new DataPath(new int[]{dir1, dir2, dir3}));
-                                 data.addData(y, new DataPath(new int[]{dir1, dir2, dir3}));
-                                 data.addData((ArrayList) tile.compress().get(), new DataPath(new int[]{dir1, dir2, dir3}));
-                             }
-                         }
-                     }
-                     for (int z = 0; z < reg.getMultiTileCount(); z++) {
-                         final int dir3 = data.addFolder(new DataPath(new int[]{dir1, dir2}));
-                         final MultiTile mt = reg.getMultiTile(z);
-                         data.addData(1, new DataPath(new int[]{dir1, dir2, dir3}));
-                         data.addData(mt.getRefTilePoint().x, new DataPath(new int[]{dir1, dir2, dir3}));
-                         data.addData(mt.getRefTilePoint().y, new DataPath(new int[]{dir1, dir2, dir3}));
-                         data.addData((ArrayList) mt.compress().get(), new DataPath(new int[]{dir1, dir2, dir3}));
-                     }
+
                  }
              }
         }
         return data;
     }
 
-     public static Tilemap decompress(final DataTree data, final Node world, final int tileSize) { //Converts a DataTree into a tilemap
-         final int regSize = (Integer) data.get(new DataPath(new int[]{0}));
-         final int width = (Integer) data.get(new DataPath(new int[]{1}));
-         final int height = (Integer) data.get(new DataPath(new int[]{2}));
+     public static Tilemap uncrush(final DataTree data, final Node world, final int tileSize) { //Converts a DataTree into a tilemap
+         final int regSize = data.getI(0);
+         final int width = data.getI(1);
+         final int height = data.getI(2);
          final int dataSize = data.getSize();
          final Tilemap map = new Tilemap(tileSize, regSize, width, height);
-         final ArrayList<MultiTile> multiTiles = new ArrayList<>();
+         final List<MultiTile> multiTiles = new ArrayList<>();
          map.setZ(world.getZ());
          map.setWorld(world);
          for (int i = 3; i < dataSize; i++) {
-             final int regx = (Integer) data.get(new DataPath(new int[]{i, 0}));
-             final int regy = (Integer) data.get(new DataPath(new int[]{i, 1}));
+             final int regx = data.getI(i, 0);
+             final int regy = data.getI(i, 1);
              final TileRegion reg = new TileRegion(regSize);
-             for (int j = 0; j < data.getSize(new DataPath(new int[]{i, 2})); j++) {
-                 final int tiletype = (Integer) data.get(new DataPath(new int[]{i, 2, j, 0}));
-                 final int x = (Integer) data.get(new DataPath(new int[]{i, 2, j, 1}));
-                 final int y = (Integer) data.get(new DataPath(new int[]{i, 2, j, 2}));
-                 final int id = (Integer) data.get(new DataPath(new int[]{i, 2, j, 3, 0}));
-                 final ArrayList dataFolder = (ArrayList) data.get(new DataPath(new int[]{i, 2, j, 3, 1}));
-                 final DataTree tileData = new DataTree(dataFolder);
-                 final TileReference reference = TileReference.getTileRef(id);
-                 if (reference != null) {
-                     if (tiletype == 0) {
-                         final Tile sample = reference.getSample();
-                         final Tile tile = sample.clone(tileData);
-                         reg.set(tile, x, y);
-                     } else if (tiletype == 1) {
-                         final MultiTile sample = (MultiTile) reference.getSample();
-                         final MultiTile multiTile = (MultiTile) sample.clone(tileData);
-                         multiTile.setRefTilePoint(new Point(x, y));
-                         multiTiles.add(multiTile);
-                     }
+             for (int j = 0; j < data.getSize(i, 2); j++) {
+                 final DataTree tileData = new DataTree(data.getF(i, 2, j));
+                 final Tile tile = Tile.uncrush(tileData);
+                 if (!(tile instanceof MultiTile)) {
+
                  } else {
-                     Log.doc("LOADING TILE: UNRECOGNIZED REFERENCE NAME", "NioLib", LogManager.LogType.ERROR);
+
                  }
              }
              map.setRegion(reg, regx, regy);
          }
-         for (MultiTile multiTile : multiTiles) {
+         for (final MultiTile multiTile : multiTiles) {
              final Point multiTilePoint = multiTile.getRefTilePoint();
              map.setMultiTile(multiTile, multiTilePoint.x, multiTilePoint.y);
          }

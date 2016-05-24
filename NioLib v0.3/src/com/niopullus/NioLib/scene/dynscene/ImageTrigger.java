@@ -36,4 +36,12 @@ public class ImageTrigger extends ImageNode implements Trigger {
         return getHeight() / 2 + yRad;
     }
 
+    public int getXRad() {
+        return xRad;
+    }
+
+    public int getYRad() {
+        return yRad;
+    }
+
 }

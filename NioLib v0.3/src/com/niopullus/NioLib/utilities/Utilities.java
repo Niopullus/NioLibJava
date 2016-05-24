@@ -7,11 +7,14 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.function.ObjDoubleConsumer;
 
 /**
  * Created by Owen on 3/5/2016.
  */
 public abstract class Utilities {
+
+    public static final Object placeHolder = new Object();
 
     public static BufferedImage loadImage(String imageDir) {
         BufferedImage image = null;

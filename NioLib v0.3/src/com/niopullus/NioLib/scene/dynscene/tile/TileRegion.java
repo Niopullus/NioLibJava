@@ -1,44 +1,78 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
+import com.niopullus.NioLib.Crushable;
+import com.niopullus.NioLib.DataTree;
+
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**Maps tiles, tracks MultiTiles
  * Created by Owen on 4/13/2016.
  */
-public class TileRegion {
+public class TileRegion implements Crushable {
 
-    private int size;
-    private ArrayList<MultiTile> multiTiles;
+    private Tilemap tilemap;
     private Tile[][] grid;
 
-    public TileRegion(final int regSize) {
-        this.size = regSize;
-        this.grid = new Tile[regSize][regSize];
-        this.multiTiles = new ArrayList<>();
+    public TileRegion(final Tilemap tilemap) {
+        final int regSize;
+        this.tilemap = tilemap;
+        grid = new Tile[getRegSize()][getRegSize()];
     }
 
     public Tile get(final int x, final int y) {
         return grid[x][y];
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public MultiTile getMultiTile(final int index) {
-        return multiTiles.get(index);
-    }
-
-    public int getMultiTileCount() {
-        return multiTiles.size();
+    public int getRegSize() {
+        return tilemap.getRegSize();
     }
 
     public void set(final Tile tile, final int x, final int y) {
         grid[x][y] = tile;
     }
 
-    public void addMultiTile(final MultiTile multiTile) {
-        multiTiles.add(multiTile);
+    /**
+     * Crush Diagram:
+     * root {
+     *     f - tileBundle {
+     *         i - x
+     *         i - y
+     *         f - tile
+     *     }
+     *     ...
+     * }
+     * @see Crushable
+     */
+
+    public DataTree crush() {
+        final DataTree data = new DataTree();
+        for (int i = 0; i < getRegSize(); i++) {
+            for (int j = 0; j < getRegSize(); j++) {
+                final Tile tile = grid[i][j];
+                if (tile != null) {
+                    final int dir = data.addFolder();
+                    data.addData(i, dir);
+                    data.addData(j, dir);
+                    data.addData(tile, dir);
+                }
+            }
+        }
+        return data;
+    }
+
+    public static TileRegion uncrush(final DataTree data, final Tilemap tilemap) {
+        final TileRegion region = new TileRegion(tilemap);
+        final int tiles = data.getSize();
+        for (int i = 0; i < tiles; i++) {
+            final int x = data.getI(i, 0);
+            final int y = data.getI(i, 1);
+            final DataTree tileData = new DataTree(data.getF(i, 2));
+            final Tile tile = Tile.uncrush(tileData);
+            region.set(tile, x, y);
+        }
+        return region;
     }
 
 }

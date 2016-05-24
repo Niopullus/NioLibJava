@@ -7,7 +7,7 @@ import com.niopullus.NioLib.Boundable;
  */
 public interface Trigger extends Boundable {
 
-    void trigger(CollideData data);
+    void trigger(final CollideData data);
     int getXRad();
     int getYRad();
 

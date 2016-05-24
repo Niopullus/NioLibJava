@@ -5,6 +5,7 @@ import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
+import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.tile.Tilemap;
 import com.niopullus.app.Config;
@@ -142,7 +143,7 @@ public class World {
             }
         }
         final DataTree data = DataTree.decompress(textData);
-        final Node universe = Node.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{2}))), scene);
+        final Node universe = Node.uncrush(new DataTree(data.getF(2)));
         result.setUniverse(universe);
         result.setFgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{0}))), universe.getChild(0), Config.TILESIZE));
         result.setBgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{1}))), universe.getChild(0), Config.TILESIZE));
@@ -171,7 +172,7 @@ public class World {
         }
     }
 
-    public static World generateWorld(final String name, final Scene scene) {
+    public static World generateWorld(final String name, final NodeHandler scene) {
         final Node world = new Node("world");
         final Node universe = new Node("universe");
         final PhysicsHandler physicsHandler = new PhysicsHandler();

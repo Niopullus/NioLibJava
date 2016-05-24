@@ -1,17 +1,21 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
+import com.niopullus.NioLib.Crushable;
 import com.niopullus.NioLib.DataTree;
+import com.niopullus.NioLib.Log;
+import com.niopullus.NioLib.LogManager;
 import com.niopullus.NioLib.scene.dynscene.CollideData;
 import com.niopullus.NioLib.scene.dynscene.Collision;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 
 /**Entry to a tilemap
  * Created by Owen on 3/23/2016.
  */
-public class Tile implements CollideData {
+public class Tile implements CollideData, Crushable {
 
     private DataTree data;
     private Point tileMapPos;
@@ -34,6 +38,10 @@ public class Tile implements CollideData {
 
     private Tile() { //For cloning
         this("unreferenced (clone in progress)");
+    }
+
+    public int getTileType() {
+        return 0;
     }
 
     public double getElasticity() {
@@ -72,9 +80,11 @@ public class Tile implements CollideData {
         return tileMapPos;
     }
 
-    private boolean getMultiTile() {
-        return this instanceof MultiTile;
-    }
+    /**
+     * Gets the in-world position of the (x-center, y-center) of
+     * the MultiTile
+     * @return Position of the given multiTile in real-world coordinates
+     */
 
     public Point getRWPos() {
         final Point result = new Point();
@@ -96,7 +106,7 @@ public class Tile implements CollideData {
         tileMapPos = point;
     }
 
-    public Tile clone(final DataTree data) {
+    public Tile copy(final DataTree data) {
         try {
             final Class<?> tileClass = getClass();
             final Tile tile = (Tile) tileClass.newInstance();
@@ -112,14 +122,51 @@ public class Tile implements CollideData {
     }
 
     public Tile copy() {
-        return clone(data);
+        return copy(data);
     }
 
-    public DataTree compress() { //Converts the data into a DataTree
+    /**
+     * Crush Diagram:
+     * root {
+     *     i - tiletype
+     *     i - id
+     *     f - data
+     * }
+     * @see Crushable
+     */
+
+    public DataTree crush() {
         final DataTree result = new DataTree();
-        result.addData(this.reference.getId());
-        result.addData((ArrayList) this.data.get());
+        result.addData(getTileType());
+        result.addData(reference.getId());
+        result.addData(data);
         return result;
+    }
+
+    public static Tile uncrush(final DataTree data) {
+        final int tiletype = data.getI(0);
+        final int id = data.getI(1);
+        final List dataFolder = data.getF(2);
+        final DataTree tileData = new DataTree(dataFolder);
+        final TileReference reference = TileReference.getTileRef(id);
+        if (reference != null) {
+            if (tiletype == 0) {
+                final Tile sample = reference.getSample();
+                final Tile tile = sample.copy(tileData);
+                return tile;
+            } else if (tiletype == 1) {
+                final MultiTile sample = (MultiTile) reference.getSample();
+                final MultiTile multiTile = (MultiTile) sample.copy(tileData);
+                return multiTile;
+            }
+        } else {
+            complain();
+        }
+        return null;
+    }
+
+    private static void complain() {
+        Log.doc("LOADING TILE: UNRECOGNIZED REFERENCE NAME", "NioLib", LogManager.LogType.ERROR);
     }
 
     public void clickedOn() {

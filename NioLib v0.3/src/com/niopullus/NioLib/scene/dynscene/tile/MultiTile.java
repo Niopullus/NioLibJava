@@ -19,6 +19,14 @@ public class MultiTile extends Tile {
         this.refTilePoint = new Point();
     }
 
+    /**
+     * @return the tile-coordinate location of the bottom left MultiTilePart
+     */
+
+    public int getTileType() {
+        return 1;
+    }
+
     public Point getRefTilePoint() {
         return refTilePoint;
     }
@@ -27,30 +35,53 @@ public class MultiTile extends Tile {
         return (MultiTileReference) super.getReference();
     }
 
+    /**
+     * @return the amount of MultiTileParts-wide the MultiTile is
+     */
+
     public int getWidth() {
         final MultiTileReference ref = getReference();
         return ref.getWidth();
     }
+
+    /**
+     * @return the amount of MultiTileParts-tall the MultiTile is
+     */
 
     public int getHeight() {
         final MultiTileReference ref = getReference();
         return ref.getHeight();
     }
 
-    public BufferedImage getImage(final int part) { //Gets the image of a particular part of the MultiTile
+    /**
+     * @param part index of the part
+     * @return the image of a particular part of the MultiTile
+     */
+
+    public BufferedImage getImage(final int part) {
         final MultiTileReference ref = getReference();
         return ref.getImage(part);
     }
 
-    public MultiTilePart getPart(final int index) { //Gets the part of a certain index (0-[WIDTH * HEIGHT])
+    /**
+     * @param index of the part
+     * @return the MultiTilePart(0-[WIDTH * HEIGHT])
+     */
+
+    public MultiTilePart getPart(final int index) {
         return parts.get(index);
     }
 
-    public int getPartsCount() { //Gets the amount of MultiTileParts (Can also be calculated with (WIDTH * HEIGHT))
+    /**
+     * @return the amount of MultiTileParts (Can also be calculated with
+     * (WIDTH * HEIGHT))
+     */
+
+    public int getPartsCount() {
         return parts.size();
     }
 
-    public Point getRWPos() { //Gets the in-world position of the (x-center, y-center) of the MultiTile
+    public Point getRWPos() {
         final MultiTileReference ref = getReference();
         final Tilemap tilemap = getTilemap();
         final int tileSize = tilemap.getTileSize();

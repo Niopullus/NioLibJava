@@ -1,27 +1,24 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.Boundable;
-import com.niopullus.NioLib.DataPath;
-import com.niopullus.NioLib.DataTree;
-import com.niopullus.NioLib.UUID;
+import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**Polymorphic sprite designed for a Dynamic Scene
  * Created by Owen on 3/5/2016.
  */
-public class Node implements Comparable<Node>, CollideData, Boundable {
+public class Node implements Comparable<Node>, CollideData, Boundable, Crushable {
 
     private UUID id;
     private int x;
     private int y;
     private int z;
-    private ArrayList<Node> children;
+    private List<Node> children;
     private Node parent;
     private boolean isUniverse;
     private boolean isWorld;
@@ -54,7 +51,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable {
     }
 
     public Node(final String name, final int width, final int height) {
-        this.children = new ArrayList<Node>();
+        this.children = new ArrayList<>();
         this.id = new UUID(name);
         this.physicsData = new PhysicsData();
         this.width = width;
@@ -685,18 +682,18 @@ public class Node implements Comparable<Node>, CollideData, Boundable {
         return id.compareTo(node.getId());
     }
 
-    public Node clone() {
+    public Node copy() {
         try {
             final Class<?> nodeClass = getClass();
             final Node node = (Node) nodeClass.newInstance();
-            final ArrayList<Node> newChildren = new ArrayList<Node>();
+            final List<Node> newChildren = new ArrayList();
             for (Node child : children) {
-                newChildren.add(child.clone());
+                newChildren.add(child.copy());
             }
             node.id = new UUID(id.getName());
             node.children = newChildren;
-            node.physicsData = physicsData.clone();
-            node.data = data.clone();
+            node.physicsData = physicsData.copy();
+            node.data = data.copy();
             return node;
         } catch (Exception e) {
             e.printStackTrace();
@@ -704,26 +701,54 @@ public class Node implements Comparable<Node>, CollideData, Boundable {
         return null;
     }
 
-    public static Node decompress(final DataTree data, final DynamicScene scene) {
-        final int id = (Integer) data.get(new DataPath(new int[]{0}));
-        final DataTree nodeData = new DataTree((ArrayList) data.get(new DataPath(new int[]{1})));
-        final int x = (Integer) data.get(new DataPath(new int[]{2, 0}));
-        final int y = (Integer) data.get(new DataPath(new int[]{2, 1}));
-        final PhysicsData physicsData = PhysicsData.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{2, 2}))));
-        final int state = (Integer) data.get(new DataPath(new int[]{2, 3}));
-        final ArrayList children = (ArrayList) data.get(new DataPath(new int[]{3}));
-        final ArrayList<Node> decompressedChildren = new ArrayList<Node>();
+    /**
+     * root {
+     *     i - id
+     *     f - nodeData
+     *     f - details {
+     *         i - x
+     *         i - y
+     *         f - physicsData
+     *         i - nodeState
+     *     }
+     *     f - children
+     * }
+     */
+
+    public DataTree crush() {
+        final DataTree result = new DataTree();
+        result.addData(reference.getId());
+        result.addData(data);
+        result.addFolder();
+        result.addData(x, 2);
+        result.addData(y, 2);
+        result.addData(physicsData, 2);
+        result.addData(isUniverse ? 2: isWorld ? 1: 0, 2);
+        result.addData(children);
+        return result;
+    }
+
+    public static Node uncrush(final DataTree data, final NodeHandler scene) {
+        final int id = data.getI(0);
+        final DataTree nodeData = new DataTree(data.getF(1));
+        final int x = data.getI(2, 0);
+        final int y = data.getI(2, 1);
+        final PhysicsData physicsData = PhysicsData.uncrush(new DataTree(data.getF(2, 2)));
+        final int state = data.getI(2, 3);
+        final List<List> children = data.getF(3);
+        final List<Node> decompressedChildren = new ArrayList<>();
         final NodeReference ref = NodeReference.getNodeRef(id);
         final Node node;
         PhysicsHandler physicsHandler;
-        for (Object child : children) {
-            final Node kid = Node.decompress(new DataTree((ArrayList) child), scene);
+        for (List child : children) {
+            final Node kid = Node.uncrush(new DataTree(child), scene);
             decompressedChildren.add(kid);
         }
         if (ref == null) {
             node = new Node();
         } else {
-            node = ref.getSample().clone();
+            final Node sample = ref.getSample();
+            node = sample.copy();
             node.setXScale(ref.getDefaultXScale());
             node.setYScale(ref.getDefaultYScale());
         }
@@ -731,18 +756,19 @@ public class Node implements Comparable<Node>, CollideData, Boundable {
         node.reference = NodeReference.getNodeRef(id);
         node.scene = scene;
         node.physicsData = physicsData;
+        node.x = x;
+        node.y = y;
         for (Node kid : decompressedChildren) {
             node.addChild(kid);
         }
-        node.x = x;
-        node.y = y;
         switch (state) {
             case 1: node.markWorld(); node.setName("world"); break;
             case 2: node.markUniverse(); node.setName("universe"); break;
         }
         physicsHandler = null;
-        if (scene != null) {
-            physicsHandler = scene.getPhysicsHandler();
+        if (scene != null && scene instanceof DynamicScene) {
+            final DynamicScene dynamicScene = (DynamicScene) scene;
+            physicsHandler = dynamicScene.getPhysicsHandler();
         }
         if (physicsHandler != null && node.physicsData.getEnablePhysics()) {
             physicsHandler.addPhysicsNode(node);

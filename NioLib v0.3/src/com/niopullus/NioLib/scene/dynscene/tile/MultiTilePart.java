@@ -10,17 +10,31 @@ public class MultiTilePart extends Tile {
     private int part;
     private MultiTile multiTile;
 
-    public MultiTilePart(final MultiTile multiTile, final int part) { //part: Index of part in the MultiTile
+    /**
+     * @param multiTile the MultiTile object that this object stands in
+     *                  for
+     * @param part Index of part in the MultiTile
+     */
+
+    public MultiTilePart(final MultiTile multiTile, final int part) {
         super(multiTile.getName());
         this.multiTile = multiTile;
         this.part = part;
     }
 
-    public MultiTile get() { //Gets the MultiTile that this part points to
+    /**
+     * @return the MultiTile that this part points to
+     */
+
+    public MultiTile get() {
         return multiTile;
     }
 
-    public BufferedImage getImage() { //Gets the image of the multitile that corresponds with this part
+    /**
+     * @return the image of the multitile that corresponds with this part
+     */
+
+    public BufferedImage getImage() {
         return multiTile.getImage(part);
     }
 
