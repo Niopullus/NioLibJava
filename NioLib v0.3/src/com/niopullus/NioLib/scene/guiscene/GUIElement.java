@@ -10,7 +10,7 @@ import com.niopullus.NioLib.utilities.Utilities;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-/**
+/**Display item for GUI scenes
  * Created by Owen on 3/6/2016.
  */
 public class GUIElement {
