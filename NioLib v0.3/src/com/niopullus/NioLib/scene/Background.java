@@ -6,11 +6,8 @@ import java.io.Serializable;
 /**
  * Created by Owen on 3/19/2016.
  */
-public class Background implements Serializable {
+public class Background {
 
-    private int x;
-    private int y;
-    private int z;
     private int width;
     private int height;
 
@@ -18,28 +15,9 @@ public class Background implements Serializable {
         this(0, 0);
     }
 
-    public Background(int width, int height) {
-        this(0, 0, width, height);
-    }
-
-    public Background(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.z = 0;
+    public Background(final int width, final int height) {
         this.width = width;
         this.height = height;
-    }
-
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
-    }
-
-    public int getZ() {
-        return this.z;
     }
 
     public int getWidth() {
@@ -50,18 +28,6 @@ public class Background implements Serializable {
         return this.height;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void setZ(int z) {
-        this.z = z;
-    }
-
     public void setWidth(int width) {
         this.width = width;
     }
@@ -70,11 +36,7 @@ public class Background implements Serializable {
         this.height = height;
     }
 
-    public void draw() {
-
-    }
-
-    public void draw(int x, int y) {
+    public void draw(final int x, final int y, final int z) {
 
     }
 

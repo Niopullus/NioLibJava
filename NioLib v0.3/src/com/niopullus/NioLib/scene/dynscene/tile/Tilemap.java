@@ -61,6 +61,10 @@ public class Tilemap implements Crushable {
         return regSize;
     }
 
+    public int getZ() {
+        return z;
+    }
+
     /**
      * Precondition: x - [0-(REGSIZE - 1)], y - [0-(REGSIZE - 1)]
      * @param x in Tile coordinates
@@ -187,14 +191,13 @@ public class Tilemap implements Crushable {
      * @param tile is the tile to be placed into the tilemap
      * @param x is the x tile coordinate of where the bottom left of the
      *          MultiTile
-     * @param y is the y tile coordainte of where the bottom left of the
+     * @param y is the y tile coordinate of where the bottom left of the
      *          MultiTile
      */
 
     public void setMultiTile(final MultiTile tile, final int x, final int y) { //Sets a MultiTile in tile coordinates
         int part = 0;
         final TileRegion reg = getRegion(x, y);
-        reg.addMultiTile(tile);
         tile.setRefTilePoint(new Point(x, y));
         tile.setTilemap(this);
         for (int j = y; j < y + tile.getHeight(); j++) {
@@ -233,7 +236,7 @@ public class Tilemap implements Crushable {
                 if (tile != null && tile.getImage() != null) {
                     final int x = i * tileSize + world.getX();
                     final int y = Main.Height() - ((j + 1) * tileSize) - world.getY();
-                    Draw.image(x, y, z, tileSize, tileSize, tile.getImage());
+                    tile.draw(x, y);
                 }
             }
         }

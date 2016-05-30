@@ -4,6 +4,7 @@ import com.niopullus.NioLib.Crushable;
 import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.Log;
 import com.niopullus.NioLib.LogManager;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.scene.dynscene.CollideData;
 import com.niopullus.NioLib.scene.dynscene.Collision;
 
@@ -21,6 +22,7 @@ public class Tile implements CollideData, Crushable {
     private Point tileMapPos;
     private Tilemap tilemap;
     private TileReference reference;
+    private final int tiletype;
 
     public Tile(final String refName, final DataTree data) {
         TileReference ref = null;
@@ -30,6 +32,7 @@ public class Tile implements CollideData, Crushable {
             ref = TileReference.getTileRef(refName);
         }
         this.reference = ref;
+        this.tiletype = 0;
     }
 
     public Tile(final String refName) {
@@ -41,7 +44,7 @@ public class Tile implements CollideData, Crushable {
     }
 
     public int getTileType() {
-        return 0;
+        return tiletype;
     }
 
     public double getElasticity() {
@@ -179,6 +182,17 @@ public class Tile implements CollideData, Crushable {
 
     public final void causerCollision(Collision collision) {
         //Blank Implementation
+    }
+
+    public void update() {
+        //To be overridden
+    }
+
+    public void draw(final int x, final int y) {
+        final Tilemap tilemap = getTilemap();
+        final int tileSize = tilemap.getTileSize();
+        final int z = tilemap.getZ();
+        Draw.o.image(getImage(), x, y, tileSize, tileSize, z);
     }
 
 }

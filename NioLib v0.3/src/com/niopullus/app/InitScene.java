@@ -2,9 +2,8 @@ package com.niopullus.app;
 
 import com.niopullus.NioLib.scene.guiscene.*;
 
-import java.awt.*;
 
-/**
+/**Automatically presented when a NioLib project is run
  * Created by Owen on 4/3/2016.
  */
 public class InitScene extends GUIScene {

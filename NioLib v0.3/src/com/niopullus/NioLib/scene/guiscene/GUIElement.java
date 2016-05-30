@@ -2,7 +2,7 @@ package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Animation;
 import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.DrawElement;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.*;
 import com.niopullus.NioLib.utilities.Utilities;
@@ -28,25 +28,20 @@ public class GUIElement {
     private int height;
     private int borderWidth;
     private int fontSize;
-    private boolean drawBG;
 
     public GUIElement() {
         this("");
     }
 
-    public GUIElement(String content) {
+    public GUIElement(final String content) {
         this(content, 0 , 0, 0, 0);
     }
 
-    public GUIElement(String content, int x, int y, int width, int height) {
-        this(content, x, y, 0, width, height);
-    }
-
-    public GUIElement(String content, int x, int y, int z, int width, int height) {
+    public GUIElement(final String content, final int x, final int y, final int width, final int height) {
         this.content = content;
         this.x = x;
         this.y = y;
-        this.z = z;
+        this.z = 0;
         this.borderWidth = 10;
         this.borderBG = new ColorBackground(Main.Width() / 2 + this.x - width / 2, Utilities.convertY(Main.Height() / 2 + this.y + height / 2), width, height, Color.BLACK);
         this.bg = new ColorBackground(Main.Width() / 2 + this.x - width / 2 + this.borderWidth, Utilities.convertY(Main.Height() / 2 + this.y + height / 2 - this.borderWidth), width - this.borderWidth * 2, height - this.borderWidth * 2, Color.WHITE);
@@ -54,19 +49,19 @@ public class GUIElement {
         this.height = height;
         this.textColor = Color.BLACK;
         this.fontSize = 30;
-        this.drawBG = true;
         this.fontName = "Bold";
     }
 
     public void draw() {
-        this.borderBG.draw();
-        if (this.drawBG) {
-            this.bg.draw();
-        } else {
-            Draw.rect(this.bg.getX(), this.bg.getY(), this.bg.getWidth(), this.bg.getHeight(), this.z, this.guiScene.getBackgroundColor());
-        }
-        Color color = this.textColor;
-        Draw.text(this.x, this.y, this.z, this.content, new Font(this.fontName, Font.BOLD, this.fontSize), color, DrawElement.MODE_TEXTCENTERED);
+        final int borderX = Main.Width() / 2 - width / 2;
+        final int borderY = Main.Height() / 2 - height / 2;
+        final int bgX = borderX + borderWidth;
+        final int bgY = borderY + borderWidth;
+        final int bgWidth = width - borderWidth * 2;
+        final int bgHeight = height - borderWidth * 2;
+        borderBG.draw(borderX, borderY, z);
+        bg.draw(bgX, bgY, z + 1);
+        Draw.text(x, y, z, content, new Font(this.fontName, Font.BOLD, this.fontSize), color, DrawElement.MODE_TEXTCENTERED);
     }
 
     public void setTextColor(Color color) {
@@ -95,6 +90,12 @@ public class GUIElement {
 
     public void setGUIScene(GUIScene guiScene) {
         this.guiScene = guiScene;
+    }
+
+    private int updateDimensions() {
+        final int bgWidth = width - borderWidth;
+        final int bgHeight = height - borderWidth;
+        
     }
 
     public void setColor(Color color) {

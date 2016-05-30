@@ -12,20 +12,22 @@ public class MultiTile extends Tile {
 
     private List<MultiTilePart> parts;
     private Point refTilePoint;
+    private final int tileType;
 
     public MultiTile(final String refName, final Point refTP) {
         super(refName);
         this.parts = new ArrayList<>();
         this.refTilePoint = new Point();
+        this.tileType = 1;
+    }
+
+    public int getTileType() {
+        return tileType;
     }
 
     /**
      * @return the tile-coordinate location of the bottom left MultiTilePart
      */
-
-    public int getTileType() {
-        return 1;
-    }
 
     public Point getRefTilePoint() {
         return refTilePoint;

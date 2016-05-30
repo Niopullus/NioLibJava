@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.DrawElement;
+import com.niopullus.NioLib.draw.DrawElement;
 
 import java.awt.*;
 import java.util.ArrayList;

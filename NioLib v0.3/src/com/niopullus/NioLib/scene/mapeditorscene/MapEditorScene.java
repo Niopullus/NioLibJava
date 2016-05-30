@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
 import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.DrawElement;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.Scene;
@@ -14,8 +14,6 @@ import com.niopullus.app.InitScene;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.ArrayList;
 
 /**
  * Created by Owen on 4/7/2016.

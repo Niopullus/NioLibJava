@@ -1,14 +1,7 @@
 package com.niopullus.app;
 
 
-import com.niopullus.NioLib.scene.dynscene.tile.MultiTileReference;
-import com.niopullus.NioLib.scene.dynscene.tile.TileReference;
-import com.niopullus.NioLib.utilities.Utilities;
-
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
-/**
+/**Used to tweak aspects of one's NioLib project
  * Created by Owen on 4/7/2016.
  */
 public class Config {
@@ -27,6 +20,7 @@ public class Config {
     public static final String DIRNAME = "Default Dir";
     public static final int FGTILEMAPZ = 50;
     public static final int BGTILEMAPZ = 25;
+    public static final String DEFAULTFONTNAME = "Bold";
 
     public static void init() {
 

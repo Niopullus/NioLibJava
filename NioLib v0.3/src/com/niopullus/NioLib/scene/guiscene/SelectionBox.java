@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import com.niopullus.NioLib.DrawElement;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.Draw;
 
 import java.awt.*;

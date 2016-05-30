@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.DrawElement;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.utilities.EString;
 
 import java.awt.*;

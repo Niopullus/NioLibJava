@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.DrawElement;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.*;
 import com.niopullus.NioLib.Draw;
