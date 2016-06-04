@@ -13,7 +13,8 @@ import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
-/**
+/**Manages elements of a scene designed to serve as a GUI
+ * Buttons should be instance variables so they can be referenced from buttonActivate()
  * Created by Owen on 3/5/2016.
  */
 public class GUIScene extends Scene {
@@ -132,7 +133,8 @@ public class GUIScene extends Scene {
 
     public void pressEnter() {
         if (this.selected >= 0) {
-            this.selectableElements.get(this.selected).selectionAction();
+            final SelectableGUIElement selectedElement = selectableElements.get(selected);
+            buttonActivate(selectedElement);
         }
     }
 
@@ -140,10 +142,8 @@ public class GUIScene extends Scene {
 
     }
 
-    public void buttonActivate(int index) {
-        switch (index) {
-
-        }
+    public void buttonActivate(final SelectableGUIElement element) {
+        //To be overridden
     }
 
     public void setBackgroundColor(Color color) {

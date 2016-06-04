@@ -2,6 +2,7 @@ package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.NodeHandler;
+import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;

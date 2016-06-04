@@ -1,18 +1,21 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.Draw;
+import com.niopullus.NioLib.draw.Draw;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 /**Image Node that can switch through images and animations
  * Created by Owen on 3/27/2016.
  */
 public class DynamicImageNode extends ImageNode {
 
-    private ArrayList<Animation> animations;
+    private List<BufferedImage> images;
+    private List<Animation> animations;
     private int curAnimation;
+    private int curImage;
     private int animationTimer;
     private int currentOffsetMode;
     private boolean indefTimer;
@@ -123,7 +126,7 @@ public class DynamicImageNode extends ImageNode {
             animation.draw(x, y, scaledAWidth, scaledAHeight, getZ(), getAngle());
             animationTimer--;
         } else {
-            Draw.image(getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle(), image);
+            Draw.o.image(image, getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle());
         }
     }
 

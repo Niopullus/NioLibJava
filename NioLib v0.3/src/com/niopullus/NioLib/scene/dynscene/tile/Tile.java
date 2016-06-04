@@ -7,13 +7,17 @@ import com.niopullus.NioLib.LogManager;
 import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.scene.dynscene.CollideData;
 import com.niopullus.NioLib.scene.dynscene.Collision;
+import com.niopullus.NioLib.scene.dynscene.reference.Ref;
+import com.niopullus.NioLib.scene.dynscene.reference.TileReference;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
 
 /**Entry to a tilemap
+ * It is highly discouraged to create instance variables of sub-classes of this class
+ * If this is done, their values will not be saved when the object is uncrushed
+ * In order to subvert this, enter data into the data object of this class
  * Created by Owen on 3/23/2016.
  */
 public class Tile implements CollideData, Crushable {
@@ -29,7 +33,7 @@ public class Tile implements CollideData, Crushable {
         this.data = data;
         this.tileMapPos = new Point();
         if (refName != null) {
-            ref = TileReference.getTileRef(refName);
+            ref = Ref.getTileRef(refName);
         }
         this.reference = ref;
         this.tiletype = 0;
@@ -151,16 +155,14 @@ public class Tile implements CollideData, Crushable {
         final int id = data.getI(1);
         final List dataFolder = data.getF(2);
         final DataTree tileData = new DataTree(dataFolder);
-        final TileReference reference = TileReference.getTileRef(id);
+        final TileReference reference = Ref.getTileRef(id);
         if (reference != null) {
             if (tiletype == 0) {
                 final Tile sample = reference.getSample();
-                final Tile tile = sample.copy(tileData);
-                return tile;
+                return sample.copy(tileData);
             } else if (tiletype == 1) {
                 final MultiTile sample = (MultiTile) reference.getSample();
-                final MultiTile multiTile = (MultiTile) sample.copy(tileData);
-                return multiTile;
+                return sample.copy(tileData);
             }
         } else {
             complain();

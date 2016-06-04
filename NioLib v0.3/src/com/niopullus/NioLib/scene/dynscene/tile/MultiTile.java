@@ -1,5 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
+import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -56,13 +58,14 @@ public class MultiTile extends Tile {
     }
 
     /**
-     * @param part index of the part
+     * @param relX x coordinate relative to the MultiTile
+     * @param relY y coordinate relative to the MultiTile
      * @return the image of a particular part of the MultiTile
      */
 
-    public BufferedImage getImage(final int part) {
+    public BufferedImage getImage(final int relX, final int relY) {
         final MultiTileReference ref = getReference();
-        return ref.getImage(part);
+        return ref.getImage(relX, relY);
     }
 
     /**
@@ -81,6 +84,11 @@ public class MultiTile extends Tile {
 
     public int getPartsCount() {
         return parts.size();
+    }
+
+    public Point getAnchor() {
+        final MultiTileReference reference = getReference();
+        return reference.getAnchor();
     }
 
     public Point getRWPos() {

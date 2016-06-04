@@ -1,7 +1,6 @@
 package com.niopullus.NioLib;
 
 import com.niopullus.NioLib.scene.SceneManager;
-import com.niopullus.NioLib.scene.dynscene.tile.TileReference;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
 

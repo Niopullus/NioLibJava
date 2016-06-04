@@ -23,7 +23,7 @@ public class Config {
     public static final String DEFAULTFONTNAME = "Bold";
 
     public static void init() {
-
+        //Register tiles, nodes, program setup
     }
 
 }

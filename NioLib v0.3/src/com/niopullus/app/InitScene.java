@@ -8,11 +8,18 @@ import com.niopullus.NioLib.scene.guiscene.*;
  */
 public class InitScene extends GUIScene {
 
+    /**
+     * Scene setup
+     */
     public InitScene() {
 
     }
 
-    public void buttonActivate(int index) {
+    /**
+     * Runs when a button is activated
+     * @param element that was selected by the mouse/key board
+     */
+    public void buttonActivate(final SelectableGUIElement element) {
 
     }
 

@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-/**Cardinal direction
+/**Cardinal directions
  * Created by Owen on 3/23/2016.
  */
 public enum Dir {

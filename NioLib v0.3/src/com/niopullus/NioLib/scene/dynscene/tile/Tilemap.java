@@ -3,6 +3,7 @@ package com.niopullus.NioLib.scene.dynscene.tile;
 import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Node;
+import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
 import com.niopullus.NioLib.utilities.SignedContainer;
 
 import java.awt.*;
@@ -172,7 +173,7 @@ public class Tilemap implements Crushable {
         }
         reg = map.get(xReg, yReg);
         if (reg == null) {
-            map.set(xReg, yReg, new TileRegion(regSize));
+            map.set(xReg, yReg, new TileRegion(this));
             reg = map.get(xReg, yReg);
         }
         reg.set(tile, pointInRegion.x, pointInRegion.y);
@@ -187,23 +188,33 @@ public class Tilemap implements Crushable {
         }
     }
 
-    /**
-     * @param tile is the tile to be placed into the tilemap
-     * @param x is the x tile coordinate of where the bottom left of the
-     *          MultiTile
-     * @param y is the y tile coordinate of where the bottom left of the
-     *          MultiTile
-     */
+    public void setMultiTile(final MultiTile multiTile, final int x, final int y) {
+        for (int i = 0; i < multiTile.getWidth(); i++) {
+            for (int j = 0; j < multiTile.getHeight(); j++) {
+                if (multiTile.getImage(i, j) != null) {
+                    setTile(new MultiTilePart(multiTile, i, j), x + i, y + j);
+                }
+            }
+        }
+    }
 
-    public void setMultiTile(final MultiTile tile, final int x, final int y) { //Sets a MultiTile in tile coordinates
-        int part = 0;
-        final TileRegion reg = getRegion(x, y);
-        tile.setRefTilePoint(new Point(x, y));
-        tile.setTilemap(this);
-        for (int j = y; j < y + tile.getHeight(); j++) {
-            for (int i = x; i < x + tile.getWidth(); i++) {
-                setTile(new MultiTilePart(tile, part), i, j);
-                part++;
+    /**
+     * Only to be called after uncrushing the tilemap
+     */
+    private void expandMultiTiles() {
+        for (int i = -map.getWidth(); i < map.getWidth(); i++) {
+            for (int j = -map.getHeight(); j < map.getHeight(); j++) {
+                final TileRegion region = map.get(i, j);
+                for (int k = 0; k < regSize; k++) {
+                    for (int l = 0; l < regSize; l++) {
+                        final Tile tile = region.get(k, l);
+                        if (tile != null && tile instanceof MultiTile) {
+                            final MultiTile multiTile = (MultiTile) tile;
+                            region.set(null, k, l);
+                            setMultiTile(multiTile, i * regSize + k, j * regSize + l);
+                        }
+                    }
+                }
             }
         }
     }
@@ -265,7 +276,11 @@ public class Tilemap implements Crushable {
      *     i - region size
      *     i - width
      *     i - height
-     *     f - region
+     *     f - regionBundle {
+     *         i - x
+     *         i - y
+     *         f - region
+     *     }
      *     ...
      * }
      * @see Crushable
@@ -280,41 +295,32 @@ public class Tilemap implements Crushable {
              for (int j = -map.getHeight(); j < map.getHeight(); j++) {
                  final TileRegion reg = map.get(i, j);
                  if (reg != null) {
-
+                     final int dir = data.addFolder();
+                     data.addData(i, dir);
+                     data.addData(j, dir);
+                     data.addData(reg, dir);
                  }
              }
         }
         return data;
     }
 
-     public static Tilemap uncrush(final DataTree data, final Node world, final int tileSize) { //Converts a DataTree into a tilemap
+     public static Tilemap uncrush(final DataTree data, final Node world, final int tileSize) {
          final int regSize = data.getI(0);
          final int width = data.getI(1);
          final int height = data.getI(2);
          final int dataSize = data.getSize();
          final Tilemap map = new Tilemap(tileSize, regSize, width, height);
-         final List<MultiTile> multiTiles = new ArrayList<>();
          map.setZ(world.getZ());
          map.setWorld(world);
          for (int i = 3; i < dataSize; i++) {
-             final int regx = data.getI(i, 0);
-             final int regy = data.getI(i, 1);
-             final TileRegion reg = new TileRegion(regSize);
-             for (int j = 0; j < data.getSize(i, 2); j++) {
-                 final DataTree tileData = new DataTree(data.getF(i, 2, j));
-                 final Tile tile = Tile.uncrush(tileData);
-                 if (!(tile instanceof MultiTile)) {
-
-                 } else {
-
-                 }
-             }
-             map.setRegion(reg, regx, regy);
+             final int x = data.getI(i, 0);
+             final int y = data.getI(i, 1);
+             final DataTree regionData = new DataTree(data.getF(i, 2));
+             final TileRegion region = TileRegion.uncrush(regionData, map);
+             map.setRegion(region, x, y);
          }
-         for (final MultiTile multiTile : multiTiles) {
-             final Point multiTilePoint = multiTile.getRefTilePoint();
-             map.setMultiTile(multiTile, multiTilePoint.x, multiTilePoint.y);
-         }
+         map.expandMultiTiles();
          return map;
      }
 

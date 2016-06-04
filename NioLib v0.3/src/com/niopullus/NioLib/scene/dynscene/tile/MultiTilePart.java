@@ -1,5 +1,8 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
+import com.niopullus.NioLib.DataTree;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**Tile that stands in for a part of a MultiTile
@@ -7,19 +10,22 @@ import java.awt.image.BufferedImage;
  */
 public class MultiTilePart extends Tile {
 
-    private int part;
+    private int relX;
+    private int relY;
     private MultiTile multiTile;
 
     /**
      * @param multiTile the MultiTile object that this object stands in
      *                  for
-     * @param part Index of part in the MultiTile
+     * @param relX x coordinate of this part relative to the MultiTile
+     * @param relY y coordinate of this part relative to the MultiTile
      */
 
-    public MultiTilePart(final MultiTile multiTile, final int part) {
+    public MultiTilePart(final MultiTile multiTile, final int relX, final int relY) {
         super(multiTile.getName());
         this.multiTile = multiTile;
-        this.part = part;
+        this.relX = relX;
+        this.relY = relY;
     }
 
     /**
@@ -35,7 +41,16 @@ public class MultiTilePart extends Tile {
      */
 
     public BufferedImage getImage() {
-        return multiTile.getImage(part);
+        return multiTile.getImage(relX, relY);
+    }
+
+    public DataTree crush() {
+        final Point anchor = multiTile.getAnchor();
+        if (anchor.equals(new Point(relX, relY))) {
+            return multiTile.crush();
+        } else {
+            return null;
+        }
     }
 
 }

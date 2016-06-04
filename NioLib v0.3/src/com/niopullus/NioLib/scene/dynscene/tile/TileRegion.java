@@ -3,10 +3,6 @@ package com.niopullus.NioLib.scene.dynscene.tile;
 import com.niopullus.NioLib.Crushable;
 import com.niopullus.NioLib.DataTree;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 /**Maps tiles, tracks MultiTiles
  * Created by Owen on 4/13/2016.
  */
@@ -52,10 +48,13 @@ public class TileRegion implements Crushable {
             for (int j = 0; j < getRegSize(); j++) {
                 final Tile tile = grid[i][j];
                 if (tile != null) {
-                    final int dir = data.addFolder();
-                    data.addData(i, dir);
-                    data.addData(j, dir);
-                    data.addData(tile, dir);
+                    final DataTree tileData = tile.crush();
+                    if (tileData != null) {
+                        final int dir = data.addFolder();
+                        data.addData(i, dir);
+                        data.addData(j, dir);
+                        data.addData(tileData, dir);
+                    }
                 }
             }
         }
