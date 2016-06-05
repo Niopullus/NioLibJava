@@ -18,6 +18,14 @@ public class DynamicTrigger extends DynamicImageNode implements Trigger {
         //To be overridden
     }
 
+    public int getXRad() {
+        return xRad;
+    }
+
+    public int getYRad() {
+        return yRad;
+    }
+
     public int getCx() {
         return getX() + getWidth() / 2 - xRad;
     }

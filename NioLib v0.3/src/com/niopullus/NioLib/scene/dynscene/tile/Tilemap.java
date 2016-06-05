@@ -232,7 +232,7 @@ public class Tilemap implements Crushable {
         return new Point(convertedX, convertedY);
     }
 
-    public int convertLengthToTileLength(final int length) { //Converts a magnitude from world to tile
+    public int convertLengthToTileLength(final int length) {
         return (int) Math.floor((double) length / tileSize);
     }
 

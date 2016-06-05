@@ -214,25 +214,4 @@ public class GUIScene extends Scene {
         }
     }
 
-/**
-    public void setWidth(int width) {
-        super.setWidth(width);
-        this.background.setWidth(width);
-    }
-
-    public void setHeight(int height) {
-        super.setHeight(height);
-        this.background.setHeight(height);
-    }
-
-    public void setDx(int x) {
-        super.setDx(x);
-        this.background.setX(x);
-    }
-
-    public void setDy(int y) {
-        super.setDy(y);
-        this.background.setY(y);
-    }
-**/
 }

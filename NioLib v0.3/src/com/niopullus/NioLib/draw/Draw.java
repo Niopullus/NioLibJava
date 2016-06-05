@@ -1,6 +1,7 @@
 package com.niopullus.NioLib.draw;
 
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -113,6 +114,13 @@ public class Draw {
             final int nY = Main.Height() * 3 / 2 - height * 3 / 2 - y;
             return new Point(nX, nY);
         }
+
+    }
+
+    public static enum DrawMode {
+
+        ORIGIN,
+        CENTERED
 
     }
 

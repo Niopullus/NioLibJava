@@ -1,8 +1,7 @@
 package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.draw.DrawElement;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.*;
 import com.niopullus.NioLib.utilities.Utilities;
@@ -21,6 +20,7 @@ public class GUIElement {
     private Background bg;
     private Color textColor;
     private GUIScene guiScene;
+    private Draw.DrawMode drawMode;
     private int x;
     private int y;
     private int z;
@@ -53,15 +53,15 @@ public class GUIElement {
     }
 
     public void draw() {
-        final int borderX = Main.Width() / 2 - width / 2;
-        final int borderY = Main.Height() / 2 - height / 2;
-        final int bgX = borderX + borderWidth;
-        final int bgY = borderY + borderWidth;
-        final int bgWidth = width - borderWidth * 2;
-        final int bgHeight = height - borderWidth * 2;
-        borderBG.draw(borderX, borderY, z);
-        bg.draw(bgX, bgY, z + 1);
-        Draw.text(x, y, z, content, new Font(this.fontName, Font.BOLD, this.fontSize), color, DrawElement.MODE_TEXTCENTERED);
+        if (drawMode == Draw.DrawMode.ORIGIN) {
+            Draw.c.text(content, fontName, textColor, fontSize, x, y, z);
+        } else if (drawMode == Draw.DrawMode.CENTERED) {
+
+        }
+    }
+
+    public void setDrawMode(final Draw.DrawMode mode) {
+        drawMode = mode;
     }
 
     public void setTextColor(Color color) {
