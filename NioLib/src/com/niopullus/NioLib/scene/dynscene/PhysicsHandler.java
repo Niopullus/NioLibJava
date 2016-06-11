@@ -6,24 +6,24 @@ import com.niopullus.NioLib.utilities.Utilities;
 import com.niopullus.app.Config;
 
 import java.awt.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**Manages gravity, friction, and Node movement
  * Created by Owen on 3/10/2016.
  */
-public class PhysicsHandler implements Serializable {
+public class PhysicsHandler {
 
-    private ArrayList<Node> nodes;
-    private ArrayList<Collision> collisions;
+    private List<Node> nodes;
+    private List<Collision> collisions;
     private Tilemap tilemap;
     private NodePartitionManager partition;
     private double gravitation;
     private boolean pause;
 
     public PhysicsHandler() {
-        this.nodes = new ArrayList<Node>();
+        this.nodes = new ArrayList<>();
         this.partition = new NodePartitionManager(Config.NODEPARTSIZE, Config.NODEPARTRAD, Config.NODEPARTRAD);
         this.gravitation = -10;
         this.pause = false;
@@ -34,7 +34,7 @@ public class PhysicsHandler implements Serializable {
         return nodes.size();
     }
 
-    public ArrayList<Collision> getCollisions() {
+    public List<Collision> getCollisions() {
         return collisions;
     }
 
@@ -78,7 +78,7 @@ public class PhysicsHandler implements Serializable {
 
     public void tick() {
         if (!pause) {
-            collisions = new ArrayList<Collision>();
+            collisions = new ArrayList<>();
             updateNodes();
             executeMoveCalcs();
             gravity();
