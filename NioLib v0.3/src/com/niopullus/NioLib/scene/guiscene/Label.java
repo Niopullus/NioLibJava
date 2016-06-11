@@ -1,20 +1,14 @@
 package com.niopullus.NioLib.scene.guiscene;
 
+import java.awt.*;
+
 /**
  * Created by Owen on 3/6/2016.
  */
 public class Label extends GUIElement {
 
-    public Label() {
-        this(new String(), 0, 0, 0, 0, 0);
-    }
-
-    public Label(String content, int x, int y, int width, int height) {
-        this(content, x, y, 0, width, height);
-    }
-
-    public Label(String content, int x, int y, int z, int width, int height) {
-        super(content, x, y, z, width, height);
+    public Label(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap) {
+        super(content, font, x, y, widthGap, heightGap);
     }
 
 }

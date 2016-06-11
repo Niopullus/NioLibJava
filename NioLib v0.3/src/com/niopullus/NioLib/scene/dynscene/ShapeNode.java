@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Main;
-import com.niopullus.NioLib.Draw;
+import com.niopullus.NioLib.draw.Draw;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -22,7 +22,7 @@ public class ShapeNode extends Node {
     }
 
     public void draw() {
-        Draw.rect(getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle(), color);
+        Draw.o.rect(color, getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle());
     }
 
 }

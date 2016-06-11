@@ -1,8 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.DataPath;
-import com.niopullus.NioLib.DataTree;
-import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.NodeHandler;
@@ -97,56 +95,18 @@ public class World {
 
     public static World loadWorld(final String fileName, final DynamicScene scene) {
         final World result = new World();
-        File worldFile;
-        String textData = "";
-        worldFile = new File("C:\\" + Config.DIRNAME + "\\worlds\\" + fileName);
-        if (!worldFile.exists()) {
-            try {
-                final String path = "builtinworlds";
-                String jarPath = World.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-                jarPath = jarPath.replace('/', '\\');
-                jarPath = jarPath.replace("%20", " ");
-                final File jarFile = new File(jarPath.substring(1));
-                if (jarFile.isFile()) {  // Run with JAR file
-                    InputStream in = (new Node("temp")).getClass().getClassLoader().getResourceAsStream(path + "/" + fileName);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    String line = null;
-                    while ((line = reader.readLine()) != null) {
-                        textData += line;
-                    }
-                    reader.close();
-                } else { // Run with IDE
-                    worldFile = new File("C:\\" + Config.DIRNAME + "\\worlds\\" + fileName);
-                    if (!worldFile.exists()) {
-                        worldFile = new File("Resources\\" + path + "\\" + fileName);
-                    }
-                    BufferedReader reader = new BufferedReader(new FileReader(worldFile));
-                    List<String> lines = Files.readAllLines(worldFile.toPath());
-                    reader.close();
-                    for (String s : lines) {
-                        textData += s;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(worldFile));
-                List<String> lines = Files.readAllLines(worldFile.toPath());
-                reader.close();
-                for (String s : lines) {
-                    textData += s;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        String textData;
+        final DataTree data;
+        final Node universe;
+        textData = Data.getTextFromFile("worlds/" + fileName);
+        if (textData == null) {
+            textData = Data.getTextFromJar("worlds/" + fileName);
         }
-        final DataTree data = DataTree.decompress(textData);
-        final Node universe = Node.uncrush(new DataTree(data.getF(2)));
+        data = DataTree.decompress(textData);
+        universe = Node.uncrush(new DataTree(data.getF(2)), scene);
         result.setUniverse(universe);
-        result.setFgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{0}))), universe.getChild(0), Config.TILESIZE));
-        result.setBgTilemap(Tilemap.decompress(new DataTree((ArrayList) data.get(new DataPath(new int[]{1}))), universe.getChild(0), Config.TILESIZE));
+        result.setFgTilemap(Tilemap.uncrush(new DataTree((List) data.get(0)), universe.getChild(0), Config.TILESIZE));
+        result.setBgTilemap(Tilemap.uncrush(new DataTree((List) data.get(1)), universe.getChild(0), Config.TILESIZE));
         return result;
     }
 
@@ -154,21 +114,21 @@ public class World {
         return loadWorld(fileName, null);
     }
 
-    public static void saveWorld(World world) {
-        DataTree data = new DataTree();
-        Tilemap fg = world.getFgTilemap();
-        Tilemap bg = world.getBgTilemap();
-        data.addData((ArrayList) fg.compress().get());
-        data.addData((ArrayList) bg.compress().get());
-        String textData = data.compress();
-        BufferedWriter writer = null;
-        try {
-            File worldFile = new File("C:\\" + Config.DIRNAME + "\\worlds\\" + world.getName() + ".niolibworld");
-            writer = new BufferedWriter(new FileWriter(worldFile));
-            writer.write(textData);
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static void saveWorld(final World world, Data.DataRoot root) {
+        final DataTree data = new DataTree();
+        final Tilemap fg = world.getFgTilemap();
+        final Tilemap bg = world.getBgTilemap();
+        final String textData;
+        data.addData(fg);
+        data.addData(bg);
+        textData = data.compress();
+        final String dir = "worlds/" + world.getName();
+        if (root == Data.DataRoot.FILE) {
+            Data.createFileFromFile(dir);
+            Data.writeToFileFromFile(dir, textData);
+        } else if (root == Data.DataRoot.JAR) {
+            Data.createFileFromJar(dir);
+            Data.writeToFileFromFile(dir, textData);
         }
     }
 
@@ -176,7 +136,7 @@ public class World {
         final Node world = new Node("world");
         final Node universe = new Node("universe");
         final PhysicsHandler physicsHandler = new PhysicsHandler();
-        final Background background = new ColorBackground(0, 0, Main.Width(), Main.Height(), Color.WHITE);
+        final Background background = new ColorBackground(Color.WHITE, Main.Width(), Main.Height());
         final Tilemap fgtilemap = new Tilemap(Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD);
         final Tilemap bgtilemap = new Tilemap(Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD, Config.TILEMAPRAD);
         final World storedWorld = new World();

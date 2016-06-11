@@ -1,6 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.NodeHandler;
@@ -13,6 +14,7 @@ import com.niopullus.app.Config;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 /**A scene variant that is designed to support physics, tilemaps, and nodes
  * Created by Owen on 3/5/2016.
@@ -121,7 +123,7 @@ public class DynamicScene extends Scene implements NodeHandler {
     }
 
     public final void tick() { //Called at the same rate that the game loop runs
-        final ArrayList<Collision> collisions = physicsHandler.getCollisions();
+        final List<Collision> collisions = physicsHandler.getCollisions();
         if (physicsHandler != null) {
             physicsHandler.tick();
         }
@@ -135,10 +137,10 @@ public class DynamicScene extends Scene implements NodeHandler {
             world.setX(x);
             world.setY(y);
         }
-        tock();
+        update();
     }
 
-    public void tock() {
+    public void update() {
         //To be overridden
     }
 
@@ -152,7 +154,7 @@ public class DynamicScene extends Scene implements NodeHandler {
 
     public final void draw() {
         final Scene subscene;
-        background.draw();
+        background.draw(0, 0, 0, Draw.DrawMode.ORIGIN);
         fgTilemap.draw();
         bgTilemap.draw();
         universe.drawNode();
@@ -196,13 +198,6 @@ public class DynamicScene extends Scene implements NodeHandler {
 
     public void togglePause() {
         physicsHandler.togglePause();
-    }
-
-    public void subSceneUpdate() {
-        background.setX(getDx());
-        background.setY(getDy());
-        background.setWidth(getWidth());
-        background.setHeight(getHeight());
     }
 
     public void addChildInWorld(final Node node) {

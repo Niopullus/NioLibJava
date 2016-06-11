@@ -3,6 +3,7 @@ package com.niopullus.NioLib.scene.dynscene;
 import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
+import com.niopullus.NioLib.scene.dynscene.reference.Ref;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
@@ -738,7 +739,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         final int state = data.getI(2, 3);
         final List<List> children = data.getF(3);
         final List<Node> decompressedChildren = new ArrayList<>();
-        final NodeReference ref = NodeReference.getNodeRef(id);
+        final NodeReference ref = Ref.getNodeRef(id);
         final Node node;
         PhysicsHandler physicsHandler;
         for (List child : children) {
@@ -754,7 +755,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
             node.setYScale(ref.getDefaultYScale());
         }
         node.data = nodeData;
-        node.reference = NodeReference.getNodeRef(id);
+        node.reference = Ref.getNodeRef(id);
         node.scene = scene;
         node.physicsData = physicsData;
         node.x = x;

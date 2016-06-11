@@ -1,17 +1,17 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import com.niopullus.NioLib.Draw;
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
+import com.niopullus.NioLib.scene.dynscene.Dir;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
-import java.util.stream.IntStream;
+import java.util.List;
 
 /**Manages elements of a scene designed to serve as a GUI
  * Buttons should be instance variables so they can be referenced from buttonActivate()
@@ -19,127 +19,96 @@ import java.util.stream.IntStream;
  */
 public class GUIScene extends Scene {
 
-    private ArrayList<GUIElement> elements;
-    private ArrayList<SelectableGUIElement> selectableElements;
+    private List<GUIElement> elements;
+    private List<SelectableGUIElement> selectableElements;
     private Background background;
-    private int selected;
-    private boolean drawBG;
+    private SelectableGUIElement selected;
+    private int selectedIndex;
     private boolean invertDirection;
 
     public GUIScene() {
         super();
-        this.elements = new ArrayList<GUIElement>();
-        this.selectableElements = new ArrayList<SelectableGUIElement>();
-        this.selected = -1;
-        this.drawBG = true;
+        this.elements = new ArrayList<>();
+        this.selectableElements = new ArrayList<>();
+        this.selected = null;
         this.invertDirection = false;
-        this.background = new ColorBackground(Main.Width(), Main.Height(), Color.GRAY);
+        this.background = new ColorBackground(Color.GRAY, Main.Width(), Main.Height());
+        this.selectedIndex = 0;
     }
 
-    public GUIScene(Scene superscene) {
-        super(superscene);
-        this.elements = new ArrayList<GUIElement>();
-        this.selectableElements = new ArrayList<SelectableGUIElement>();
-        this.background = new ColorBackground(Main.Width(), Main.Height(), Color.GRAY);
-        this.selected = -1;
-        this.drawBG = true;
-        this.invertDirection = false;
-    }
-
-    @Override
     public final void draw() {
-        if (this.drawBG) {
-            this.background.draw();
-        }
-        for (GUIElement guiElement : this.elements) {
+        background.draw(0, 0, 0, Draw.DrawMode.ORIGIN);
+        for (GUIElement guiElement : elements) {
             guiElement.draw();
         }
-        if (this.getSubscene() != null) {
-            this.getSubscene().draw();
+        if (getSubscene() != null) {
+            final Scene subScene = getSubscene();
+            subScene.draw();
         }
     }
 
-    public void tick() {
-
+    public void keyPress(final KeyPack pack) {
+        switch (pack.code) {
+            case KeyEvent.VK_UP: arrow(Dir.N); break;
+            case KeyEvent.VK_DOWN: arrow(Dir.S); break;
+            case KeyEvent.VK_ENTER: activate(); break;
+            default: selected.keyPress(pack);
+        }
     }
 
-    @Override
-    public void keyPress(KeyEvent k) {
-        int key = k.getKeyCode();
-        if (this.getSubscene() != null && this.getSubscene() instanceof GUIScene) {
-            this.getSubscene().keyPress(k);
-        } else {
-            switch (key) {
-                case KeyEvent.VK_UP: pressUp(false); break;
-                case KeyEvent.VK_DOWN: pressDown(false); break;
-                case KeyEvent.VK_ENTER: pressEnter(); break;
-                default: this.selectableElements.get(this.selected).keyPress(k);
+    private void arrow(final Dir dir) {
+        if (dir == Dir.N) {
+            if (!invertDirection) {
+                pressUp();
+            } else {
+                pressDown();
+            }
+        } else if (dir == Dir.S) {
+            if (!invertDirection) {
+                pressDown();
+            } else {
+                pressUp();
             }
         }
     }
 
-    @Override
-    public void keyReleased(KeyEvent key) {
-
-    }
-
-    public void addElement(GUIElement guiElement) {
-        this.elements.add(guiElement);
+    public void addElement(final GUIElement guiElement) {
+        elements.add(guiElement);
         guiElement.setGUIScene(this);
         if (guiElement instanceof SelectableGUIElement) {
-            this.selectableElements.add((SelectableGUIElement) guiElement);
-            guiElement.setIndex(this.selectableElements.size() - 1);
-            if (this.selected == -1) {
-                this.selected = 0;
-                this.selectableElements.get(0).select();
+            selectableElements.add((SelectableGUIElement) guiElement);
+        }
+    }
+
+    public void pressDown() {
+        if (selected.isOverrideArrows()) {
+            selected.downArrow();
+        } else if (selected != null && selectedIndex - 1 >= 0) {
+            selected.deselect();
+            selectedIndex--;
+            selected = selectableElements.get(selectedIndex);
+            selected.select();
+        }
+    }
+
+    public void pressUp() {
+        if (selected.isOverrideArrows()) {
+            selected.upArrow();
+        } else if (selected != null && selectedIndex + 1 < selectableElements.size()) {
+            selected.deselect();
+            selectedIndex++;
+            selected = selectableElements.get(selectedIndex);
+            selected.select();
+        }
+    }
+
+    public void activate() {
+        if (selected != null) {
+            final Rectangle rect = selected.getRectOrigin();
+            if (Utilities.pointInRect(rect, getMousePos())) {
+                selected.activate();
             }
         }
-    }
-
-    public void pressDown(boolean override) {
-        if (this.invertDirection && !override) {
-            this.pressUp(true);
-            return;
-        }
-        if (this.getSubscene() != null && this.getSubscene() instanceof GUIScene) {
-            ((GUIScene) (this.getSubscene())).pressDown(true);
-        } else {
-            if (this.selectableElements.get(this.selected).doOverrideArrows()) {
-                this.selectableElements.get(this.selected).downArrow();
-            } else if (this.selected - 1 >= 0) {
-                this.selectableElements.get(this.selected).deselect();
-                this.selected--;
-                this.selectableElements.get(this.selected).select();
-            }
-        }
-    }
-
-    public void pressUp(boolean override) {
-        if (this.invertDirection && !override) {
-            this.pressDown(true);
-        }
-        if (this.getSubscene() != null && this.getSubscene() instanceof GUIScene) {
-            ((GUIScene) (this.getSubscene())).pressUp(true);
-        } else {
-            if (this.selectableElements.get(this.selected).doOverrideArrows()) {
-                this.selectableElements.get(this.selected).upArrow();
-            } else if (this.selected + 1 < this.selectableElements.size()) {
-                this.selectableElements.get(this.selected).deselect();
-                this.selected++;
-                this.selectableElements.get(this.selected).select();
-            }
-        }
-    }
-
-    public void pressEnter() {
-        if (this.selected >= 0) {
-            final SelectableGUIElement selectedElement = selectableElements.get(selected);
-            buttonActivate(selectedElement);
-        }
-    }
-
-    private void debug() {
-
     }
 
     public void buttonActivate(final SelectableGUIElement element) {
@@ -147,70 +116,73 @@ public class GUIScene extends Scene {
     }
 
     public void setBackgroundColor(Color color) {
-        ((ColorBackground) this.background).setColor(color);
+        background.setColor(color);
     }
 
     public Color getBackgroundColor() {
-        return ((ColorBackground) this.background).getColor();
+        return background.getColor();
     }
 
-    public void setBackground(Background background) {
+    public void setBackground(final Background background) {
         this.background = background;
     }
 
-    public int getSelected() {
-        return this.selected;
+    public SelectableGUIElement getSelected() {
+        return selected;
     }
 
-    public void setSelected(int index) {
-        this.selected = index;
+    public void setSelected(final int index) {
+        selected = selectableElements.get(index);
+    }
+
+    public void setSelected(final SelectableGUIElement element) {
+        selected = element;
     }
 
     public void enableInvertDirection() {
-        this.invertDirection = true;
+        invertDirection = true;
     }
 
     public void disableInvertDirection() {
-        this.invertDirection = false;
+        invertDirection = false;
     }
 
     public void toggleInvertDirection() {
-        this.invertDirection = !this.invertDirection;
+        invertDirection = !invertDirection;
     }
 
-    public void mouseMove() {
-        if (this.selectableElements.size() > 0) {
-            if (!(this.selectableElements.get(this.selected).doOverrideArrows())) {
-                for (SelectableGUIElement element: this.selectableElements) {
-                    if (Utilities.pointInRect(element.getX() + Main.Width() / 2 - element.getWidth() / 2, Utilities.convertY(this.background.getHeight() / 2 + element.getY() + element.getHeight() / 2), element.getWidth(), element.getHeight(), new Point(this.getMousePos().x - this.getDx(), this.getMousePos().y))) {
+    public void mouseMove(final MousePack pack) {
+        if (selectableElements.size() > 0) {
+            if (!selected.isOverrideMouse()) {
+                for (SelectableGUIElement element: selectableElements) {
+                    final Rectangle rect = element.getRectOrigin();
+                    if (Utilities.pointInRect(rect, getMousePos())) {
                         element.select();
-                        this.selected = element.getIndex();
+                        selected = element;
                     } else {
-                        if (this.selected != element.getIndex()) {
+                        if (selected != element) {
                             element.deselect();
                         }
                     }
                 }
+            } else {
+                selected.moveMouse(pack);
             }
         }
     }
 
-    public void mousePress() {
-        if (this.selectableElements.size() > 0) {
-            if (Utilities.pointInRect(this.selectableElements.get(this.selected).getX() + Main.Width() / 2 - this.selectableElements.get(this.selected).getWidth() / 2, Utilities.convertY(this.background.getHeight() / 2 + this.selectableElements.get(this.selected).getY() + this.selectableElements.get(this.selected).getHeight() / 2), this.selectableElements.get(this.selected).getWidth(), this.selectableElements.get(this.selected).getHeight(), new Point(this.getMousePos().x - this.getDx(), this.getMousePos().y))) {
-                this.pressEnter();
-            }
+    public void mousePress(final MousePack pack) {
+        if (!selected.isOverrideMouse()) {
+            activate();
+        } else {
+            selected.mousePress(pack);
         }
+
     }
 
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        if (this.selectableElements.get(selected) instanceof SelectionBox) {
-            int notches = e.getWheelRotation();
-            if (notches < 0) {
-                this.selectableElements.get(this.selected).upArrow();
-            } else if (notches > 0) {
-                this.selectableElements.get(this.selected).downArrow();
-            }
+    public void mouseWheelMoved(final MouseWheelPack pack) {
+        if (selected.isOverrideMouseWheel()) {
+            selected.moveMouseWheel(pack);
         }
     }
 

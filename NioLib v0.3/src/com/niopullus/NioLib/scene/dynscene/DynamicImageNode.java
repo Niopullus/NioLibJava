@@ -123,7 +123,7 @@ public class DynamicImageNode extends ImageNode {
             final int yOff = deriveYOffsetFromMode(currentOffsetMode, yDif);
             final int x = getTX() - xOff;
             final int y = getTY() - yOff;
-            animation.draw(x, y, scaledAWidth, scaledAHeight, getZ(), getAngle());
+            Draw.o.animation(animation, x, y, scaledAWidth, scaledAHeight, getZ(), getAngle());
             animationTimer--;
         } else {
             Draw.o.image(image, getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle());

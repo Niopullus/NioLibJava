@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.Draw;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.utilities.EString;
 
@@ -57,8 +57,7 @@ public class LabelNode extends Node {
     }
 
     public void draw() {
-        final Font font = new Font(fontName, Font.BOLD, fontSize);
-        Draw.text(getX(), getY(), getZ(), content.get(), font, color, DrawElement.MODE_TEXT);
+        Draw.o.text(content.get(), color, fontName, fontSize, getX(), getY(), getZ());
     }
 
 }

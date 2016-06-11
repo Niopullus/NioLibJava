@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.Draw;
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.geom.AffineTransform;
@@ -33,7 +33,7 @@ public class ImageNode extends Node {
     }
 
     public void draw() {
-        Draw.image(getTMinX(), getTMinY(), getTMaxY(), getTMaxY(), getZ(), getAngle(), image);
+        Draw.o.image(image, getTMinX(), getTMinY(), getTMaxY(), getTMaxY(), getZ(), getAngle());
     }
 
 }

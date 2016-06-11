@@ -1,9 +1,11 @@
 package com.niopullus.NioLib.scene;
 
-import java.awt.*;
-import java.io.Serializable;
 
-/**
+import com.niopullus.NioLib.draw.Draw;
+
+import java.awt.*;
+
+/**Used to display a rectangular visual in multiple contexts
  * Created by Owen on 3/19/2016.
  */
 public class Background {
@@ -21,23 +23,31 @@ public class Background {
     }
 
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
-    public void setWidth(int width) {
+    public Color getColor() {
+        return null; //To be overridden
+    }
+
+    public void setWidth(final int width) {
         this.width = width;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(final int height) {
         this.height = height;
     }
 
-    public void draw(final int x, final int y, final int z) {
+    public void setColor(final Color color) {
+        //To be overridden
+    }
 
+    public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
+        //To be overridden
     }
 
 }

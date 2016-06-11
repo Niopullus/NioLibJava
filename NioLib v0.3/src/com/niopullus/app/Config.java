@@ -21,6 +21,11 @@ public class Config {
     public static final int FGTILEMAPZ = 50;
     public static final int BGTILEMAPZ = 25;
     public static final String DEFAULTFONTNAME = "Bold";
+    public static final int DEFAULTELEMENTGAPWIDTH = 20;
+    public static final int DEFAULTELEMENTGAPHEIGHT = 20;
+    public static final boolean CREATEFOLDER = false;
+    public static final boolean PROMPTFOLDERDIRECTORY = false;
+    public static final boolean ALLOWWORLDSAVESTOJAR = false;
 
     public static void init() {
         //Register tiles, nodes, program setup

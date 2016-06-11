@@ -1,79 +1,52 @@
 package com.niopullus.NioLib;
 
-import com.niopullus.NioLib.utilities.Utilities;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
-/**
+/**Displays images by frame
  * Created by Owen on 3/24/2016.
  */
 public class Animation {
 
-    private ArrayList<BufferedImage> frames;
+    private List<BufferedImage> frames;
     private double currentFrame;
-    private double frameIterationCoefficient;
+    private double frameRate;
+    private static final double defaultFrameRate = 0.1;
 
     public Animation() {
-        this.frames = new ArrayList<BufferedImage>();
+        this.frames = new ArrayList<>();
         this.currentFrame = 0;
-        this.frameIterationCoefficient = 0.1;
+        this.frameRate = defaultFrameRate;
     }
 
-    public void addFrame(BufferedImage img) {
-        this.frames.add(img);
+    public void addFrame(final BufferedImage image) {
+        frames.add(image);
     }
 
-    public void addFrame(String imgDir) {
-        this.frames.add(Utilities.loadImage(imgDir));
-    }
-
-    public void draw(int x, int y, int z, double angle) {
-        if (this.currentFrame + this.frameIterationCoefficient < this.frames.size()) {
-            this.currentFrame += this.frameIterationCoefficient;
-        } else {
-            this.currentFrame = 0;
-        }
-        Draw.image(x, y, z, angle, this.frames.get((int) this.currentFrame));
-    }
-
-    public void draw(int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, int z) {
-        this.draw(dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, z, 0);
-    }
-
-    public void draw(int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, int z, double angle) {
-        if (this.currentFrame + this.frameIterationCoefficient < this.frames.size()) {
-            this.currentFrame += this.frameIterationCoefficient;
-        } else {
-            this.currentFrame = 0;
-        }
-        Draw.image(dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, z, angle, this.frames.get((int) this.currentFrame));
-    }
-
-    public void draw(int dx1, int dy1, int dx2, int dy2, int z, double angle) {
-        if (this.currentFrame + this.frameIterationCoefficient < this.frames.size()) {
-            this.currentFrame += this.frameIterationCoefficient;
-        } else {
-            this.currentFrame = 0;
-        }
-        BufferedImage image = this.frames.get((int) this.currentFrame);
-        Draw.image(dx1, dy1, dx2, dy2, 0, 0, image.getWidth(), image.getHeight(), z, angle, image);
-    }
-
-    public void setSpeed(double speed) {
-        this.frameIterationCoefficient = speed;
+    public void setFrameRate(final double frameRate) {
+        this.frameRate = frameRate;
     }
 
     public int getWidth() {
-        return this.frames.get((int) this.currentFrame).getWidth();
+        final BufferedImage image = frames.get((int) currentFrame);
+        return image.getWidth();
     }
 
     public int getHeight() {
-        return this.frames.get((int) this.currentFrame).getHeight();
+        final BufferedImage image = frames.get((int) currentFrame);
+        return image.getHeight();
+    }
+
+    public BufferedImage runFrame() {
+        final BufferedImage image = frames.get((int) currentFrame);
+        currentFrame += frameRate;
+        return image;
     }
 
     public int calcRunOnceTime() {
-        return (int) Math.ceil((double) this.frames.size() / this.frameIterationCoefficient);
+        final double times = frames.size() / frameRate;
+        return (int) Math.ceil(times);
     }
 
 }

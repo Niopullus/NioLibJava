@@ -1,6 +1,8 @@
 package com.niopullus.NioLib.draw;
 
 
+import com.niopullus.NioLib.Main;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
@@ -21,9 +23,9 @@ public class DrawElement {
 
     public DrawElement(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
         this.dx1 = dx1;
-        this.dy1 = dy1;
+        this.dy1 = Main.Height() - dy2;
         this.dx2 = dx2;
-        this.dy2 = dy2;
+        this.dy2 = dy1;
         this.z = z;
         this.angle = angle;
     }
@@ -58,6 +60,10 @@ public class DrawElement {
 
     public double getAngle() {
         return angle;
+    }
+
+    public void setDx1(final int n) {
+
     }
 
     public void adjustGraphics(final Graphics2D g, final double angle) {

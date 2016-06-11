@@ -1,15 +1,13 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
-import com.niopullus.NioLib.Draw;
+import com.niopullus.NioLib.Data;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.*;
-import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
-import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
-import com.niopullus.NioLib.scene.dynscene.reference.Reference;
-import com.niopullus.NioLib.scene.dynscene.reference.TileReference;
+import com.niopullus.NioLib.scene.dynscene.reference.*;
 import com.niopullus.NioLib.scene.dynscene.tile.*;
 import com.niopullus.NioLib.utilities.Utilities;
 import com.niopullus.app.Config;
@@ -19,65 +17,61 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-/**
+/**Used to design levels
  * Created by Owen on 4/7/2016.
  */
 public class MapEditorScene extends Scene implements NodeHandler {
 
     private Tilemap fgMap;
     private Tilemap bgMap;
+    private Tilemap map;
     private Node world;
-    private Point selectedTile;
-    private Point selection;
+    private Node universe;
+    private Point chosenTileSpace;
+    private Point selectedSquare;
+    private Point chosenSquare;
+    private Point fillingAnchor;
     private int pages;
+    private int cols;
     private int page;
-    private int choice;
-    private TileReference tile;
-    private Point commitPoint;
+    private int activePart;
+    private int xDivider;
+    private int squareSize;
+    private int mapMode;
+    private Reference selection;
     private boolean whold;
     private boolean ahold;
     private boolean shold;
     private boolean dhold;
-    private Point fillingAnchor;
-    private int cols;
-    private int mm;
-    private String fileName;
-    private int loadMode;
-    private int selectionType;
-    private NodeReference node;
-    private Node universe;
+    private String worldName;
 
-    public MapEditorScene() {
+    public MapEditorScene(String name) {
         super();
-        this.universe = new Node("universe");
-        this.universe.markUniverse();
-        this.world = new Node("world");
-        this.fgMap = new Tilemap(world, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.FGTILEMAPZ);
-        this.bgMap = new Tilemap(world, Config.TILESIZE, Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.TILEMAPRAD / Config.TILEREGIONSIZE, Config.BGTILEMAPZ);
-        this.selectedTile = new Point();
-        this.selection = new Point();
-        this.cols = Main.Height() / (Main.Width() / 12);
-        this.pages = (int) Math.ceil((double) (Reference.getTileQuant() + Reference.getNodeQuant()) / ((cols - 2) * 2));
-        this.commitPoint = new Point();
-        this.page = 0;
-        this.mm = 0;
-        this.loadMode = 0;
-        this.selectionType = 0;
-        this.world.markWorld();
-        this.universe.addChild(this.world);
+        final World pack = World.generateWorld(worldName, this);
+        final int elementCount = Ref.getNodeCount() + Ref.getTileCount();
+        fgMap = pack.getFgTilemap();
+        bgMap = pack.getBgTilemap();
+        universe = pack.getUniverse();
+        world = universe.getChild(0);
+        chosenTileSpace = null;
+        chosenSquare = null;
+        selectedSquare = null;
+        fillingAnchor = null;
+        cols = Main.Height() * 12  / Main.Width();
+        pages = (int) Math.ceil(elementCount / ((cols - 2) * 2));
+        page = 0;
+        whold = false;
+        ahold = false;
+        shold = false;
+        dhold = false;
+        worldName = name;
+        xDivider = Main.Width() * 5 / 6;
+        squareSize = Main.Width() / 16;
+        mapMode = 1;
     }
 
-    public MapEditorScene(String worldFileName) {
-        this();
-        World world = World.loadWorld(worldFileName);
-        this.bgMap = world.getBgTilemap();
-        this.fgMap = world.getFgTilemap();
-        this.fileName = worldFileName;
-        this.universe = world.getUniverse();
-        this.world = this.universe.getChild(0);
-        this.bgMap.setWorld(this.world);
-        this.fgMap.setWorld(this.world);
-        System.out.println("chicken");
+    public MapEditorScene() {
+        this("Unnamed World");
     }
 
     public void addChild(final Node node) {
@@ -93,10 +87,10 @@ public class MapEditorScene extends Scene implements NodeHandler {
     }
 
     public void draw() {
-        Draw.rect(0, 0, Main.Width(), Main.Height(), 0, new Color(172, 172, 172));
-        Draw.rect(Main.Width() * 5 / 6 - 50, 0, Main.Width() / 6, Main.Height(), 100, new Color(0, 0, 0, 127));
-        Draw.rect(this.commitPoint.x * Main.Width() / 12 + Main.Width() * 5 / 6 - 50, this.commitPoint.y * Main.Width() / 12, Main.Width() / 12, Main.Width() / 12, 480, new Color(255, 0, 0, 100));
-        Draw.text(Main.Width() * 21 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 2) * 2 + 1) / 24), 1000, "Prev Page", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
+        Draw.o.rect(new Color(172, 172, 172), 0, 0, Main.Width(), Main.Height(), 0);
+        Draw.o.rect(new Color(0, 0, 0, 127), xDivider, 0, Main.Width() - xDivider, Main.Height(), 100);
+        Draw.o.rect(new Color(255, 0, 0, 100), selectedSquare.x * squareSize + xDivider, selectedSquare.y * squareSize, squareSize, squareSize, 480);
+        Draw.m.text(xDivider + , (Main.Height() / 2) - (Main.Width() * ((cols - 2) * 2 + 1) / 24), 1000, "Prev Page", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
         Draw.text(Main.Width() * 23 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 2) * 2 + 1) / 24), 1000, "Next Page", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
         Draw.text(Main.Width() * 21 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 1) * 2 + 1) / 24), 1000, "FG Map", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
         Draw.text(Main.Width() * 23 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 1) * 2 + 1) / 24), 1000, "BG Map", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
@@ -198,55 +192,50 @@ public class MapEditorScene extends Scene implements NodeHandler {
         }
     }
 
-    @Override
     public void tick() {
-        if (this.ahold) {
-            this.world.moveX(15);
-            mouseMove();
-        } else if (this.dhold) {
-            this.world.moveX(-15);
-            mouseMove();
+        final Point mousePoint = getMousePos();
+        if (ahold) {
+            world.moveX(15);
+        } else if (dhold) {
+            world.moveX(-15);
         }
-        if (this.whold) {
-            this.world.moveY(-15);
-            mouseMove();
-        } else if (this.shold) {
-            this.world.moveY(15);
-            mouseMove();
+        if (whold) {
+            world.moveY(-15);
+        } else if (shold) {
+            world.moveY(15);
         }
-    }
-
-    @Override
-    public void keyPress(KeyEvent key) {
-        int k = key.getKeyCode();
-        switch (k) {
-            case KeyEvent.VK_A: this.ahold = true; break;
-            case KeyEvent.VK_S: this.shold = true; break;
-            case KeyEvent.VK_W: this.whold = true; break;
-            case KeyEvent.VK_D: this.dhold = true; break;
-            case KeyEvent.VK_ESCAPE: this.addSubScene(new ExitMenu(this)); break;
-            case KeyEvent.VK_O: this.addSubScene(new SaveMenu(this, this.fileName));
+        if ((ahold || dhold || shold || whold) && activePart == 0) {
+            updateChosenSquare(mousePoint.x, mousePoint.y);
         }
     }
 
-    @Override
-    public void keyReleased(KeyEvent key) {
-        int k = key.getKeyCode();
-        switch (k) {
-            case KeyEvent.VK_A: this.ahold = false; break;
-            case KeyEvent.VK_S: this.shold = false; break;
-            case KeyEvent.VK_W: this.whold = false; break;
-            case KeyEvent.VK_D: this.dhold = false; break;
+    public void keyPress(final KeyPack pack) {
+        switch (pack.code) {
+            case KeyEvent.VK_A: ahold = true; break;
+            case KeyEvent.VK_S: shold = true; break;
+            case KeyEvent.VK_W: whold = true; break;
+            case KeyEvent.VK_D: dhold = true; break;
+            case KeyEvent.VK_ESCAPE: addSubScene(new ExitMenu(this)); break;
+            case KeyEvent.VK_O: addSubScene(new SaveMenu(this, worldName));
         }
     }
 
-    public void saveMap(String name) {
+    public void keyReleased(final KeyPack pack) {
+        switch (pack.code) {
+            case KeyEvent.VK_A: ahold = false; break;
+            case KeyEvent.VK_S: shold = false; break;
+            case KeyEvent.VK_W: whold = false; break;
+            case KeyEvent.VK_D: dhold = false; break;
+        }
+    }
+
+    public void saveMap(final Data.DataRoot root) {
         World world = new World();
-        world.setName(name);
-        world.setFgTilemap(this.fgMap);
-        world.setBgTilemap(this.bgMap);
-        world.setUniverse(this.universe);
-        World.saveWorld(world);
+        world.setName(worldName);
+        world.setFgTilemap(fgMap);
+        world.setBgTilemap(bgMap);
+        world.setUniverse(universe);
+        World.saveWorld(world, root);
         presentScene(new InitScene());
     }
 
@@ -254,98 +243,90 @@ public class MapEditorScene extends Scene implements NodeHandler {
         presentScene(new InitScene());
     }
 
-    public void mouseMove() {
-        if (this.getSubscene() != null) {
-            this.getSubscene().mouseMove();
-        }
-        if (this.getMousePos().x < Main.Width() * 5 / 6 - 50 || this.getMousePos().x > Main.Width() - 50) {
-            this.choice = 1;
-            this.selectedTile = new Point(Math.floorDiv(-this.world.getX() + this.getMousePos().x, this.fgMap.getTileSize()), Math.floorDiv((Main.Height() - (this.world.getY() + this.getMousePos().y)), this.fgMap.getTileSize()));
+    public void mouseMove(final MousePack pack) {
+        if (pack.x < xDivider) {
+            activePart = 1;
+            updateChosenSquare(pack.x, pack.y);
         } else {
-            this.choice = 2;
-            this.selection = new Point((this.getMousePos().x - (Main.Width() * 5 / 6 - 50)) / (Main.Width() / 12), this.getMousePos().y / (Main.Width() / 12));
+            activePart = 2;
+            chosenSquare = new Point();
+            chosenSquare.x = pack.x - xDivider / squareSize;
+            chosenSquare.y = pack.y / squareSize;
         }
     }
 
-    public void mousePress() {
-        if (this.getMousePos().x < Main.Width() * 5 / 6 - 50 || this.getMousePos().x > Main.Width() - 50) { // Mouse in world
-            this.fillingAnchor = new Point(this.selectedTile);
-        } else if (Reference.getTileRef(this.cols * 2 * this.page + this.selection.y * 2 + this.selection.x) != null) { //Selection tiles
-            this.tile = Reference.getTileRef(this.selection.y * 2 + this.selection.x);
-            this.commitPoint = new Point(this.selection);
-            this.selectionType = 0;
-        } else if (this.selection.y * 2 + this.selection.x == 0) {
-            this.tile = null;
-            this.commitPoint = new Point(this.selection);
-            this.selectionType = 0;
-        } else if (Reference.getNodeRef((this.selection.y * 2 + this.selection.x - TileReference.getTileQuant() - 1) + this.cols * 2 * this.page) != null) {
-            this.commitPoint = new Point(this.selection);
-            this.selectionType = 1;
-            this.node = Reference.getNodeRef((this.selection.y * 2 + this.selection.x - TileReference.getTileQuant() - 1) + this.cols * 2 * this.page);
-        } else if (this.selection.y >= this.cols - 2) { //Pages and stuffs
-            if (this.selection.x == 0 && this.selection.y == this.cols - 2) {
-                if (this.page - 1 >= 0) {
-                    this.page--;
+    private void updateChosenSquare(final int x, final int y) {
+        chosenTileSpace.x = Math.floorDiv(-world.getX() + x, fgMap.getTileSize());
+        chosenTileSpace.y = Math.floorDiv(-world.getY() + y, fgMap.getTileSize());
+    }
+
+    public void mousePress(final MousePack pack) {
+        if (pack.x < xDivider) {
+            fillingAnchor = new Point(chosenTileSpace);
+        } else if (selectedSquare.y > cols - 2) {
+            final int selectionIndex = cols * 2 * page + chosenSquare.y * 2 + chosenSquare.x;
+            if (selectionIndex < Ref.getTileCount()) {
+                selection = Ref.getTileRef(selectionIndex);
+            } else if (selectionIndex < Ref.getNodeCount()) {
+                final int nodeSelectionIndex = selectionIndex - Ref.getTileCount();
+                selection = Ref.getNodeRef(nodeSelectionIndex);
+            }
+        } else {
+            if (chosenSquare.y == cols - 2)  {
+                if (chosenSquare.y == cols - 1) {
+                    if (chosenSquare.x == 0) {
+                        page--;
+                        selectedSquare = null;
+                    }
+                } else if (chosenSquare.x == 1) {
+                    if (page + 1 < pages - 1) {
+                        page++;
+                        selectedSquare = null;
+                    }
                 }
-            } else if (this.selection.x == 1 && this.selection.y == this.cols - 2) {
-                if (this.page + 1 < this.pages - 1) {
-                    this.page++;
+            } else if (chosenSquare.y == cols - 1) {
+                if (chosenSquare.x == 0) {
+                    map = fgMap;
+                    mapMode = 1;
+                } else if (chosenSquare.x == 1) {
+                    map = bgMap;
+                    mapMode = 2;
                 }
-            } else if (this.selection.x == 0 && this.selection.y == this.cols - 1) {
-                this.mm = 0;
-            } else if (this.selection.x == 1 && this.selection.y == this.cols - 1) {
-                this.mm = 1;
             }
         }
     }
 
-    public void mouseRelease() {
-        if (this.fillingAnchor != null) {
-            if (this.selectionType == 0) {
-                Tilemap map = null;
-                if (this.mm == 0) {
-                    map = this.fgMap;
-                } else if (this.mm == 1) {
-                    map = this.bgMap;
+    public void mouseRelease(final MousePack pack) {
+        if (pack.x < xDivider && fillingAnchor != null && chosenTileSpace != null && activePart == 1) {
+            if (selection instanceof TileReference) {
+                final TileReference reference = (TileReference) selection;
+                int x1 = fillingAnchor.x, x2 = fillingAnchor.x;
+                int y1 = fillingAnchor.y, y2 = fillingAnchor.y;
+                if (fillingAnchor.x > chosenTileSpace.x) {
+                    x1 = chosenTileSpace.x;
+                    x2 = fillingAnchor.x;
+                } else if (fillingAnchor.x < chosenTileSpace.x) {
+                    x1 = fillingAnchor.x;
+                    x2 = chosenTileSpace.x;
                 }
-                int x1 = this.fillingAnchor.x, x2 = this.fillingAnchor.x;
-                int y1 = this.fillingAnchor.y, y2 = this.fillingAnchor.y;
-                if (this.fillingAnchor.x > this.selectedTile.x) {
-                    x1 = this.selectedTile.x;
-                    x2 = this.fillingAnchor.x;
-                } else if (this.fillingAnchor.x < this.selectedTile.x) {
-                    x1 = this.fillingAnchor.x;
-                    x2 = this.selectedTile.x;
-                }
-                if (this.fillingAnchor.y > this.selectedTile.y) {
-                    y1 = this.selectedTile.y;
-                    y2 = this.fillingAnchor.y;
-                } else if (this.fillingAnchor.y < this.selectedTile.y) {
-                    y1 = this.fillingAnchor.y;
-                    y2 = this.selectedTile.y;
+                if (fillingAnchor.y > chosenTileSpace.y) {
+                    y1 = chosenTileSpace.y;
+                    y2 = fillingAnchor.y;
+                } else if (fillingAnchor.y < chosenTileSpace.y) {
+                    y1 = fillingAnchor.y;
+                    y2 = chosenTileSpace.y;
                 }
                 for (int i = x1; i <= x2; i++) {
                     for (int j = y1; j <= y2; j++) {
-                        if (this.tile != null) {
-                            if (!(this.tile instanceof MultiTileReference)) {
-                                map.setTile(this.tile.getSample().clone(), i, j);
-                            } else {
-                                MultiTileReference mtr = (MultiTileReference) this.tile;
-                                map.setMultiTile((MultiTile) mtr.getSample().clone(), i, j);
-                            }
+                        final Tile tile = reference.getSampleCopy();
+                        if (!(selection instanceof MultiTileReference)) {
+                            map.setTile(tile, i, j);
                         } else {
-                            map.setTile(null, i, j);
+                            map.setMultiTile((MultiTile) tile, i, j);
                         }
                     }
                 }
-            } else if (this.selectionType == 1) {
-                Node node = this.node.getSample().clone();
-                node.setPosition(this.getMousePos().x - this.world.getPosition().x, Main.Height() - this.getMousePos().y - this.world.getPosition().y);
-                node.setXScale(this.node.getDefaultXScale());
-                node.setYScale(this.node.getDefaultYScale());
-                this.world.addChild(node);
             }
-            this.fillingAnchor = null;
         }
     }
 

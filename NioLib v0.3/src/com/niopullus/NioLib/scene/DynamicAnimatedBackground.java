@@ -1,11 +1,11 @@
 package com.niopullus.NioLib.scene;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.scene.dynscene.Node;
+import com.niopullus.NioLib.draw.Draw;
 
 import java.awt.*;
 
-/**
+/**AnimatedBackground that can shift
  * Created by Owen on 3/25/2016.
  */
 public class DynamicAnimatedBackground extends Background {
@@ -13,118 +13,87 @@ public class DynamicAnimatedBackground extends Background {
     private Animation animation;
     private int xShiftSpeed;
     private int yShiftSpeed;
-    private int xShift;
-    private int yShift;
     private Rectangle window;
-    private boolean resetMode;
 
-    public DynamicAnimatedBackground(int width, int height, Animation animation) {
-        this(0, 0, width, height, animation);
-    }
-
-    public DynamicAnimatedBackground(int x, int y, int width, int height, Animation animation) {
-        super(x, y, width, height);
+    public DynamicAnimatedBackground(final int width, final int height, final Animation animation) {
         this.xShiftSpeed = 0;
         this.yShiftSpeed = 0;
         this.window = new Rectangle(0, 0, width, height);
         this.animation = animation;
-        this.resetMode = false;
     }
 
-    public void draw() {
-        this.draw(this.getX(), this.getY());
-    }
-
-    public void draw(int x, int y) {
-        int xBound = this.animation.getWidth();
-        int yBound = this.animation.getHeight();
-        if (this.resetMode) {
-            this.xShift += this.xShiftSpeed;
-            this.yShift += this.yShiftSpeed;
+    public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
+        final int xBound = animation.getWidth();
+        final int yBound = animation.getHeight();
+        final int dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2;
+        window.x += xShiftSpeed;
+        window.y += yShiftSpeed;
+        if (window.x > xBound) {
+            window.x = window.x % xBound;
         }
-        this.window.x += this.xShift;
-        this.window.y += this.yShift;
-        if (this.window.x > xBound) {
-            this.window.x = this.window.x % xBound;
+        if (window.x < 0) {
+            window.x = window.x % xBound + xBound;
         }
-        if (this.window.x < 0) {
-            this.window.x = this.window.x % xBound + xBound;
+        if (window.y > yBound) {
+            window.y = window.y % yBound;
         }
-        if (this.window.y > yBound) {
-            this.window.y = this.window.y % yBound;
+        if (window.y < 0) {
+            window.y = window.y % yBound + yBound;
         }
-        if (this.window.y < 0) {
-            this.window.y = this.window.y % yBound + yBound;
-        }
-        int dx1 = x;
-        int dy1 = y;
-        int dx2 = x + this.getWidth();
-        int dy2 = y + this.getHeight();
-        int sx1 = this.window.x;
-        int sy1 = this.window.y;
-        int sx2 = this.window.x + this.window.width;
-        int sy2 = this.window.y + this.window.height;
+        dx1 = x;
+        dy1 = y;
+        dx2 = x + getWidth();
+        dy2 = y + getHeight();
+        sx1 = window.x;
+        sy1 = window.y;
+        sx2 = window.x + window.width;
+        sy2 = window.y + window.height;
         if (sx2 <= xBound && sy2 <= yBound) {
-            this.animation.draw(dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this.getZ());
+            Draw.mode(mode).animation(animation, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, z, 0);
         } else if (sx2 >= xBound && sy2 <= yBound) {
-            int xBound2 = (int) ((double) (xBound - sx1) / (sx2 - sx1) * this.getWidth());
-            this.animation.draw(dx1, dy1, xBound2 + dx1, dy2, sx1, sy1, xBound, sy2, this.getZ());
-            this.animation.draw(xBound2 + dx1, dy1, dx2, dy2, 0, sy1, sx2 - xBound, sy2, this.getZ());
+            final int xBound2 = (int) ((double) (xBound - sx1) / (sx2 - sx1) * getWidth());
+            Draw.mode(mode).animation(animation, dx1, dy1, xBound2 + dx1, dy2, sx1, sy1, xBound, sy2, z, 0);
+            Draw.mode(mode).animation(animation, xBound2 + dx1, dy1, dx2, dy2, 0, sy1, sx2 - xBound, sy2, z, 0);
         } else if (sx2 <= xBound && sy2 >= yBound) {
-            int yBound2 = (int) ((double) (yBound - sy1) / (sy2 - sy1) * this.getHeight());
-            this.animation.draw(dx1, dy1, dx2, yBound2 + dy1, sx1, sy1, sx2, yBound, this.getZ());
-            this.animation.draw(dx1, yBound2 + dy1, dx2, dy2, sx1, 0, sx2, sy2 - yBound, this.getZ());
+            final int yBound2 = (int) ((double) (yBound - sy1) / (sy2 - sy1) * getHeight());
+            Draw.mode(mode).animation(animation, dx1, dy1, dx2, yBound2 + dy1, sx1, sy1, sx2, yBound, z, 0);
+            Draw.mode(mode).animation(animation, dx1, yBound2 + dy1, dx2, dy2, sx1, 0, sx2, sy2 - yBound, z, 0);
         } else if (sx2 >= xBound && sy2 >= yBound) {
-            int xBound2 = (int) ((double) (xBound - sx1) / (sx2 - sx1) * this.getWidth());
-            int yBound2 = (int) ((double) (yBound - sy1) / (sy2 - sy1) * this.getHeight());
-            this.animation.draw(dx1, dy1, xBound2 + dx1, yBound2 + dy1, sx1, sy1, xBound, yBound, this.getZ());
-            this.animation.draw(xBound2 + dx1, dy1, dx2, dy2, 0, sy1, sx2 - xBound, sy2, this.getZ());
-            this.animation.draw(dx1, yBound2 + dy1, dx2, dy2, sx1, 0, sx2, sy2 - yBound, this.getZ());
-            this.animation.draw(xBound2 + dx1, yBound2 + dy1, dx2, dy2, 0, 0, sx2 - xBound, sy2 - yBound, this.getZ());
+            final int xBound2 = (int) ((double) (xBound - sx1) / (sx2 - sx1) * getWidth());
+            final int yBound2 = (int) ((double) (yBound - sy1) / (sy2 - sy1) * getHeight());
+            Draw.mode(mode).animation(animation, dx1, dy1, xBound2 + dx1, yBound2 + dy1, sx1, sy1, xBound, yBound, z, 0);
+            Draw.mode(mode).animation(animation, xBound2 + dx1, dy1, dx2, dy2, 0, sy1, sx2 - xBound, sy2, z, 0);
+            Draw.mode(mode).animation(animation, dx1, yBound2 + dy1, dx2, dy2, sx1, 0, sx2, sy2 - yBound, z, 0);
+            Draw.mode(mode).animation(animation, xBound2 + dx1, yBound2 + dy1, dx2, dy2, 0, 0, sx2 - xBound, sy2 - yBound, z, 0);
         }
     }
 
-    public void setxShiftSpeed(int xShiftSpeed) {
+    public void setxShiftSpeed(final int xShiftSpeed) {
         this.xShiftSpeed = xShiftSpeed;
-        if (!this.resetMode) {
-            this.xShift = xShiftSpeed;
-        }
     }
 
-    public void setyShiftSpeed(int yShiftSpeed) {
+    public void setyShiftSpeed(final int yShiftSpeed) {
         this.yShiftSpeed = yShiftSpeed;
-        if (!this.resetMode) {
-            this.yShift = yShiftSpeed;
-        }
     }
 
-
-    public void setWindow(Rectangle window) {
+    public void setWindow(final Rectangle window) {
         this.window = window;
     }
 
-    public void shiftX(int shift) {
-        this.window.setBounds(this.window.x + shift, this.window.y, this.window.width, this.window.height);
+    public void shiftX(final int shift) {
+        window.setBounds(window.x + shift, window.y, window.width, window.height);
     }
 
-    public void shiftY(int shift) {
-        this.window.setBounds(this.window.x, this.window.y + shift, this.window.width, this.window.height);
+    public void shiftY(final int shift) {
+        window.setBounds(window.x, window.y + shift, window.width, window.height);
     }
 
-    public void setXShift(int shift) {
-        this.window.setBounds(shift, this.window.y, this.window.width, this.window.height);
+    public void setXShift(final int shift) {
+        window.setBounds(shift, window.y, window.width, window.height);
     }
 
-    public void setYShift(int shift) {
-        this.window.setBounds(this.window.x, shift, this.window.width, this.window.height);
-    }
-
-    public void enableResetMode() {
-        this.resetMode = true;
-    }
-
-    public void disableResetMode() {
-        this.resetMode = false;
+    public void setYShift(final int shift) {
+        window.setBounds(window.x, shift, window.width, window.height);
     }
 
 }

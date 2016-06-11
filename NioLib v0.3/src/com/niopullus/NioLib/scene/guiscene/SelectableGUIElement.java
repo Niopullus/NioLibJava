@@ -1,15 +1,11 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.draw.DrawElement;
-import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.Draw;
 import com.niopullus.NioLib.scene.*;
-import com.niopullus.NioLib.Draw;
-import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
 
-/**
+/**GUIElement that can be informed that they have been selected by the GUIScene
  * Created by Owen on 4/1/2016.
  */
 public class SelectableGUIElement extends GUIElement {
@@ -18,39 +14,77 @@ public class SelectableGUIElement extends GUIElement {
     private Background selectedBorderBG;
     private Color selectedTextColor;
     private boolean selected;
+    private boolean overrideMouse;
     private boolean overrideArrows;
+    private boolean overrideKeys;
+    private boolean overrideMouseWheel;
 
-    public SelectableGUIElement(String content, int x, int y, int width, int height) {
-        super(content, x, y, width, height);
-        this.selectedBG = new ColorBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2 + this.getBorderWidth(), Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2 - this.getBorderWidth()), this.getWidth() - this.getBorderWidth() * 2, this.getHeight() - this.getBorderWidth() * 2, Color.WHITE);
-        this.selectedBorderBG = new ColorBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2, Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2), this.getWidth(), this.getHeight(), Color.CYAN);
+    public SelectableGUIElement(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap) {
+        super(content, font, x, y, widthGap, heightGap);
+        this.selectedBG = new ColorBackground(Color.WHITE);
+        this.selectedBorderBG = new ColorBackground(Color.CYAN);
         this.selectedTextColor = Color.black;
         this.selected = false;
         this.overrideArrows = false;
     }
 
-    public void setSelectedColor(Color color) {
-        ((ColorBackground) this.selectedBG).setColor(color);
-    }
-
     public Color getSelectedColor() {
-        return ((ColorBackground) this.selectedBG).getColor();
-    }
-
-    public void setSelectedBorderColor(Color color) {
-        ((ColorBackground) this.selectedBorderBG).setColor(color);
+        return selectedBG.getColor();
     }
 
     public Color getSelectedBorderColor() {
-        return ((ColorBackground) this.selectedBorderBG).getColor();
-    }
-
-    public void setSelectedTextColor(Color color) {
-        this.selectedTextColor = color;
+        return selectedBorderBG.getColor();
     }
 
     public Color getSelectedTextColor() {
-        return this.selectedTextColor;
+        return selectedTextColor;
+    }
+
+    public boolean getSelected() {
+        return this.selected;
+    }
+
+    public Background getSelectedBG() {
+        return selectedBG;
+    }
+
+    public Background getSelectedBorderBG() {
+        return selectedBorderBG;
+    }
+
+    public void setSelectedColor(final Color color) {
+        selectedBG.setColor(color);
+    }
+
+    public void setSelectedBorderColor(final Color color) {
+        selectedBorderBG.setColor(color);
+    }
+
+    public void setSelectedTextColor(final Color color) {
+        this.selectedTextColor = color;
+    }
+
+    public void setTheme(final Theme t) {
+        super.setTheme(t);
+        selectedBG.setColor(t.getSelectedBgColor());
+        selectedBorderBG.setColor(t.getSelectedBorderColor());
+        selectedTextColor = t.getSelectedTextColor();
+    }
+
+    public void updateBackgrounds() {
+        super.updateBackgrounds();
+        updateSelectedBG();
+        updateSelectedBorder();
+    }
+
+    private void updateSelectedBG() {
+        selectedBG.setWidth(getWidth() - getBorderWidth() * 2);
+        selectedBG.setHeight(getHeight() - getBorderWidth() * 2);
+    }
+
+    private void updateSelectedBorder() {
+        selectedBorderBG.setWidth(getWidth());
+        selectedBorderBG.setHeight(getHeight());
     }
 
     public void select() {
@@ -61,131 +95,100 @@ public class SelectableGUIElement extends GUIElement {
         this.selected = false;
     }
 
-    public boolean getSelected() {
-        return this.selected;
-    }
-
-    public void setBorderWidth(int bwidth) {
-        super.setBorderWidth(bwidth);
-        Color c1 = ((ColorBackground) this.selectedBG).getColor();
-        Color c2 = ((ColorBackground) this.selectedBorderBG).getColor();
-        this.selectedBG = new ColorBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2 + this.getBorderWidth(), Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2 - this.getBorderWidth()), this.getWidth() - this.getBorderWidth() * 2, this.getHeight() - this.getBorderWidth() * 2, Color.WHITE);
-        this.selectedBorderBG = new ColorBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2, Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2), this.getWidth(), this.getHeight(), Color.CYAN);
-        ((ColorBackground) this.selectedBG).setColor(c1);
-        ((ColorBackground) this.selectedBorderBG).setColor(c2);
-    }
-
-    public void setSelectedBackgroundToImage(String imgDir) {
-        this.selectedBG = new ImageBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2 + this.getBorderWidth(), Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2 - this.getBorderWidth()), this.getWidth() - this.getBorderWidth() * 2, this.getHeight() - this.getBorderWidth() * 2, imgDir);
-    }
-
-    public void setSelectedBackgroundToAnimation(Animation animation) {
-        this.selectedBG = new AnimatedBackground(Main.Width() / 2 + this.getX() - getWidth() / 2 + this.getBorderWidth(), Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2 - this.getBorderWidth()), this.getWidth() - this.getBorderWidth() * 2, this.getHeight() - this.getBorderWidth() * 2, animation);
-    }
-
-    public void setSelectedBackgroundToDynamicImage(String img, int xShiftSpeed, int yShiftSpeed, int wx, int wy, int wwidth, int wheight) {
-        DynamicImageBackground dynamicImageBackground  = new DynamicImageBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2 + this.getBorderWidth(), Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2 - this.getBorderWidth()), this.getWidth() - this.getBorderWidth() * 2, this.getHeight() - this.getBorderWidth() * 2, img);
-        dynamicImageBackground.setxShiftSpeed(xShiftSpeed);
-        dynamicImageBackground.setyShiftSpeed(yShiftSpeed);
-        dynamicImageBackground.setWindow(new Rectangle(wx, wy, wwidth, wheight));
-        this.selectedBG = dynamicImageBackground;
-    }
-
-    public void setSelectedBackgroundToDynamicAnimation(Animation animation, int xShiftSpeed, int yShiftSpeed, int wx, int wy, int wwidth, int wheight) {
-        DynamicAnimatedBackground dynamicAnimatedBackground  = new DynamicAnimatedBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2 + this.getBorderWidth(), Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2 - this.getBorderWidth()), this.getWidth() - this.getBorderWidth() * 2, this.getHeight() - this.getBorderWidth() * 2, animation);
-        dynamicAnimatedBackground.setxShiftSpeed(xShiftSpeed);
-        dynamicAnimatedBackground.setyShiftSpeed(yShiftSpeed);
-        dynamicAnimatedBackground.setWindow(new Rectangle(wx, wy, wwidth, wheight));
-        this.selectedBG = dynamicAnimatedBackground;
-    }
-
-    public void setSelectedBorderToImage(String imgDir) {
-        this.selectedBorderBG = new ImageBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2, Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2), this.getWidth(), this.getHeight(), imgDir);
-    }
-
-    public void setSelectedBorderToAnimation(Animation animation) {
-        this.selectedBorderBG = new AnimatedBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2, Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2), this.getWidth(), this.getHeight(), animation);
-    }
-
-    public void setSelectedBorderToDynamicImage(String img, int xShiftSpeed, int yShiftSpeed, int wx, int wy, int wwidth, int wheight) {
-        DynamicImageBackground dynamicImageBackground = new DynamicImageBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2, Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2), this.getWidth(), this.getHeight(), img);
-        dynamicImageBackground.setxShiftSpeed(xShiftSpeed);
-        dynamicImageBackground.setyShiftSpeed(yShiftSpeed);
-        dynamicImageBackground.setWindow(new Rectangle(wx, wy, wwidth, wheight));
-        this.selectedBorderBG = dynamicImageBackground;
-    }
-
-    public void setSelectedBorderToDynamicAnimation(Animation animation, int xShiftSpeed, int yShiftSpeed, int wx, int wy, int wwidth, int wheight) {
-        DynamicAnimatedBackground dynamicAnimatedBackground = new DynamicAnimatedBackground(Main.Width() / 2 + this.getX() - this.getWidth() / 2, Utilities.convertY(Main.Height() / 2 + this.getY() + this.getHeight() / 2), this.getWidth(), this.getHeight(), animation);
-        dynamicAnimatedBackground.setxShiftSpeed(xShiftSpeed);
-        dynamicAnimatedBackground.setyShiftSpeed(yShiftSpeed);
-        dynamicAnimatedBackground.setWindow(new Rectangle(wx, wy, wwidth, wheight));
-        this.selectedBorderBG = dynamicAnimatedBackground;
-    }
-
-    public void selectionAction() {
-
-    }
-
     public void draw() {
-        if (this.selected) {
-            this.selectedBorderBG.draw();
-            if (this.doDrawBG()) {
-                this.selectedBG.draw();
-            } else {
-                Draw.rect(this.getBG().getX(), this.getBG().getY(), this.getBG().getWidth(), this.getBG().getHeight(), this.getZ(), this.getGUIScene().getBackgroundColor());
+        if (selected) {
+            int yPos = getHeightGap() + getY();
+            for (int i = 0; i < getLineCount(); i++) {
+                final String line = getLine(i);
+                final int xPos = getXPos(line);
+                Draw.mode(getDrawMode()).text(line, selectedTextColor, getFont(), xPos, yPos, getZ(), 0);
+                yPos += getLineGap();
             }
-            Color color = this.getSelectedTextColor();
-            Draw.text(this.getX(), this.getY(), this.getZ(), this.getContent(), new Font(this.getFontName(), Font.BOLD, this.getFontSize()), color, DrawElement.MODE_TEXTCENTERED);
-
+            selectedBG.draw(getX() + getBorderWidth(), getY() + getBorderWidth(), getZ(), getDrawMode());
+            selectedBorderBG.draw(getX(), getY(), getZ(), getDrawMode());
         } else {
             super.draw();
         }
     }
 
-    public Background getSelectedBG() {
-        return this.selectedBG;
-    }
-
-    public Background getSelectedBorderBG() {
-        return this.selectedBorderBG;
+    public void activate() {
+        //To be overridden
     }
 
     public void upArrow() {
-
+        //To be overridden
     }
 
     public void downArrow() {
-
+        //To be overridden
     }
 
-    public boolean doOverrideArrows() {
-        return this.overrideArrows;
+    public void keyPress(final Scene.KeyPack pack) {
+        //To be overridden
     }
 
-    public void overrideArrows() {
-        this.overrideArrows = true;
+    public void keyRelease(final Scene.KeyPack pack) {
+        //To be overridden
+    }
+
+    public void moveMouse(final Scene.MousePack pack) {
+        //To be overridden
+    }
+
+    public void mousePress(final Scene.MousePack pack) {
+        //To be overridden
+    }
+
+    public void moveMouseWheel(final Scene.MouseWheelPack pack) {
+        //To be overridden
+    }
+
+    public boolean isOverrideMouse() {
+        return overrideMouse;
+    }
+
+    public boolean isOverrideArrows() {
+        return overrideArrows;
+    }
+
+    public boolean isOverrideKeys() {
+        return overrideKeys;
+    }
+
+    public boolean isOverrideMouseWheel() {
+        return overrideMouseWheel;
+    }
+
+    public void enableOverrideMouse() {
+        overrideKeys = true;
+    }
+
+    public void enableOverrideArrows() {
+        overrideArrows = true;
+    }
+
+    public void enableOverrideKeys() {
+        overrideKeys = true;
+    }
+
+    public void enableOverrideMouseWheel() {
+        overrideMouseWheel = true;
+    }
+
+    public void disableOverrideMouse() {
+        overrideMouse = false;
     }
 
     public void disableOverrideArrows() {
-        this.overrideArrows = false;
+        overrideArrows = false;
     }
 
-    public void setTheme(Theme t) {
-        super.setTheme(t);
-        if (this.selectedBG instanceof ColorBackground) {
-            ((ColorBackground) this.selectedBG).setColor(t.getSelectedBgColor());
-        }
-        if (this.selectedBorderBG instanceof ColorBackground) {
-            ((ColorBackground) this.selectedBorderBG).setColor(t.getSelectedBorderColor());
-        }
-        this.selectedTextColor = t.getSelectedTextColor();
+    public void disableOverrideKeys() {
+        overrideKeys = false;
     }
 
-    public void setZ(int z) {
-        super.setZ(z);
-        this.selectedBG.setZ(z);
-        this.selectedBorderBG.setZ(z);
+    public void disableOverrideMouseWheel() {
+        overrideMouseWheel = false;
     }
 
 }
