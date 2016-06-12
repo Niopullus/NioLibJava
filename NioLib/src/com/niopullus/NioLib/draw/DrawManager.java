@@ -24,6 +24,12 @@ public class DrawManager {
         }
     }
 
+    public void add(final List<DrawElement> elements) {
+        for (DrawElement element : elements) {
+            add(element);
+        }
+    }
+
     public void display(final Graphics2D g) {
         final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
                 final Integer z = o1.getZ();

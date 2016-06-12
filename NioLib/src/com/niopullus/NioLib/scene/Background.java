@@ -2,13 +2,15 @@ package com.niopullus.NioLib.scene;
 
 
 import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.draw.ParcelDelegate;
 
 import java.awt.*;
 
 /**Used to display a rectangular visual in multiple contexts
  * Created by Owen on 3/19/2016.
  */
-public class Background {
+public class Background implements Parcel {
 
     private int width;
     private int height;
@@ -47,6 +49,10 @@ public class Background {
     }
 
     public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
+        //To be overridden
+    }
+
+    public void integrate(final ParcelDelegate delegate) {
         //To be overridden
     }
 

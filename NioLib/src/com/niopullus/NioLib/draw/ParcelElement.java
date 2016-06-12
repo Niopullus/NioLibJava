@@ -17,7 +17,7 @@ public class ParcelElement extends DrawElement {
 
     public void display(final Graphics g) {
         for (DrawElement element : elements) {
-            element.
+            element.setDx1(element.g);
         }
     }
 
