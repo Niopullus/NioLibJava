@@ -16,17 +16,20 @@ import java.awt.*;
  */
 public class ExitMenu extends GUIScene {
 
-    public ExitMenu(Scene scene) {
-        super(scene);
-        Background background = new ColorBackground(this.getDx(), this.getDy(), this.getWidth(), this.getHeight(), new Color(61, 179, 255, 180));
+    private Button submitButton;
+    private Button cancelButton;
+
+    public ExitMenu() {
+        super();
+        final Font font = new Font("Bold", Font.BOLD, 40);
+        final Background background = new ColorBackground(new Color(61, 179, 255, 180));
+        final Label label = new Label("Exit?", font, 0, 200, 300, 100);
+        submitButton = new Button("Yes", font,  200, -200, 200, 100);
+        cancelButton = new Button("No", font, -200, -200, 200, 100);
         setBackground(background);
-        Label label = new Label("Exit?", 0, 200, 300, 100);
-        Button submitButton = new Button("Yes", 200, -200, 200, 100);
-        Button cancelButton = new Button("No", -200, -200, 200, 100);
         addElement(label);
         addElement(submitButton);
         addElement(cancelButton);
-        background.setZ(490);
         label.setZ(500);
         submitButton.setZ(500);
         cancelButton.setZ(500);
@@ -34,10 +37,10 @@ public class ExitMenu extends GUIScene {
         submitButton.setSelectedColor(Color.orange);
     }
 
-    public void buttonActivate(int index) {
-        if (index == 0) {
+    public void buttonActivate(final SelectableGUIElement element) {
+        if (element == submitButton) {
             presentScene(new InitScene());
-        } else if (index == 1) {
+        } else if (element == cancelButton) {
             closeSubScene();
         }
     }

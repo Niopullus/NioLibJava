@@ -17,7 +17,13 @@ public class ParcelElement extends DrawElement {
 
     public void display(final Graphics g) {
         for (DrawElement element : elements) {
-            element.setDx1(element.g);
+            element.setDx1(getDx1() + element.getDx1());
+            element.setDy1(getDy1() + element.getDy1());
+            element.setDx2(getDx2() + element.getDx2());
+            element.setDy2(getDy2() + element.getDy2());
+            element.setZ(getZ() + element.getZ());
+            element.setAngle(getAngle() + element.getAngle());
+            element.display(g);
         }
     }
 

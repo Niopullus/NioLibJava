@@ -1,9 +1,8 @@
 package com.niopullus.NioLib.scene;
 
 
-import com.niopullus.NioLib.draw.Draw;
-
 import java.awt.*;
+import com.niopullus.NioLib.draw.Canvas;
 
 /**Displays a rectangle of a particular color
  * Created by Owen on 3/19/2016.
@@ -33,8 +32,8 @@ public class ColorBackground extends Background {
         this.color = color;
     }
 
-    public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
-        Draw.mode(mode).rect(color, x, y, getWidth(), getHeight(), z);
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.rect(color, 0, 0, getWidth(), getHeight(), 0);
     }
 
 }

@@ -8,6 +8,6 @@ import java.util.List;
  */
 public interface Parcel {
 
-    void integrate(final ParcelDelegate delegate);
+    void parcelDraw(final Canvas canvas);
 
 }

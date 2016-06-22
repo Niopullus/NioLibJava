@@ -1,14 +1,11 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import com.niopullus.NioLib.draw.Draw;
-import com.niopullus.NioLib.draw.DrawElement;
+import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Dir;
 
 import java.awt.*;
-import java.awt.event.MouseWheelEvent;
-import java.util.ArrayList;
 
 /**
  * Created by Owen on 3/31/2016.
@@ -24,8 +21,12 @@ public class SelectionBox extends SelectableGUIElement {
         this.expand = false;
     }
 
-    public void addSelection(final String item) {
-        addLine(item);
+    public String getContent() {
+        return getLine(selection);
+    }
+
+    public void addLine(final String item) {
+        super.addLine(item);
         selection = getLineCount() / 2;
     }
 
@@ -60,23 +61,19 @@ public class SelectionBox extends SelectableGUIElement {
         }
     }
 
-    public void draw() {
+    public void parcelDraw(final Canvas canvas) {
         final Background bg = getBG();
         final Background borderBG = getBorderBG();
         final Background selectedBG = getSelectedBG();
         final Background selectedBorderBG = getSelectedBorderBG();
-        int yPos = getY();
+        int yPos = -(getLineCount() * getHeight() / 2);
         for (int i = 0; i < getLineCount(); i++) {
             final String line = getLine(i);
             final int xPos = getXPos(line);
-            Draw.mode(getDrawMode()).text(line, getTextColor(), getFont(), xPos, yPos + getHeight() / 2, getZ(), 0);
-            if (i != selection) {
-                selectedBG.draw(getX() + getBorderWidth(), yPos + getBorderWidth(), getZ(), getDrawMode());
-                selectedBorderBG.draw(getX(), yPos, getZ(), getDrawMode());
-            } else {
-                bg.draw(getX() + getBorderWidth(), yPos + getBorderWidth(), getZ(), getDrawMode());
-                borderBG.draw(getX(), yPos, getZ(), getDrawMode());
-            }
+            final Background activateBG = i != selection ? bg : selectedBG;
+            final Background activateBorder = i != selection ? borderBG : selectedBorderBG;
+            canvas.o.parcel(activateBG, xPos, yPos, 0, 0);
+            canvas.o.parcel(activateBorder, xPos + getBorderSpacing(), yPos + getBorderSpacing(), 0, 0);
             yPos += getHeight();
         }
     }

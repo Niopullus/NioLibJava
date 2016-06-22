@@ -16,10 +16,7 @@ public class DrawElement {
     private int dx2;
     private int dy2;
     private int z;
-    private int originMode;
     private double angle;
-    public static final int ORIGIN_BOTTOMLEFT = 1;
-    public static final int ORIGIN_CENTER = 2;
 
     public DrawElement(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
         this.dx1 = dx1;
@@ -62,8 +59,28 @@ public class DrawElement {
         return angle;
     }
 
-    public void setDx1(final int n) {
+    public void setDx1(final int x) {
+        dx1 = x;
+    }
 
+    public void setDy1(final int y) {
+        dy1 = y;
+    }
+
+    public void setDx2(final int x) {
+        dx2 = x;
+    }
+
+    public void setDy2(final int y) {
+        dy2 = y;
+    }
+
+    public void setZ(final int z) {
+        this.z = z;
+    }
+
+    public void setAngle(final double angle) {
+        this.angle = angle;
     }
 
     public void adjustGraphics(final Graphics2D g, final double angle) {
@@ -74,11 +91,21 @@ public class DrawElement {
         g.translate(-transX, -transY);
     }
 
+    private boolean isVisible() {
+        final boolean cond1 = dx1 < Main.Width();
+        final boolean cond2 = dy1 < Main.Height();
+        final boolean cond3 = dx2 > 0;
+        final boolean cond4 = dy2 > 0;
+        return cond1 && cond2 && cond3 && cond4;
+    }
+
     public final void draw(final Graphics2D g) {
-        final AffineTransform old = g.getTransform();
-        adjustGraphics(g, angle);
-        display(g);
-        g.setTransform(old);
+        if (isVisible()) {
+            final AffineTransform old = g.getTransform();
+            adjustGraphics(g, angle);
+            display(g);
+            g.setTransform(old);
+        }
     }
 
     public void display(final Graphics g) {

@@ -1,9 +1,8 @@
 package com.niopullus.NioLib.scene;
 
 
-import com.niopullus.NioLib.draw.Draw;
-import com.niopullus.NioLib.draw.Parcel;
-import com.niopullus.NioLib.draw.ParcelDelegate;
+import com.niopullus.NioLib.draw.*;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
 
@@ -48,11 +47,7 @@ public class Background implements Parcel {
         //To be overridden
     }
 
-    public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
-        //To be overridden
-    }
-
-    public void integrate(final ParcelDelegate delegate) {
+    public void parcelDraw(final Canvas canvas) {
         //To be overridden
     }
 

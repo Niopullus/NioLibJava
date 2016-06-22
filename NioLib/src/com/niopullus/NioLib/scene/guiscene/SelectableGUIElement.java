@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.scene.*;
 
 import java.awt.*;
@@ -78,8 +78,8 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     private void updateSelectedBG() {
-        selectedBG.setWidth(getWidth() - getBorderWidth() * 2);
-        selectedBG.setHeight(getHeight() - getBorderWidth() * 2);
+        selectedBG.setWidth(getWidth() - getBorderSpacing() * 2);
+        selectedBG.setHeight(getHeight() - getBorderSpacing() * 2);
     }
 
     private void updateSelectedBorder() {
@@ -95,19 +95,19 @@ public class SelectableGUIElement extends GUIElement {
         this.selected = false;
     }
 
-    public void draw() {
+    public void parcelDraw(final Canvas canvas) {
         if (selected) {
-            int yPos = getHeightGap() + getY();
+            canvas.o.parcel(selectedBorderBG, 0, 0, 0, 0);
+            canvas.o.parcel(selectedBG, getBorderSpacing(), getBorderSpacing(), 10, 0);
+            int yPos = getBorderSpacing() + getHeightGap();
             for (int i = 0; i < getLineCount(); i++) {
-                final String line = getLine(i);
+                final String line = getLine(getLineCount() - i - 1);
                 final int xPos = getXPos(line);
-                Draw.mode(getDrawMode()).text(line, selectedTextColor, getFont(), xPos, yPos, getZ(), 0);
+                canvas.o.text(line, selectedTextColor, getFont(), xPos, yPos, 20, 0);
                 yPos += getLineGap();
             }
-            selectedBG.draw(getX() + getBorderWidth(), getY() + getBorderWidth(), getZ(), getDrawMode());
-            selectedBorderBG.draw(getX(), getY(), getZ(), getDrawMode());
         } else {
-            super.draw();
+            super.parcelDraw(canvas);
         }
     }
 

@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class DynamicImageNode extends ImageNode {
         }
     }
 
-    public void draw() {
+    public void parcelDraw(final Canvas canvas) {
         final BufferedImage image = getImage();
         if (reset && mod) {
             unmodCollisionBox(getAnimation(), getImage(), currentOffsetMode);
@@ -123,11 +123,12 @@ public class DynamicImageNode extends ImageNode {
             final int yOff = deriveYOffsetFromMode(currentOffsetMode, yDif);
             final int x = getTX() - xOff;
             final int y = getTY() - yOff;
-            Draw.o.animation(animation, x, y, scaledAWidth, scaledAHeight, getZ(), getAngle());
+            canvas.o.animation(animation, x, y, scaledAWidth, scaledAHeight, 0, 0);
             animationTimer--;
         } else {
-            Draw.o.image(image, getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle());
+            canvas.o.image(image, 0, 0, getWidth(), getHeight(), 0, 0);
         }
+        super.parcelDraw(canvas);
     }
 
     private int deriveXOffsetFromMode(final int mode, final int xDiff) {

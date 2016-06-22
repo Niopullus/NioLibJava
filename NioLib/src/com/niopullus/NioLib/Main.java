@@ -1,16 +1,14 @@
 package com.niopullus.NioLib;
 
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.scene.SceneManager;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 /**Manages the program
  * Created by Owen on 3/5/2016.
@@ -105,10 +103,11 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         long wait;
         init();
         while (running) {
+            final Canvas canvas = new Canvas();
             start = System.nanoTime();
             sceneManager.tick();
-            sceneManager.draw();
-            Draw.display(g);
+            sceneManager.parcelDraw(canvas);
+            canvas.display(g);
             drawToScreen();
             elapsed = System.nanoTime() - start;
             wait = targetTime - elapsed / 1000000;

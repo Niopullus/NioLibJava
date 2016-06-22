@@ -1,7 +1,8 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.*;
 import com.niopullus.app.Config;
 
@@ -13,13 +14,13 @@ import java.awt.*;
 /**Display item for GUI scenes
  * Created by Owen on 3/6/2016.
  */
-public class GUIElement {
+public class GUIElement implements Parcel {
 
     private List<String> lines;
     private Background borderBG;
     private Background bg;
     private Color textColor;
-    private Draw.DrawMode drawMode;
+    private Canvas.DrawMode drawMode;
     private GUIScene scene;
     private Font font;
     private int x;
@@ -27,7 +28,7 @@ public class GUIElement {
     private int z;
     private int width;
     private int height;
-    private int borderWidth;
+    private int borderSpacing;
     private int widthGap;
     private int heightGap;
     private int lineGap;
@@ -40,7 +41,7 @@ public class GUIElement {
         this.x = x;
         this.y = y;
         this.z = 0;
-        this.borderWidth = 10;
+        this.borderSpacing = 10;
         this.textColor = Color.BLACK;
         this.font = font;
         this.bg = new ColorBackground(Color.WHITE);
@@ -59,7 +60,7 @@ public class GUIElement {
         return lines.get(0);
     }
 
-    public Draw.DrawMode getDrawMode() {
+    public Canvas.DrawMode getDrawMode() {
         return drawMode;
     }
 
@@ -83,8 +84,8 @@ public class GUIElement {
         return height;
     }
 
-    public int getBorderWidth() {
-        return borderWidth;
+    public int getBorderSpacing() {
+        return borderSpacing;
     }
 
     public Background getBG() {
@@ -147,7 +148,7 @@ public class GUIElement {
         this.justify = justify;
     }
 
-    public void setDrawMode(final Draw.DrawMode mode) {
+    public void setDrawMode(final Canvas.DrawMode mode) {
         drawMode = mode;
     }
 
@@ -205,8 +206,8 @@ public class GUIElement {
         font = new Font(fontName, Font.BOLD, fontSize);
     }
 
-    public void setBorderWidth(final int borderWidth) {
-        this.borderWidth = borderWidth;
+    public void setBorderSpacing(final int borderSpacing) {
+        this.borderSpacing = borderSpacing;
         updateBackgrounds();
     }
 
@@ -234,8 +235,8 @@ public class GUIElement {
         }
         this.fieldWidth = stringWidth + 2 * widthGap;
         this.fieldHeight = stringHeight + 2 * heightGap;
-        this.width = fieldWidth + borderWidth * 2;
-        this.height = fieldHeight + borderWidth * 2;
+        this.width = fieldWidth + borderSpacing * 2;
+        this.height = fieldHeight + borderSpacing * 2;
     }
 
     private void determineLineGap() {
@@ -258,37 +259,35 @@ public class GUIElement {
         borderBG.setHeight(height);
     }
 
-    public void draw() {
-        int yPos = heightGap + y;
-        for (String line : lines) {
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.parcel(borderBG, 0, 0, 0, 0);
+        canvas.o.parcel(bg, borderSpacing, borderSpacing, 10, 0);
+        int yPos = borderSpacing + heightGap;
+        for (int i = 0; i < lines.size(); i++) {
+            final String line = lines.get(lines.size() - i - 1);
             final int xPos = getXPos(line);
-            Draw.mode(drawMode).text(line, textColor, font, xPos, yPos, z, 0);
+            canvas.o.text(line, textColor, font, xPos, yPos, 20, 0);
             yPos += lineGap;
         }
-        bg.draw(x + borderWidth, y + borderWidth, z, drawMode);
-        borderBG.draw(x, y, z, drawMode);
     }
 
-    public int getXPos(final String string) {
+    public int getXPos(final String line) {
         final FontMetrics metrics = new FontMetrics(font) {};
-        final int stringwidth = metrics.stringWidth(string);
-        final int lineDiff = fieldWidth - stringwidth;
-        int x = this.x + borderWidth;
-        if (justify == Justify.LEFT) {
-            x += widthGap;
+        final int diff = metrics.stringWidth(line);
+        int result = borderSpacing + widthGap;
+        if (justify == Justify.CENTER) {
+            result += diff / 2;
         } else if (justify == Justify.RIGHT) {
-            x += lineDiff + widthGap;
-        } else if (justify == Justify.CENTER) {
-            x += lineDiff / 2 + widthGap;
+            result += diff;
         }
-        return x;
+        return result;
     }
 
     public void setTheme(final Theme theme) {
         bg.setColor(theme.getBgColor());
         borderBG.setColor(theme.getBorderColor());
         textColor = theme.getTextColor();
-        setBorderWidth(theme.getBorderWidth());
+        setBorderSpacing(theme.getBorderWidth());
         setFontName(theme.getFontName());
     }
 

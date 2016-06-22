@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene;
 
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.image.BufferedImage;
 
@@ -24,8 +24,8 @@ public class ImageBackground extends Background {
         this(image, 1);
     }
 
-    public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
-        Draw.mode(mode).image(image, x, y, getWidth(), getHeight(), z);
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.image(image, 0, 0, getWidth(), getHeight(), 0);
     }
 
 }

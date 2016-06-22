@@ -1,7 +1,8 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Main;
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.NodeHandler;
@@ -19,7 +20,7 @@ import java.util.List;
 /**A scene variant that is designed to support physics, tilemaps, and nodes
  * Created by Owen on 3/5/2016.
  */
-public class DynamicScene extends Scene implements NodeHandler {
+public class DynamicScene extends Scene implements NodeHandler, Parcel {
 
     private String name;
     private Node universe;
@@ -152,15 +153,15 @@ public class DynamicScene extends Scene implements NodeHandler {
         //To be overridden
     }
 
-    public final void draw() {
+    public final void parcelDraw(final Canvas canvas) {
         final Scene subscene;
-        background.draw(0, 0, 0, Draw.DrawMode.ORIGIN);
-        fgTilemap.draw();
-        bgTilemap.draw();
-        universe.drawNode();
+        canvas.o.parcel(background, 0, 0, 0, 0);
+        canvas.o.parcel(fgTilemap, 0, 0, 10, 0);
+        canvas.o.parcel(bgTilemap, 0, 0, 5, 0);
+        canvas.o.parcel(universe, universe.getX(), universe.getY(), universe.getZ(), universe.getAngle());
         subscene = getSubscene();
         if (subscene != null) {
-            subscene.draw();
+            canvas.o.parcel(subscene, 0, 0, 50, 0);
         }
     }
 

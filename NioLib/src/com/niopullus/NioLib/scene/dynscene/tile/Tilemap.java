@@ -1,20 +1,18 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
 import com.niopullus.NioLib.*;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Node;
-import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
 import com.niopullus.NioLib.utilities.SignedContainer;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**Keeps track of tile regions
  * Created by Owen on 3/23/2016.
  */
-public class Tilemap implements Crushable {
+public class Tilemap implements Crushable, Parcel {
 
     private int tileSize;
     private int width;
@@ -236,7 +234,7 @@ public class Tilemap implements Crushable {
         return (int) Math.floor((double) length / tileSize);
     }
 
-    public void draw() {
+    public void parcelDraw(final Canvas canvas) {
         final int xMin = (int) Math.floor((double) -world.getX() / tileSize);
         final int xMax = (int) Math.ceil((double) (-world.getX() + Main.Width()) / tileSize) + 1;
         final int yMin = (int) Math.floor((double) -world.getY() / tileSize);
@@ -247,7 +245,7 @@ public class Tilemap implements Crushable {
                 if (tile != null && tile.getImage() != null) {
                     final int x = i * tileSize + world.getX();
                     final int y = Main.Height() - ((j + 1) * tileSize) - world.getY();
-                    tile.draw(x, y);
+                    canvas.o.parcel(tile, x, y, 0, 0);
                 }
             }
         }

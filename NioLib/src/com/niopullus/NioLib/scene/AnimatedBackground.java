@@ -1,8 +1,7 @@
 package com.niopullus.NioLib.scene;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.draw.Draw;
-import com.niopullus.NioLib.draw.ParcelDelegate;
+import com.niopullus.NioLib.draw.Canvas;
 
 /**Rectangular display of an animation
  * Created by Owen on 3/24/2016.
@@ -24,12 +23,8 @@ public class AnimatedBackground extends Background {
         this(animation, 1);
     }
 
-    public void draw(final int x, final int y, final int z, final Draw.DrawMode mode) {
-        Draw.mode(mode).animation(animation, x, y, getWidth(), getHeight(), z);
-    }
-
-    public void integrate(final ParcelDelegate delegate) {
-        delegate.
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.animation(animation, 0, 0, getWidth(), getHeight(), 0);
     }
 
 }

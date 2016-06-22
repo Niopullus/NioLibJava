@@ -1,11 +1,8 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.Main;
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 
 /**A node that is drawn in the form of a colorable rectangle
  * Created by Owen on 3/19/2016.
@@ -21,8 +18,8 @@ public class ShapeNode extends Node {
         osetHeight(height);
     }
 
-    public void draw() {
-        Draw.o.rect(color, getTX(), getTY(), getWidth(), getHeight(), getZ(), getAngle());
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.rect(color, 0, 0, getWidth(), getHeight(), 0);
     }
 
 }

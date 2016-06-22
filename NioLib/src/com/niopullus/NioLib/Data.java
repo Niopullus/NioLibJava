@@ -39,6 +39,10 @@ public class Data {
         return fileManager.getFileNames(fileDir, jarDir);
     }
 
+    public static List<String> getFileNames(final String dir) {
+        return fileManager.getFileNames(dir);
+    }
+
     public static void setRootDir(final String dir) {
         fileManager.setRootDir(dir);
     }

@@ -1,6 +1,8 @@
 package com.niopullus.NioLib.scene;
 
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -12,7 +14,7 @@ import java.util.List;
 /**Regulates various interactions pertaining to scenes
  * Created by Owen on 3/5/2016.
  */
-public class SceneManager {
+public class SceneManager implements Parcel {
 
     private Main main;
     private Scene currentScene;
@@ -45,9 +47,9 @@ public class SceneManager {
         }
     }
 
-    public void draw() {
+    public void parcelDraw(final Canvas canvas) {
         if (currentScene != null) {
-            currentScene.draw();
+            canvas.o.parcel(currentScene, 0, 0, 0, 0);
         }
     }
 

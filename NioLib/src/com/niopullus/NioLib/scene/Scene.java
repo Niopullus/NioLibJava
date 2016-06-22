@@ -1,6 +1,8 @@
 package com.niopullus.NioLib.scene;
 
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.draw.*;
+import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.scene.dynscene.Dir;
 
 import java.awt.*;
@@ -11,7 +13,7 @@ import java.awt.event.MouseWheelEvent;
 /**Stores data pertaining a specific group of items to be displayed
  * Created by Owen on 3/5/2016.
  */
-public class Scene {
+public class Scene implements Parcel {
 
     private SceneManager sceneManager;
     private Scene subscene;
@@ -115,7 +117,7 @@ public class Scene {
         }
     }
 
-    public void draw() {
+    public void parcelDraw(final Canvas canvas) {
         //To be overridden
     }
 

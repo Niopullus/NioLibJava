@@ -1,7 +1,8 @@
 package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Main;
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
@@ -36,23 +37,30 @@ public class GUIScene extends Scene {
         this.selectedIndex = 0;
     }
 
-    public final void draw() {
-        background.draw(0, 0, 0, Draw.DrawMode.ORIGIN);
+    public final void parcelDraw(final Canvas canvas) {
+        canvas.o.parcel(background, 0, 0, 0, 0);
         for (GUIElement guiElement : elements) {
-            guiElement.draw();
-        }
-        if (getSubscene() != null) {
-            final Scene subScene = getSubscene();
-            subScene.draw();
+            canvas.c.parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
         }
     }
 
     public void keyPress(final KeyPack pack) {
-        switch (pack.code) {
-            case KeyEvent.VK_UP: arrow(Dir.N); break;
-            case KeyEvent.VK_DOWN: arrow(Dir.S); break;
-            case KeyEvent.VK_ENTER: activate(); break;
-            default: selected.keyPress(pack);
+        if (!selected.isOverrideKeys()) {
+            if (pack.code == KeyEvent.VK_UP) {
+                if (!selected.isOverrideArrows()) {
+                    arrow(Dir.N);
+                } else {
+                    selected.upArrow();
+                }
+            } else if (pack.code == KeyEvent.VK_DOWN) {
+                if (!selected.isOverrideArrows()) {
+                    arrow(Dir.S);
+                } else {
+                    selected.downArrow();
+                }
+            }
+        } else {
+            selected.keyPress(pack);
         }
     }
 

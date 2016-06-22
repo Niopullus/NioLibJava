@@ -4,7 +4,8 @@ import com.niopullus.NioLib.Crushable;
 import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.Log;
 import com.niopullus.NioLib.LogManager;
-import com.niopullus.NioLib.draw.Draw;
+import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.dynscene.CollideData;
 import com.niopullus.NioLib.scene.dynscene.Collision;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
@@ -20,7 +21,7 @@ import java.util.List;
  * In order to subvert this, enter data into the data object of this class
  * Created by Owen on 3/23/2016.
  */
-public class Tile implements CollideData, Crushable {
+public class Tile implements CollideData, Crushable, Parcel {
 
     private DataTree data;
     private Point tileMapPos;
@@ -85,6 +86,10 @@ public class Tile implements CollideData, Crushable {
 
     public Point getTileMapPos() {
         return tileMapPos;
+    }
+
+    public int getTileSize() {
+        return tilemap.getTileSize();
     }
 
     /**
@@ -190,11 +195,8 @@ public class Tile implements CollideData, Crushable {
         //To be overridden
     }
 
-    public void draw(final int x, final int y) {
-        final Tilemap tilemap = getTilemap();
-        final int tileSize = tilemap.getTileSize();
-        final int z = tilemap.getZ();
-        Draw.o.image(getImage(), x, y, tileSize, tileSize, z);
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.image(getImage(), 0, 0, tilemap.getTileSize(), tilemap.getTileSize(), 0);
     }
 
 }

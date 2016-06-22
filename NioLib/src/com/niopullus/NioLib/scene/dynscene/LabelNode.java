@@ -1,7 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.draw.Draw;
-import com.niopullus.NioLib.draw.DrawElement;
+import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.utilities.EString;
 
 import java.awt.*;
@@ -56,8 +56,9 @@ public class LabelNode extends Node {
         this.fontSize = fontSize;
     }
 
-    public void draw() {
-        Draw.o.text(content.get(), color, fontName, fontSize, getX(), getY(), getZ());
+    public void parcelDraw(final Canvas canvas) {
+        canvas.o.text(content.get(), color, fontName, fontSize, 0, 0, 0);
+        super.parcelDraw(canvas);
     }
 
 }

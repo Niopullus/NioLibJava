@@ -1,8 +1,7 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
 import com.niopullus.NioLib.Data;
-import com.niopullus.NioLib.draw.Draw;
-import com.niopullus.NioLib.draw.DrawElement;
+import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.Scene;
@@ -10,7 +9,6 @@ import com.niopullus.NioLib.scene.dynscene.*;
 import com.niopullus.NioLib.scene.dynscene.reference.*;
 import com.niopullus.NioLib.scene.dynscene.tile.*;
 import com.niopullus.NioLib.utilities.Utilities;
-import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
 
 import java.awt.*;
@@ -44,11 +42,14 @@ public class MapEditorScene extends Scene implements NodeHandler {
     private boolean shold;
     private boolean dhold;
     private String worldName;
+    private Font font;
+    private int tileSize;
+    private int elementCount;
 
     public MapEditorScene(String name) {
         super();
         final World pack = World.generateWorld(worldName, this);
-        final int elementCount = Ref.getNodeCount() + Ref.getTileCount();
+        elementCount = Ref.getNodeCount() + Ref.getTileCount() + 1;
         fgMap = pack.getFgTilemap();
         bgMap = pack.getBgTilemap();
         universe = pack.getUniverse();
@@ -68,6 +69,8 @@ public class MapEditorScene extends Scene implements NodeHandler {
         xDivider = Main.Width() * 5 / 6;
         squareSize = Main.Width() / 16;
         mapMode = 1;
+        font = new Font("Bold", Font.BOLD, 30);
+        tileSize = fgMap.getTileSize();
     }
 
     public MapEditorScene() {
@@ -86,109 +89,44 @@ public class MapEditorScene extends Scene implements NodeHandler {
         return universe.getChildCount();
     }
 
-    public void draw() {
-        Draw.o.rect(new Color(172, 172, 172), 0, 0, Main.Width(), Main.Height(), 0);
-        Draw.o.rect(new Color(0, 0, 0, 127), xDivider, 0, Main.Width() - xDivider, Main.Height(), 100);
-        Draw.o.rect(new Color(255, 0, 0, 100), selectedSquare.x * squareSize + xDivider, selectedSquare.y * squareSize, squareSize, squareSize, 480);
-        Draw.m.text(xDivider + , (Main.Height() / 2) - (Main.Width() * ((cols - 2) * 2 + 1) / 24), 1000, "Prev Page", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
-        Draw.text(Main.Width() * 23 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 2) * 2 + 1) / 24), 1000, "Next Page", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
-        Draw.text(Main.Width() * 21 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 1) * 2 + 1) / 24), 1000, "FG Map", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
-        Draw.text(Main.Width() * 23 / 24 - 50 - Main.Width() / 2, (Main.Height() / 2) - (Main.Width() * ((cols - 1) * 2 + 1) / 24), 1000, "BG Map", new Font("Bold", Font.BOLD, 30), Color.BLACK, DrawElement.MODE_TEXTCENTERED);
-        if (this.mm == 0) {
-            Draw.rect(Main.Width() * 5 / 6 - 50, (cols - 1) * Main.Width() / 12, Main.Width() / 12, Main.Width() / 12, 500, new Color(255, 196, 46, 100));
-        } else if (this.mm == 1) {
-            Draw.rect(Main.Width() / 12 + Main.Width() * 5 / 6 - 50, (cols - 1) * Main.Width() / 12, Main.Width() / 12, Main.Width() / 12, 500, new Color(255, 196, 46, 100));
+    public void parcelDraw(final Canvas canvas) {
+        final int mmX = mapMode == 2 ? 0 : squareSize;
+        final int ssX = (selectedSquare.x - 1) * squareSize, ssY = selectedSquare.y * squareSize;
+        final int csX = (chosenSquare.x - 1) * squareSize, csY = chosenSquare.y * squareSize;
+        int id = page * (cols - 2) * 2;
+        canvas.o.rect(new Color(172, 172, 172), 0, 0, Main.Width(), Main.Height(), 0);
+        canvas.o.rect(new Color(0, 0, 0, 127), xDivider, 0, Main.Width() - xDivider, Main.Height(), 100);
+        canvas.o.rect(new Color(18, 255,0), xDivider + ssX, ssY, squareSize, squareSize, 480);
+        canvas.o.rect(new Color(18, 255,0), xDivider + mmX, 0, squareSize, squareSize, 0);
+        canvas.o.text("Prev Page", Color.BLACK, font, xDivider + squareSize / 2, squareSize * 3 / 2, 1000, 0);
+        canvas.o.text("Next Page", Color.BLACK, font, xDivider + squareSize * 3 / 2, squareSize * 3 / 2, 1000, 0);
+        canvas.m.text("FG Map", Color.BLACK, font, xDivider + squareSize / 2, squareSize / 2, 1000, 0);
+        canvas.m.text("BG Map", Color.BLACK, font, xDivider + squareSize * 3 / 2, squareSize / 2, 1000, 0);
+        if (activePart == 1) {
+            final int x1 = (fillingAnchor != null ? Utilities.lesser(fillingAnchor.x, chosenTileSpace.x) : chosenTileSpace.x) * tileSize + world.getX();
+            final int y1 = (fillingAnchor != null ? Utilities.lesser(fillingAnchor.y, chosenTileSpace.y) : chosenTileSpace.y) * tileSize + world.getY();
+            final int x2 = (fillingAnchor != null ? Utilities.greater(fillingAnchor.x, chosenTileSpace.x) : chosenTileSpace.x) * tileSize + world.getX();
+            final int y2 = (fillingAnchor != null ? Utilities.greater(fillingAnchor.y, chosenTileSpace.y) : chosenTileSpace.y) * tileSize + world.getY();
+            final int width = x2 - x1;
+            final int height = y2 - y1;
+            canvas.o.rect(new Color(51, 240, 229), x1, y1, width, height, 200);
+        } else if (activePart == 2) {
+            canvas.o.rect(new Color(51, 240, 229), xDivider + csX, csY, squareSize, squareSize, 500);
         }
-        if (this.choice == 1) {
-            if (this.fillingAnchor == null) {
-                Draw.rect(this.selectedTile.x * this.fgMap.getTileSize() + this.world.getX(), Main.Height() - ((this.selectedTile.y + 1) * this.fgMap.getTileSize()) - this.world.getY(), this.fgMap.getTileSize(), this.fgMap.getTileSize(), 200, new Color(52, 240, 255, 100));
-            } else {
-                int x1 = this.fillingAnchor.x, x2 = this.fillingAnchor.x;
-                int y1 = this.fillingAnchor.y, y2 = this.fillingAnchor.y;
-                if (this.selectionType == 0) {
-                    if (this.fillingAnchor.x > this.selectedTile.x) {
-                        x1 = this.selectedTile.x;
-                        x2 = this.fillingAnchor.x;
-                    } else if (this.fillingAnchor.x < this.selectedTile.x) {
-                        x1 = this.fillingAnchor.x;
-                        x2 = this.selectedTile.x;
-                    }
-                    if (this.fillingAnchor.y > this.selectedTile.y) {
-                        y1 = this.selectedTile.y;
-                        y2 = this.fillingAnchor.y;
-                    } else if (this.fillingAnchor.y < this.selectedTile.y) {
-                        y1 = this.fillingAnchor.y;
-                        y2 = this.selectedTile.y;
-                    }
-                } else if (this.selectionType == 1) {
-                    x1 = this.fillingAnchor.x;
-                    x2 = this.fillingAnchor.x;
-                    y1 = this.fillingAnchor.y;
-                    y2 = this.fillingAnchor.y;
+        for (int y = cols - 2; y >= 0; y++) {
+            for (int x = 1; x <= 2 && id < elementCount; x++) {
+                if (id < Ref.getTileCount()) {
+                    final TileReference reference = Ref.getTileRef(id);
+                    final Tile sample = reference.getSample();
+                    canvas.o.parcel(sample, x * squareSize, y * squareSize, squareSize, squareSize, 100, 0);
+                } else if (id < Ref.getNodeCount()) {
+                    final int nodeID = id - Ref.getTileCount();
+                    final NodeReference reference = Ref.getNodeRef(nodeID);
+                    final Node sample = reference.getSample();
+                    canvas.o.parcel(sample, x * squareSize, y * squareSize, squareSize, squareSize, 100, 0);
                 }
-                Draw.rect(x1 * this.fgMap.getTileSize() + this.world.getX(), Main.Height() - ((y1) * this.fgMap.getTileSize()) - this.world.getY() - (this.fgMap.getTileSize() * (y2 - y1 + 1)), this.fgMap.getTileSize() * (x2 - x1 + 1), this.fgMap.getTileSize() * (y2 - y1 + 1), 200, new Color(52, 240, 255, 100));
+                id++;
             }
-        } else if (choice == 2) {
-            Draw.rect(this.selection.x * Main.Width() / 12 + Main.Width() * 5 / 6 - 50, this.selection.y * Main.Width() / 12, Main.Width() / 12, Main.Width() / 12, 500, new Color(74, 255, 64, 100));
-        }
-        int id = this.page * 16;
-        //System.out.println("t" + TileReference.getTileQuant());
-        //System.out.println("n" + TileReference.getNodeQuant());
-        for (int y = 1; y <= this.cols - 2; y++) {
-            for  (int x = 1; x <= 2; x++) {
-                if (id <= TileReference.getTileQuant()) {
-                    TileReference tile = Reference.getTileRef(id);
-                    if (tile != null) {
-                        if (!(tile instanceof MultiTileReference)) {
-                            Draw.image((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50, (int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()), 300, Main.Width() / 16, Main.Width() / 16, tile.getImage());
-                        } else {
-                            MultiTileReference mtr = (MultiTileReference) tile;
-                            int size = Utilities.greater(mtr.getWidth(), mtr.getHeight());
-                            int smallTileSize = (Main.Width() / 16) / size;
-                            int xStart = (size - mtr.getWidth()) * smallTileSize / 2;
-                            int yStart = (size - mtr.getHeight()) * smallTileSize / 2;
-                            int part = 0;
-                            for (int i = 0; i < mtr.getWidth(); i++) {
-                                for (int j = 0; j < mtr.getHeight(); j++) {
-                                    Draw.image((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50 + xStart + (i * smallTileSize), (int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()) + yStart + (j * smallTileSize), 300, smallTileSize, smallTileSize, mtr.getImage(0, (mtr.getWidth() * mtr.getHeight()) - part - 1));
-                                    part++;
-                                }
-                            }
-                        }
-                    }
-                    id++;
-                } else if (id - TileReference.getTileQuant() - 1 < NodeReference.getNodeQuant()) {
-                    NodeReference node = Reference.getNodeRef(id - TileReference.getTileQuant() - 1);
-                    if (node != null) {
-                        if (node.getSample() instanceof ImageNode || node.getSample() instanceof DynamicImageNode) {
-                            BufferedImage image = null;
-                            if (node.getSample() instanceof ImageNode) {
-                                ImageNode imageNode = (ImageNode) node.getSample();
-                                image = imageNode.getImage();
-                            } else if (node.getSample() instanceof DynamicImageNode) {
-                                DynamicImageNode imageNode = (DynamicImageNode) node.getSample();
-                                image = imageNode.getImage();
-                            }
-                            double drawScale = (double) (Main.Width() / 16) / Utilities.greater(image.getWidth(), image.getHeight());
-                            int scaledWidth = (int) (drawScale * image.getWidth());
-                            int scaledHeight = (int) (drawScale * image.getHeight());
-                            int xrest = ((Main.Width() / 16) - scaledWidth) / 2;
-                            int yrest = ((Main.Width() / 16) - scaledHeight) / 2;
-                            //System.out.println("x" + ((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50 + xrest) + "y" + ((int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()) + yrest));
-                            //System.out.println("width" + scaledWidth + "hegith" + scaledHeight);
-                            Draw.image((int) ((double) Main.Width() * 81 / 96 + ((double) (x - 1) / 12) * Main.Width()) - 50 + xrest, (int) ((double) Main.Width() / 96 + ((double) (y - 1) / 12) * Main.Width()) + yrest, 300, scaledWidth, scaledHeight, image);
-                        }
-                    }
-                    id++;
-                }
-            }
-            this.world.drawNode();
-        }
-        Draw.rect(this.world.getX() - 50, Main.Height() - (this.world.getY() - 50), 100, 100, 500, Color.RED);
-        this.bgMap.draw();
-        this.fgMap.draw();
-        if (this.getSubscene() != null) {
-            this.getSubscene().draw();
         }
     }
 
@@ -215,8 +153,8 @@ public class MapEditorScene extends Scene implements NodeHandler {
             case KeyEvent.VK_S: shold = true; break;
             case KeyEvent.VK_W: whold = true; break;
             case KeyEvent.VK_D: dhold = true; break;
-            case KeyEvent.VK_ESCAPE: addSubScene(new ExitMenu(this)); break;
-            case KeyEvent.VK_O: addSubScene(new SaveMenu(this, worldName));
+            case KeyEvent.VK_ESCAPE: addSubScene(new ExitMenu()); break;
+            case KeyEvent.VK_O: addSubScene(new SaveMenu(worldName));
         }
     }
 

@@ -1,10 +1,12 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.*;
+import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
 import com.niopullus.NioLib.utilities.Utilities;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import java.util.List;
 /**Polymorphic sprite designed for a Dynamic Scene
  * Created by Owen on 3/5/2016.
  */
-public class Node implements Comparable<Node>, CollideData, Boundable, Crushable {
+public class Node implements Comparable<Node>, CollideData, Boundable, Crushable, Parcel {
 
     private UUID id;
     private int x;
@@ -657,15 +659,10 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         return Math.sqrt(Math.pow(node.getWX() - (getWX() + width / 2), 2) + Math.pow(node.getWY() - (getWY() + height / 2), 2));
     }
 
-    public final void drawNode() {
-        draw();
+    public void parcelDraw(final Canvas canvas) {
         for (Node node : children) {
-            node.drawNode();
+            canvas.o.parcel(node, node.getX(), node.getY(), node.getZ(), node.getAngle());
         }
-    }
-
-    public void draw() {
-        //To be overridden
     }
 
     public void clickedOn() {

@@ -47,6 +47,10 @@ public class FileManager {
         return all;
     }
 
+    public List<String> getFileNames(final String dir) {
+        return getFileNames(dir, dir);
+    }
+
     public void setRootDir(final String dir) {
         rootDir = dir;
         rootFile = new File(dir);

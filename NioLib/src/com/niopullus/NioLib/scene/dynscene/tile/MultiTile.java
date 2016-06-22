@@ -1,6 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
 import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -116,6 +117,17 @@ public class MultiTile extends Tile {
 
     public void addPart(final MultiTilePart part) {
         parts.add(part);
+    }
+
+    public void parcelDraw(final Canvas canvas) {
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                final BufferedImage image = getImage(i, j);
+                if (image != null) {
+                    canvas.o.image(image, i * getTileSize(), j * getTileSize(), getTileSize(), getTileSize());
+                }
+            }
+        }
     }
 
 }

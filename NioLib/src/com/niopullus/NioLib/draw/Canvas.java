@@ -5,6 +5,7 @@ import com.niopullus.NioLib.Main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,38 +14,93 @@ import java.awt.image.BufferedImage;
 /**Used to relay DrawElements to the DrawManager
  * Created by Owen on 5/29/2016.
  */
-public class Draw {
+public class Canvas {
 
-    private static DrawManager drawManager = new DrawManager();
-    public static final OriginDelegate o = new OriginDelegate();
-    public static final CenterDelegate c = new CenterDelegate();
-    public static final MiddleDelegate m = new MiddleDelegate();
-    public static final TabDelegate t = new TabDelegate();
+    private List<DrawElement> elements;
+    private boolean init;
+    private int minX;
+    private int minY;
+    private int maxX;
+    private int maxY;
+    public OriginDelegate o;
+    public CenterDelegate c;
+    public MiddleDelegate m;
+    public TabDelegate t;
 
-    public static DrawDelegate mode(final DrawMode mode) {
+    public Canvas() {
+        elements = new ArrayList<>();
+        init = false;
+        minX = 0;
+        minY = 0;
+        maxX = 0;
+        maxY = 0;
+        o = new OriginDelegate();
+        c = new CenterDelegate();
+        m = new MiddleDelegate();
+        t = new TabDelegate();
+    }
+
+    public List<DrawElement> getElements() {
+        return elements;
+    }
+
+    public int getWidth() {
+        return maxX - minX;
+    }
+
+    public int getHeight() {
+        return maxY - minY;
+    }
+
+    public void addElement(final DrawElement element) {
+        if (!init) {
+            minX = element.getDx1();
+            maxX = element.getDx2();
+            minY = element.getDy1();
+            maxY = element.getDy2();
+            init = true;
+            return;
+        }
+        if (element.getDx1() < minX) {
+            minX = element.getDx1();
+        }
+        if (element.getDx2() > maxX) {
+            maxX = element.getDx2();
+        }
+        if (element.getDy1() < minY) {
+            minY = element.getDy1();
+        }
+        if (element.getDy2() > maxY) {
+            maxY = element.getDy2();
+        }
+        elements.add(element);
+    }
+
+    public DrawDelegate mode(final DrawMode mode) {
         if (mode == DrawMode.ORIGIN) {
             return o;
         } else if (mode == DrawMode.CENTERED) {
             return c;
+        } else if (mode == DrawMode.MIDDLE) {
+            return m;
+        } else if (mode == DrawMode.TAB) {
+            return t;
         }
         return null;
     }
 
-    public static void display(final Graphics2D g) {
-        compileElements();
-        drawManager.display(g);
-    }
-
-    public static void compileElements() {
-        List<DrawDelegate> delegates = Arrays.asList(new DrawDelegate[]{o, c, m, t});
-        for (DrawDelegate delegate : delegates) {
-            drawManager.add(delegate.getElements());
+    public void display(final Graphics2D g) {
+        final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
+            final Integer z = o1.getZ();
+            return z.compareTo(o2.getZ());
+        };
+        elements.sort(comparator);
+        for (DrawElement element : elements) {
+            element.draw(g);
         }
     }
 
-    public static class DrawDelegate {
-
-        private List<DrawElement> elements;
+    public class DrawDelegate {
 
         public DrawDelegate() {
             elements = new ArrayList<>();
@@ -170,19 +226,28 @@ public class Draw {
         }
 
         public void parcel(final Parcel parcel, final int x, final int y, final int z, final double angle) {
-            final ParcelDelegate delegate = new ParcelDelegate();
+            final Canvas subCanvas = new Canvas();
+            parcel.parcelDraw(subCanvas);
+            canvas(subCanvas, x, y, subCanvas.getWidth(), subCanvas.getHeight(), z, angle);
+        }
+
+        public void parcel(final Parcel parcel, final int x, final int y, final int width, final int height, final int z, final double angle) {
+            final Canvas subCanvas = new Canvas();
+            parcel.parcelDraw(subCanvas);
+            canvas(subCanvas, x, y, width, height, z, angle);
+        }
+
+        private void canvas(final Canvas canvas, final int x, final int y, final int width, final int height, final int z, final double angle) {
             final ParcelElement.ParcelElementPack pack = new ParcelElement.ParcelElementPack();
             final ParcelElement element;
             final List<DrawElement> elements;
-            parcel.integrate(delegate);
+            elements = canvas.elements;
             element = new ParcelElement(pack);
-            drawManager.add(element);
-            elements = delegate.getElements();
             pack.elements = elements;
             pack.x = x;
             pack.y = y;
-            pack.width = delegate.getWidth();
-            pack.height = delegate.getHeight();
+            pack.width = width;
+            pack.height = height;
             pack.z = z;
             pack.angle = angle;
             addElement(element);
@@ -194,7 +259,7 @@ public class Draw {
 
     }
 
-    public static class OriginDelegate extends DrawDelegate {
+    public class OriginDelegate extends DrawDelegate {
 
         public Point getPos(final int x, final int y, final int width, final int height) {
             return new Point(x, y);
@@ -202,7 +267,7 @@ public class Draw {
 
     }
 
-    public static class CenterDelegate extends DrawDelegate {
+    public class CenterDelegate extends DrawDelegate {
 
         public Point getPos(final int x, final int y, final int width, final int height) {
             final int nX = Main.Width() / 2 - width / 2 + x;
@@ -212,7 +277,7 @@ public class Draw {
 
     }
 
-    public static class MiddleDelegate extends DrawDelegate {
+    public class MiddleDelegate extends DrawDelegate {
 
         public Point getPos(final int x, final int y, final int width, final int height) {
             final int nX = x - width / 2;
@@ -222,7 +287,7 @@ public class Draw {
 
     }
 
-    public static class TabDelegate extends DrawDelegate {
+    public class TabDelegate extends DrawDelegate {
 
         public Point getPos(final int x, final int y, final int width, final int height) {
             final int nX = Main.Width() / 2 + x;
