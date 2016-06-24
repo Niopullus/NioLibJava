@@ -1,6 +1,7 @@
 package com.niopullus.NioLib;
 
-import java.io.File;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,78 +11,168 @@ import java.util.List;
  */
 public class FileManager {
 
-    private File rootFile;
-    private String rootDir;
-
-    public File getRootFile() {
-        return rootFile;
-    }
-
     public File getFile(final String dir) {
-        return new File(rootDir + "/" + dir);
+        return new File(dir);
     }
 
     public String getTextFromFile(final String fileDir) {
         final File file = getFile(fileDir);
+        String result = "";
+        try {
+            final FileReader fileReader = new FileReader(file);
+            final BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                result += line;
+            }
+            bufferedReader.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
+    public List<String> getTextByLineFromFile(final String fileDir) {
+        final File file = getFile(fileDir);
+        final List<String> result = new ArrayList<>();
+        try {
+            final FileReader fileReader = new FileReader(file);
+            final BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                result.add(line);
+            }
+            bufferedReader.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public String getTextFromJar(final String jarDir) {
+        String result = "";
+        try {
+            final InputStream stream = Main.class.getResourceAsStream(jarDir);
+            final InputStreamReader inputStreamReader = new InputStreamReader(stream);
+            final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                result += line;
+            }
+            bufferedReader.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
+    public List<String> getTextByLineFromJar(final String jarDir) {
+        final List<String> result = new ArrayList<>();
+        try {
+            final InputStream stream = Main.class.getResourceAsStream(jarDir);
+            final InputStreamReader inputStreamReader = new InputStreamReader(stream);
+            final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                result.add(line);
+            }
+            bufferedReader.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public List<String> getFileNamesFromFile(final String fileDir) {
-
+        final File file = getFile(fileDir);
+        final File[] subFiles = file.listFiles();
+        final List<String> fileNames = new ArrayList<>();
+        for (File subFile : subFiles) {
+            fileNames.add(subFile.getName());
+        }
+        return fileNames;
     }
 
-    public List<String> getFileNamesFromJar(final String jarDile) {
-
+    public void writeToFileFromFile(final String fileDir, final List<String> data, final boolean overwrite) {
+        final File file = getFile(fileDir);
+        try {
+            final FileWriter fileWriter = new FileWriter(file, !overwrite);
+            final BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            for (String line : data) {
+                bufferedWriter.write(line + "\n");
+            }
+            bufferedWriter.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<String> getFileNames(final String fileDir, final String jarDir) {
-        final List<String> fileNamesFromFile = getFileNamesFromFile(fileDir);
-        final List<String> fileNamesFromJar = getFileNamesFromJar(jarDir);
-        final List all = new ArrayList();
-        all.addAll(fileNamesFromFile);
-        all.addAll(fileNamesFromJar);
-        return all;
+    public void writeToFileFromFile(final String fileDir, final String data, final boolean overwrite) {
+        final File file = getFile(fileDir);
+        try {
+            final FileWriter fileWriter = new FileWriter(file, !overwrite);
+            final BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(data);
+            bufferedWriter.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<String> getFileNames(final String dir) {
-        return getFileNames(dir, dir);
+    public void createFileFromFile(final String fileDir, final String fileName) {
+        try {
+            final File file = new File(fileDir + "/" + fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setRootDir(final String dir) {
-        rootDir = dir;
-        rootFile = new File(dir);
-    }
-
-    public void writeToFileFromFile(final String fileDir, final String data) {
-
-    }
-
-    public void writeToFileFromJar(final String jarDir, final String data) {
-
-    }
-
-    public void createFileFromFile(final String fileDir) {
-
-    }
-
-    public void createFileFromJar(final String jarDir) {
-
-    }
-
-    public void createFolderFromFile(final String fileDir) {
-
-    }
-
-    public void createFolderFromJar(final String jarDir) {
-
+    public void createFolderFromFile(final String fileDir, final String folderName) {
+        final File file = new File(fileDir + "/" + folderName);
+        if (!file.exists()) {
+            file.mkdir();
+        }
     }
 
     public static String getJarDir() {
+        try {
+            return Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replace("\\", "/");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+    public static String getJarFolder() {
+        try {
+            final String jar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replace("\\", "/");
+            final String jarPath;
+            int index = -1;
+            for (int i = 0; i < jar.length(); i++) {
+                if (jar.indexOf(i) == '/') {
+                    index = i;
+                }
+            }
+            return jar.substring(0, index);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void deleteFileFromFile(final String fileDir) {
+        final File file = getFile(fileDir);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public boolean fileExists(final String fileDir) {
+        final File file = getFile(fileDir);
+        return file.exists();
     }
 
 }

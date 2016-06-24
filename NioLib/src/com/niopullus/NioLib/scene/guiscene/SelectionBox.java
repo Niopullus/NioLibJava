@@ -7,7 +7,7 @@ import com.niopullus.NioLib.scene.dynscene.Dir;
 
 import java.awt.*;
 
-/**
+/**A GUIElement that allows the user to select between preset choices
  * Created by Owen on 3/31/2016.
  */
 public class SelectionBox extends SelectableGUIElement {

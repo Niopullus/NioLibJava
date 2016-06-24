@@ -1,14 +1,9 @@
 package com.niopullus.NioLib.utilities;
 
 import com.niopullus.NioLib.DataPath;
-import com.niopullus.NioLib.Log;
-import com.niopullus.NioLib.LogManager;
-import com.niopullus.NioLib.scene.dynscene.Dir;
+import static com.niopullus.NioLib.utilities.Utilities.placeHolder;
 
 import java.util.*;
-
-import static com.niopullus.NioLib.utilities.Utilities.placeHolder;
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
 
 /**An ArrayList that works on multiple dimensions
  * When assigning for a dimension that hasn't been
@@ -24,15 +19,25 @@ public class MDArrayList<T> {
 
     public MDArrayList(final int layers) {
         this.layers = layers;
-        this.enablePlaceHolder = false;
+        this.enablePlaceHolder = true;
         this.content = new Directory();
         this.layerStatuses = new ArrayList<>();
         setupStatuses();
     }
 
+    public MDArrayList(final int layers, final int... dimensions) {
+        this(layers);
+        for (int i = 0; i < dimensions.length; i++) {
+            final int dim = dimensions[i];
+            final LayerStatus status = getLayerStatus(i + 1);
+            status.restricted = true;
+            status.size = dim;
+        }
+    }
+
     private void setupStatuses() {
-        for (int i = 0; i < layerStatuses.size(); i++) {
-            layerStatuses.set(i, new LayerStatus());
+        for (int i = 1; i <= layers; i++) {
+            layerStatuses.add(new LayerStatus());
         }
     }
 
@@ -40,22 +45,31 @@ public class MDArrayList<T> {
         return layers;
     }
 
-    private Object get(final DataPath path, final Directory folder) {
+    public LayerStatus getLayerStatus(final int layer) {
+        return layerStatuses.get(layer - 1);
+    }
+
+    private Object get(final DataPath path, final Directory folder, final int layer) {
         if (path.count() == 1) {
             final int pathIndex = path.get();
-            final Object object = folder.get(pathIndex);
-            if (object == Utilities.placeHolder) {
-                return null;
+            final LayerStatus layerStatus = getLayerStatus(layer);
+            if (validDirSetGet(folder.size(), pathIndex, layer)) {
+                final Object object = folder.get(pathIndex);
+                if (object == placeHolder) {
+                    return null;
+                } else {
+                    return object;
+                }
             } else {
-                return object;
+                return null;
             }
         } else {
             final int pathIndex = path.get();
-            if (pathIndex < folder.size()) {
+            if (validDirSetGet(folder.size(), pathIndex, layer)) {
                 final Object taken = folder.get(pathIndex);
                 if (taken != null) {
                     final Directory newFolder = (Directory) taken;
-                    return get(path, newFolder);
+                    return get(path, newFolder, layer + 1);
                 } else {
                     return null;
                 }
@@ -71,7 +85,7 @@ public class MDArrayList<T> {
             complain();
             return null;
         }
-        return (T) get(path, content);
+        return (T) get(path, content, 1);
     }
 
     public MDArrayList<T> getSubList(final int... pathcontent) {
@@ -81,8 +95,8 @@ public class MDArrayList<T> {
             complain();
             return null;
         }
-        result = new MDArrayList<>(layers - path.count());
-        result.content = (Directory) get(path, content);
+        result = new MDArrayList<T>(layers - path.count());
+        result.content = (Directory) get(path, content, 1);
         return result;
     }
 
@@ -91,14 +105,15 @@ public class MDArrayList<T> {
             final int pathIndex = path.get();
             final LayerStatus layerStatus;
             fillFolder(folder, pathIndex);
-            layerStatus = layerStatuses.get(layer);
-            if (layerStatus.restricted && pathIndex < layerStatus.size) {
+            if (validDirSetGet(folder.size(), pathIndex, layer)) {
                 folder.set(pathIndex, object);
             }
         } else {
             final int pathIndex = path.get();
-            final Directory newFolder = safeGet(folder, pathIndex, layer + 1);
-            set(object, path, newFolder, layer + 1);
+            if (validDirFGet(pathIndex, layer)) {
+                final Directory newFolder = safeGet(folder, pathIndex, layer + 1);
+                set(object, path, newFolder, layer + 1);
+            }
         }
     }
 
@@ -135,14 +150,16 @@ public class MDArrayList<T> {
 
     private void add(final Object object, final DataPath path, final Directory folder, final int layer) {
         if (path.count() == 0) {
-            final LayerStatus layerStatus = layerStatuses.get(layer);
-            if (layerStatus.restricted && folder.size() < layerStatus.size) {
+            final LayerStatus layerStatus = getLayerStatus(layer);
+            if (validDirAdd(folder.size(), layer)) {
                 folder.add(object);
             }
         } else {
             final int pathIndex = path.get();
-            final Directory newFolder = safeGet(folder, pathIndex, layer + 1);
-            add(object, path, newFolder, layer + 1);
+            if (validDirFGet(pathIndex, layer)) {
+                final Directory newFolder = safeGet(folder, pathIndex, layer + 1);
+                add(object, path, newFolder, layer + 1);
+            }
         }
     }
 
@@ -176,21 +193,27 @@ public class MDArrayList<T> {
         add(dir, path, content, 1);
     }
 
-    private T remove(final DataPath path, final List folder) {
+    private T remove(final DataPath path, final List folder, final int layer) {
         if (path.count() == 1) {
             final int pathIndex = path.get();
-            final T object = (T) folder.remove(pathIndex);
-            for (int i = pathIndex; i >= 0 && folder.get(i) == placeHolder; i--) {
-                folder.remove(i);
+            if (validDirSetGet(folder.size(), pathIndex, layer)) {
+                final T object = (T) folder.remove(pathIndex);
+                int i = pathIndex;
+                do {
+                    folder.remove(i);
+                    i--;
+                } while(i >= 0 && folder.get(i) == placeHolder);
+                return object;
+            } else {
+                return null;
             }
-            return object;
         } else {
             final int pathIndex = path.get();
-            if (pathIndex < folder.size()) {
+            if (validDirSetGet(folder.size(), pathIndex, layer)) {
                 final Object taken = folder.get(pathIndex);
                 if (taken instanceof List) {
                     final List newFolder = (List) taken ;
-                    return remove(path, newFolder);
+                    return remove(path, newFolder, layer + 1);
                 } else {
                     return null;
                 }
@@ -206,13 +229,13 @@ public class MDArrayList<T> {
             complain();
             return null;
         }
-        return remove(path, content);
+        return remove(path, content, 1);
     }
 
-    private void remove(final T object, final DataPath path, final List folder) {
+    private void remove(final T object, final DataPath path, final List folder, final int layer) {
         if (path.count() == 0) {
             final int foundIndex = Collections.binarySearch(folder, object);
-            if (foundIndex != -1) {
+            if (foundIndex != -1 && validDirSetGet(folder.size(), foundIndex, layer)) {
                 folder.remove(foundIndex);
                 for (int i = foundIndex; i >= 0 && folder.get(i) == placeHolder; i--) {
                     folder.remove(i);
@@ -220,11 +243,11 @@ public class MDArrayList<T> {
             }
         } else {
             final int pathIndex = path.get();
-            if (pathIndex < folder.size()) {
+            if (validDirSetGet(folder.size(), pathIndex, layer)) {
                 final Object taken = folder.get(pathIndex);
                 if (taken instanceof List) {
                     final List newFolder = (List) taken ;
-                    remove(path, newFolder);
+                    remove(path, newFolder, layer + 1);
                 }
             }
         }
@@ -236,32 +259,32 @@ public class MDArrayList<T> {
             complain();
             return;
         }
-        remove(object, path, content);
+        remove(object, path, content, 1);
     }
 
     public int getSize(final int layer) {
-        final LayerStatus status = layerStatuses.get(layer);
+        final LayerStatus status = getLayerStatus(layer);
         return status.size;
     }
 
     public boolean isRestricted(final int layer) {
-        final LayerStatus status = layerStatuses.get(layer);
+        final LayerStatus status = getLayerStatus(layer);
         return status.restricted;
     }
 
     public int getRestriction(final int layer) {
-        final LayerStatus status = layerStatuses.get(layer);
+        final LayerStatus status = getLayerStatus(layer);
         return status.size;
     }
 
     public void restrict(final int layer, final int restriction) {
-        final LayerStatus status = layerStatuses.get(layer);
+        final LayerStatus status = getLayerStatus(layer);
         status.restricted = true;
         status.size = restriction;
     }
 
     public void unrestrict(final int layer) {
-        final LayerStatus status = layerStatuses.get(layer);
+        final LayerStatus status = getLayerStatus(layer);
         status.restricted = false;
         status.size = 0;
     }
@@ -279,9 +302,10 @@ public class MDArrayList<T> {
     }
 
     private Directory safeGet(final List folder, final int index, final int layer) {
+        //System.out.println("Safe getting");
         fillFolder(folder, index);
         Object taken = folder.get(index);
-        if (taken == null) {
+        if (taken == null || taken == placeHolder) {
             final Directory createdFolder = new Directory();
             createdFolder.layer = layer;
             folder.set(index, createdFolder);
@@ -291,21 +315,43 @@ public class MDArrayList<T> {
     }
 
     private void fillFolder(final List folder, final int end) {
+        //System.out.println("Filling with an end of " + end);
         if (end - folder.size() < 0 && !enablePlaceHolder) {
             complain();
             return;
         }
         for (int i = folder.size(); i <= end; i++) {
-            folder.set(i, Utilities.placeHolder);
+            folder.add(placeHolder);
         }
     }
 
+    private boolean validDirAdd(final int folderSize, final int layer) {
+        return validDir(folderSize, 0, layer, true, true);
+    }
+
+    private boolean validDirSetGet(final int folderSize, final int pathIndex, final int layer) {
+        return validDir(folderSize, pathIndex, layer, false, false);
+    }
+
+    private boolean validDirFGet(final int pathIndex, final int layer) {
+        return validDir(0, pathIndex, layer, true, false);
+    }
+
+    private boolean validDir(final int folderSize, final int pathIndex, final int layer, final boolean ignoreFS, final boolean addMode) {
+        //System.out.println("Checking with values of " + folderSize + ", " + pathIndex + ", " + layer + ", " + ignoreFS + ", " + addMode);
+        final LayerStatus status = getLayerStatus(layer);
+        final boolean b1 = pathIndex < folderSize;
+        final boolean b2 = !status.restricted || (!addMode ? pathIndex < status.size : folderSize < status.size);
+        //System.out.println("Did it pass inspection? " + ((b1 || ignoreFS) && b2));
+        return (b1 || ignoreFS) && b2;
+    }
+
     private void complain() {
-        Log.doc("EXCEPTION WHEN TRYING TO USE MDARRAY", "NioLib", LogManager.LogType.ERROR);
+        System.out.println("EXCEPTION WHEN TRYING TO USE MDARRAY");
     }
 
     private void complainLayerCount() {
-        Log.doc("ATTEMPTED TO ASSIGN A MDARRAYLIST TO A LOCATION WHERE IT IS WARRANTED THAT THE CURRENT AND OVERRIDING LISTS CONTAIN AN EQUAL AMOUNT OF LAYERS", "NioLib", LogManager.LogType.ERROR);
+        System.out.println("ATTEMPTED TO ASSIGN A MDARRAYLIST TO A LOCATION WHERE IT IS WARRANTED THAT THE" + " CURRENT AND OVERRIDING LISTS CONTAIN AN EQUAL AMOUNT OF LAYERS");
     }
 
     private static class Directory implements List {
@@ -473,6 +519,11 @@ public class MDArrayList<T> {
 
         public boolean restricted;
         public int size;
+
+        public LayerStatus() {
+            restricted = false;
+            size = 0;
+        }
 
     }
 

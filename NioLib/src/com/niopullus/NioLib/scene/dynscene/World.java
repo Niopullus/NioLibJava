@@ -4,21 +4,11 @@ import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.NodeHandler;
-import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.tile.Tilemap;
 import com.niopullus.app.Config;
-import com.sun.javaws.Launcher;
 
 import java.awt.*;
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**General container for DynamicScene related instance variables
  * Created by Owen on 4/13/2016.
@@ -114,7 +104,7 @@ public class World {
         return loadWorld(fileName, null);
     }
 
-    public static void saveWorld(final World world, Data.DataRoot root) {
+    public static void saveWorld(final World world) {
         final DataTree data = new DataTree();
         final Tilemap fg = world.getFgTilemap();
         final Tilemap bg = world.getBgTilemap();
@@ -123,13 +113,8 @@ public class World {
         data.addData(bg);
         textData = data.compress();
         final String dir = "worlds/" + world.getName();
-        if (root == Data.DataRoot.FILE) {
-            Data.createFileFromFile(dir);
-            Data.writeToFileFromFile(dir, textData);
-        } else if (root == Data.DataRoot.JAR) {
-            Data.createFileFromJar(dir);
-            Data.writeToFileFromFile(dir, textData);
-        }
+        Root.createFileFromFile("worlds/", world.getName());
+        Root.writeToFileFromFile(dir, textData, true);
     }
 
     public static World generateWorld(final String name, final NodeHandler scene) {

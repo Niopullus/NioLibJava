@@ -1,6 +1,5 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
-import com.niopullus.NioLib.Data;
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.NodeHandler;
@@ -13,7 +12,6 @@ import com.niopullus.app.InitScene;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 
 /**Used to design levels
  * Created by Owen on 4/7/2016.
@@ -167,13 +165,13 @@ public class MapEditorScene extends Scene implements NodeHandler {
         }
     }
 
-    public void saveMap(final Data.DataRoot root) {
+    public void saveMap() {
         World world = new World();
         world.setName(worldName);
         world.setFgTilemap(fgMap);
         world.setBgTilemap(bgMap);
         world.setUniverse(universe);
-        World.saveWorld(world, root);
+        World.saveWorld(world);
         presentScene(new InitScene());
     }
 

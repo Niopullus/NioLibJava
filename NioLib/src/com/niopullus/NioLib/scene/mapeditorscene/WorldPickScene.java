@@ -35,7 +35,7 @@ public class WorldPickScene extends GUIScene {
         submit.setColor(Color.ORANGE);
         submit.setSelectedColor(Color.orange);
         worlds.setZ(1000);
-        worldNames = Data.getFileNames("worlds");
+        worldNames = Data.getFileNamesFromFile("/worlds");
         for (String name : worldNames) {
             worlds.addLine(name);
         }

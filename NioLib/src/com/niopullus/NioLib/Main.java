@@ -2,6 +2,7 @@ package com.niopullus.NioLib;
 
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.scene.SceneManager;
+import com.niopullus.NioLib.scene.dynscene.Dir;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
 
@@ -9,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /**Manages the program
  * Created by Owen on 3/5/2016.
@@ -23,11 +25,11 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     private BufferedImage image;
     private Graphics2D g;
     private SceneManager sceneManager;
-    private FileManager fileManager;
     private Point mousePos;
     private boolean mouseHeld;
     private boolean rightMouseHeld;
     private boolean middleMouseHeld;
+    private FileManager fileManager;
     private static final int WIDTH = Config.IMGWIDTH;
     private static final int HEIGHT = Config.IMGHEIGHT;
     private static final double SCALE = Config.WINDOWSCALE;
@@ -64,8 +66,8 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public void addNotify() {
         super.addNotify();
-        if (this.thread == null) {
-            this.thread = new Thread(this);
+        if (thread == null) {
+            thread = new Thread(this);
             addKeyListener(this);
             addMouseListener(this);
             addMouseMotionListener(this);
@@ -79,13 +81,38 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         g = (Graphics2D) this.image.getGraphics();
         running = true;
         sceneManager = new SceneManager(this);
-        if (Config.CREATEFOLDER) {
-            if (Config.PROMPTFOLDERDIRECTORY) {
-                presentSelectDirScene();
-            } else {
-                Data.setRootDir(FileManager.getJarDir() + "/" + Config.DIRNAME);
-                presentInitScene();
-            }
+        fileManager = new FileManager();
+        Data.init(fileManager);
+        setupConfig();
+    }
+
+    private void setupConfig() {
+        final String programFilesDir = System.getenv("ProgramFiles");
+        final String programFiles = programFilesDir.replace("\\", "/");
+        final String folder = programFiles + "/" + Config.DIRNAME;
+        final String config = folder + "/" + "config.txt";
+        if (!Data.fileExists(config)) {
+            Data.createFolderFromFile(programFiles, Config.DIRNAME);
+            Data.createFileFromFile(folder, "config.txt");
+            Data.writeToFileFromFile(config, "Dir: null", true);
+            determineDir();
+        } else {
+            final String text = Data.getTextFromFile(config);
+            final String dir = text.substring(5);
+            Root.init(fileManager, dir);
+            presentInitScene();
+        }
+    }
+
+    private void determineDir() {
+        if (Config.PROMPTFOLDERDIRECTORY) {
+            presentSelectDirScene();
+        } else {
+            final String folderDir = Data.getJarFolder();
+            final String folder = folderDir + "/" + Config.DIRNAME;
+            Data.createFolderFromFile(folderDir, Config.DIRNAME);
+            Root.init(fileManager, folder);
+            presentInitScene();
         }
     }
 
@@ -94,7 +121,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     }
 
     public void presentSelectDirScene() {
-        sceneManager.presentScene(new SelectDirScene());
+        sceneManager.presentScene(new SelectDirScene(fileManager));
     }
 
     public void run() {

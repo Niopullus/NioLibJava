@@ -1,29 +1,29 @@
 package com.niopullus.NioLib;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
-/**
+/**Used to keep track of directory paths to be entered
  * Created by Owen on 4/13/2016.
  */
 public class DataPath {
 
-    private ArrayList<Integer> path;
+    private List<Integer> path;
 
-    public DataPath(int... path) {
-        this.path = new ArrayList<Integer>();
+    public DataPath(final int... path) {
+        this.path = new ArrayList<>();
         for (int i : path) {
             this.path.add(i);
         }
     }
 
     public DataPath() {
-        this.path = null;
+        path = null;
     }
 
     public int get() {
-        Integer firstPath = this.path.get(0);
-        this.path.remove(0);
+        final int firstPath = path.get(0);
+        path.remove(0);
         return firstPath;
     }
 
@@ -32,10 +32,10 @@ public class DataPath {
     }
 
     public int count() {
-        if (this.path == null) {
+        if (path == null) {
             return 0;
         } else {
-            return this.path.size();
+            return path.size();
         }
     }
 

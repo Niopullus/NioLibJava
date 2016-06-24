@@ -1,21 +1,23 @@
 package com.niopullus.NioLib;
 
-import java.io.*;
+import java.io.File;
 import java.util.List;
 
 /**Relay class for an instance of FileManager for transferring files
- * Created by Owen on 6/10/2016.
+ * Created by Owen on 6/23/2016.
  */
-public class Data {
+public class Root {
 
     private static FileManager fileManager;
+    private static String root;
 
-    public static void init(final FileManager fm) {
+    public static void init(final FileManager fm, final String rootDir) {
         fileManager = fm;
+        root = rootDir;
     }
 
     public static File getFile(final String dir) {
-        return fileManager.getFile(dir);
+        return fileManager.getFile(root + dir);
     }
 
     public static String getTextFromFile(final String fileDir) {
@@ -47,11 +49,11 @@ public class Data {
     }
 
     public static void createFileFromFile(final String fileDir, final String fileName) {
-        fileManager.createFileFromFile(fileDir, fileName);
+        fileManager.createFileFromFile(root + fileDir, fileName);
     }
 
     public static void createFolderFromFile(final String fileDir, final String folderName) {
-        fileManager.createFolderFromFile(fileDir, folderName);
+        fileManager.createFolderFromFile(root + fileDir, folderName);
     }
 
     public static String getJarDir() {
