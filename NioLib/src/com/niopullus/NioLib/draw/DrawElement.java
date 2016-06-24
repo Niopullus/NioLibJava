@@ -92,14 +92,16 @@ public class DrawElement {
     }
 
     private boolean isVisible() {
-        final boolean cond1 = dx1 < Main.Width();
-        final boolean cond2 = dy1 < Main.Height();
-        final boolean cond3 = dx2 > 0;
-        final boolean cond4 = dy2 > 0;
+        final boolean cond1 = dx1 <= Main.Width();
+        final boolean cond2 = dy1 <= Main.Height();
+        final boolean cond3 = dx2 >= 0;
+        final boolean cond4 = dy2 >= 0;
         return cond1 && cond2 && cond3 && cond4;
     }
 
     public final void draw(final Graphics2D g) {
+        System.out.println("1" + (this instanceof ShapeElement));
+        System.out.println(dx1 + "," + dy1 + "," + dx2 + "," + dy2 + "," + isVisible());
         if (isVisible()) {
             final AffineTransform old = g.getTransform();
             adjustGraphics(g, angle);
@@ -108,7 +110,7 @@ public class DrawElement {
         }
     }
 
-    public void display(final Graphics g) {
+    public void display(final Graphics2D g) {
         //To be overridden
     }
 

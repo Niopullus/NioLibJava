@@ -43,6 +43,7 @@ public class SelectDirScene extends GUIScene {
                 Data.createFileFromFile(folder, Config.DIRNAME);
                 Root.init(fileManager, folder);
                 presentScene(new InitScene());
+                System.out.println("Initialized Root");
             } else {
                 addElement(complain);
             }

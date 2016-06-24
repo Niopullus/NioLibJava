@@ -120,6 +120,7 @@ public class FileManager {
     }
 
     public void createFileFromFile(final String fileDir, final String fileName) {
+        System.out.println(fileDir + "/" + fileName);
         try {
             final File file = new File(fileDir + "/" + fileName);
             if (!file.exists()) {
@@ -131,6 +132,7 @@ public class FileManager {
     }
 
     public void createFolderFromFile(final String fileDir, final String folderName) {
+        System.out.println(fileDir + "/" + folderName);
         final File file = new File(fileDir + "/" + folderName);
         if (!file.exists()) {
             file.mkdir();
@@ -148,11 +150,12 @@ public class FileManager {
 
     public static String getJarFolder() {
         try {
-            final String jar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().replace("\\", "/");
+            final String path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            final String jar = path.substring(1, path.length() - 1).replace("\\", "/");
             final String jarPath;
             int index = -1;
             for (int i = 0; i < jar.length(); i++) {
-                if (jar.indexOf(i) == '/') {
+                if ("/".equals(jar.substring(i, i + 1))) {
                     index = i;
                 }
             }

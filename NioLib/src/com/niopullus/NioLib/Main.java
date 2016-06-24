@@ -87,7 +87,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     }
 
     private void setupConfig() {
-        final String programFilesDir = System.getenv("ProgramFiles");
+        final String programFilesDir = System.getenv("APPDATA");
         final String programFiles = programFilesDir.replace("\\", "/");
         final String folder = programFiles + "/" + Config.DIRNAME;
         final String config = folder + "/" + "config.txt";
@@ -101,6 +101,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
             final String dir = text.substring(5);
             Root.init(fileManager, dir);
             presentInitScene();
+            System.out.println("Initialized Root");
         }
     }
 
@@ -113,6 +114,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
             Data.createFolderFromFile(folderDir, Config.DIRNAME);
             Root.init(fileManager, folder);
             presentInitScene();
+            System.out.println("Initialized Root");
         }
     }
 

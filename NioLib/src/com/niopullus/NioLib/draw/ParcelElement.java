@@ -15,15 +15,21 @@ public class ParcelElement extends DrawElement {
         elements = pack.elements;
     }
 
-    public void display(final Graphics g) {
+    public List<DrawElement> getElements() {
+        return elements;
+    }
+
+    public void display(final Graphics2D g) {
+        System.out.println("ehbf");
         for (DrawElement element : elements) {
+            System.out.println("pefgre" + (element instanceof ShapeElement));
             element.setDx1(getDx1() + element.getDx1());
             element.setDy1(getDy1() + element.getDy1());
             element.setDx2(getDx2() + element.getDx2());
             element.setDy2(getDy2() + element.getDy2());
             element.setZ(getZ() + element.getZ());
             element.setAngle(getAngle() + element.getAngle());
-            element.display(g);
+            element.draw(g);
         }
     }
 

@@ -2,6 +2,7 @@ package com.niopullus.NioLib.draw;
 
 import com.niopullus.NioLib.Animation;
 import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.scene.guiscene.GUIScene;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,25 +54,26 @@ public class Canvas {
     }
 
     public void addElement(final DrawElement element) {
+        System.out.println("efeeeeeefv" + (element instanceof ShapeElement));
         if (!init) {
             minX = element.getDx1();
             maxX = element.getDx2();
             minY = element.getDy1();
             maxY = element.getDy2();
             init = true;
-            return;
-        }
-        if (element.getDx1() < minX) {
-            minX = element.getDx1();
-        }
-        if (element.getDx2() > maxX) {
-            maxX = element.getDx2();
-        }
-        if (element.getDy1() < minY) {
-            minY = element.getDy1();
-        }
-        if (element.getDy2() > maxY) {
-            maxY = element.getDy2();
+        } else {
+            if (element.getDx1() < minX) {
+                minX = element.getDx1();
+            }
+            if (element.getDx2() > maxX) {
+                maxX = element.getDx2();
+            }
+            if (element.getDy1() < minY) {
+                minY = element.getDy1();
+            }
+            if (element.getDy2() > maxY) {
+                maxY = element.getDy2();
+            }
         }
         elements.add(element);
     }
@@ -90,6 +92,7 @@ public class Canvas {
     }
 
     public void display(final Graphics2D g) {
+        System.out.println(1);
         final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
             final Integer z = o1.getZ();
             return z.compareTo(o2.getZ());
@@ -97,21 +100,14 @@ public class Canvas {
         elements.sort(comparator);
         for (DrawElement element : elements) {
             element.draw(g);
+            System.out.println("awwfwfe" + (element instanceof ShapeElement));
         }
     }
 
     public class DrawDelegate {
 
-        public DrawDelegate() {
-            elements = new ArrayList<>();
-        }
-
         public List<DrawElement> getElements() {
             return elements;
-        }
-
-        public void addElement(final DrawElement element) {
-            elements.add(element);
         }
 
         public void rect(final Color color, final int x, final int y, final int width, final int height, final int z) {
@@ -240,9 +236,7 @@ public class Canvas {
         private void canvas(final Canvas canvas, final int x, final int y, final int width, final int height, final int z, final double angle) {
             final ParcelElement.ParcelElementPack pack = new ParcelElement.ParcelElementPack();
             final ParcelElement element;
-            final List<DrawElement> elements;
-            elements = canvas.elements;
-            element = new ParcelElement(pack);
+            final List<DrawElement> elements = canvas.elements;
             pack.elements = elements;
             pack.x = x;
             pack.y = y;
@@ -250,6 +244,8 @@ public class Canvas {
             pack.height = height;
             pack.z = z;
             pack.angle = angle;
+            element = new ParcelElement(pack);
+            //System.out.println("is it null?" + (element.getElements() == null));
             addElement(element);
         }
 
