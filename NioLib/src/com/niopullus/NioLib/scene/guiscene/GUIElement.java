@@ -120,7 +120,7 @@ public class GUIElement implements Parcel {
     }
 
     public Rectangle getRectOrigin() {
-        return new Rectangle(Main.Width() / 2 + x, Main.Height() / 2 + y, width, height);
+        return new Rectangle(Main.Width() / 2 - width / 2 + x, Main.Height() / 2 - height / 2 + y, width, height);
     }
 
     public GUIScene getGUIScene() {
@@ -227,7 +227,7 @@ public class GUIElement implements Parcel {
         borderBG = background;
     }
 
-    private void determineDimensions() {
+    public void determineDimensions() {
         final FontMetrics metrics = StringSize.getFontMetrics(font);
         final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * getLineCount() + (lines.size() - 1) * lineGap;
         int stringWidth = 0;
@@ -303,6 +303,30 @@ public class GUIElement implements Parcel {
         lineGap = gap;
         determineDimensions();
         updateBackgrounds();
+    }
+
+    public void setFieldWidth(final int width) {
+        fieldWidth = width;
+    }
+
+    public void setFieldHeight(final int height) {
+        fieldHeight = height;
+    }
+
+    public void setWidth(final int w) {
+        width = w;
+    }
+
+    public void setHeight(final int h) {
+        height = h;
+    }
+
+    public int getFieldWidth() {
+        return fieldWidth;
+    }
+
+    public int getFieldHeight() {
+        return fieldHeight;
     }
 
     public enum Justify {

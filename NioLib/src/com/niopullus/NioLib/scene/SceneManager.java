@@ -26,7 +26,7 @@ public class SceneManager implements Parcel {
     }
 
     public Point getMousePos() {
-        return main.getMousePosition();
+        return main.getMousePos();
     }
 
     public boolean getMouseHeld() {

@@ -170,16 +170,16 @@ public class Scene implements Parcel {
     public final void mouseMoved(final MouseEvent e) {
         final Scene scene = surfaceScene();
         final MousePack pack = new MousePack();
-        pack.x = e.getX();
-        pack.y = e.getY();
+        pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getFrameWidth()));
+        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getFrameHeight())));
         scene.mouseMove(pack);
     }
 
     public final void mousePressed(final MouseEvent e) {
         final Scene scene = surfaceScene();
         final MousePack pack = new MousePack();
-        pack.x = e.getX();
-        pack.y = e.getY();
+        pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getFrameWidth()));
+        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getFrameHeight())));
         if (e.getButton() == 1) {
             scene.mousePress(pack);
         } else if (e.getButton() == 2) {
@@ -192,8 +192,8 @@ public class Scene implements Parcel {
     public final void mouseReleased(final MouseEvent e) {
         final Scene scene = surfaceScene();
         final MousePack pack = new MousePack();
-        pack.x = e.getX();
-        pack.y = e.getY();
+        pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getFrameWidth()));
+        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getFrameHeight())));
         if (e.getButton() == 1) {
             scene.mouseRelease(pack);
         } else if (e.getButton() == 2) {
@@ -262,6 +262,10 @@ public class Scene implements Parcel {
 
         public int x;
         public int y;
+
+        public Point getPos() {
+            return new Point(x, y);
+        }
 
     }
 

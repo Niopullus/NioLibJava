@@ -1,9 +1,7 @@
 package com.niopullus.NioLib;
 
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.SceneManager;
-import com.niopullus.NioLib.scene.dynscene.Dir;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
 
@@ -11,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 /**Manages the program
  * Created by Owen on 3/5/2016.
@@ -63,6 +60,13 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public boolean getMiddleMouseHeld() {
         return middleMouseHeld;
+    }
+
+    public Point getMousePos() {
+        final Point point = new Point();
+        point.x = (int) (mousePos.getX() * ((double) Main.Width() / Main.getFrameWidth()));
+        point.y = (int) (Main.Height() - (mousePos.getY() * ((double) Main.Height() / Main.getFrameHeight())));
+        return point;
     }
 
     public void addNotify() {

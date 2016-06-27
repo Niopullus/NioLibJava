@@ -91,9 +91,9 @@ public class GUIScene extends Scene {
     }
 
     public void pressDown() {
-        if (selected.isOverrideArrows()) {
+        if (selected != null && selected.isOverrideArrows()) {
             selected.downArrow();
-        } else if (selected != null && selectedIndex - 1 >= 0) {
+        } else if (selectedIndex - 1 >= 0) {
             selected.deselect();
             selectedIndex--;
             selected = selectableElements.get(selectedIndex);
@@ -102,9 +102,9 @@ public class GUIScene extends Scene {
     }
 
     public void pressUp() {
-        if (selected.isOverrideArrows()) {
+        if (selected != null && selected.isOverrideArrows()) {
             selected.upArrow();
-        } else if (selected != null && selectedIndex + 1 < selectableElements.size()) {
+        } else if (selectedIndex + 1 < selectableElements.size()) {
             selected.deselect();
             selectedIndex++;
             selected = selectableElements.get(selectedIndex);
@@ -162,24 +162,20 @@ public class GUIScene extends Scene {
     }
 
     public void mouseMove(final MousePack pack) {
-        if (selected != null) {
-            if (selectableElements.size() > 0) {
-                if (!selected.isOverrideMouse()) {
-                    for (SelectableGUIElement element: selectableElements) {
-                        final Rectangle rect = element.getRectOrigin();
-                        if (Utilities.pointInRect(rect, getMousePos())) {
-                            element.select();
-                            selected = element;
-                        } else {
-                            if (selected != element) {
-                                element.deselect();
-                            }
-                        }
-                    }
+        if (selected == null || !selected.isOverrideMouse()) {
+            boolean chosen = false;
+            for (SelectableGUIElement element: selectableElements) {
+                final Rectangle rect = element.getRectOrigin();
+                if (Utilities.pointInRect(rect, pack.getPos()) && !chosen) {
+                    element.select();
+                    selected = element;
+                    chosen = true;
                 } else {
-                    selected.moveMouse(pack);
+                    element.deselect();
                 }
             }
+        } else {
+            selected.moveMouse(pack);
         }
     }
 
