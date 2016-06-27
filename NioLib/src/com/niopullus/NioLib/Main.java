@@ -1,6 +1,7 @@
 package com.niopullus.NioLib;
 
 import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.SceneManager;
 import com.niopullus.NioLib.scene.dynscene.Dir;
 import com.niopullus.app.Config;

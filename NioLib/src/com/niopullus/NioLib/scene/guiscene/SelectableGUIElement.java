@@ -26,6 +26,8 @@ public class SelectableGUIElement extends GUIElement {
         this.selectedTextColor = Color.black;
         this.selected = false;
         this.overrideArrows = false;
+        updateSelectedBorder();
+        updateSelectedBG();
     }
 
     public Color getSelectedColor() {
@@ -78,13 +80,17 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     private void updateSelectedBG() {
-        selectedBG.setWidth(getWidth() - getBorderSpacing() * 2);
-        selectedBG.setHeight(getHeight() - getBorderSpacing() * 2);
+        if (selectedBG != null) {
+            selectedBG.setWidth(getWidth() - getBorderSpacing() * 2);
+            selectedBG.setHeight(getHeight() - getBorderSpacing() * 2);
+        }
     }
 
     private void updateSelectedBorder() {
-        selectedBorderBG.setWidth(getWidth());
-        selectedBorderBG.setHeight(getHeight());
+        if (selectedBorderBG != null) {
+            selectedBorderBG.setWidth(getWidth());
+            selectedBorderBG.setHeight(getHeight());
+        }
     }
 
     public void select() {

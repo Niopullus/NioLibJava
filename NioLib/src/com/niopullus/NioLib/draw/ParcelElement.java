@@ -9,39 +9,62 @@ import java.util.List;
 public class ParcelElement extends DrawElement {
 
     private List<DrawElement> elements;
+    private double xSF;
+    private double ySF;
 
-    public ParcelElement(final ParcelElementPack pack) {
-        super(pack.x, pack.y, pack.x + pack.width, pack.y + pack.height, pack.z, pack.angle);
-        elements = pack.elements;
+    public ParcelElement() {
+        super(0, 0, 0, 0, 0, 0);
     }
 
     public List<DrawElement> getElements() {
         return elements;
     }
 
-    public void display(final Graphics2D g) {
-        System.out.println("ehbf");
+    public double getxSF() {
+        return xSF;
+    }
+
+    public double getySF() {
+        return ySF;
+    }
+
+    public void display(final Graphics2D g, final DrawPosition drawPosition) {
         for (DrawElement element : elements) {
-            System.out.println("pefgre" + (element instanceof ShapeElement));
-            element.setDx1(getDx1() + element.getDx1());
-            element.setDy1(getDy1() + element.getDy1());
-            element.setDx2(getDx2() + element.getDx2());
-            element.setDy2(getDy2() + element.getDy2());
-            element.setZ(getZ() + element.getZ());
-            element.setAngle(getAngle() + element.getAngle());
             element.draw(g);
         }
     }
 
+    public void define(final ParcelElementPack pack) {
+        setDx1(pack.x);
+        setDy1(pack.y);
+        setDx2(pack.x + pack.width);
+        setDy2(pack.y + pack.height);
+        setZ(pack.z);
+        setAngle(pack.angle);
+        elements = pack.elements;
+        xSF = pack.xSF;
+        ySF = pack.ySF;
+    }
+
+    public int getWidth() {
+        return (int) (super.getWidth() * xSF);
+    }
+
+    public int getHeight() {
+        return (int) (super.getHeight() * ySF);
+    }
+
     public static class ParcelElementPack {
 
-        public List<DrawElement> elements;
         public int x;
         public int y;
         public int width;
         public int height;
+        public double xSF;
+        public double ySF;
         public int z;
         public double angle;
+        public List<DrawElement> elements;
 
     }
 

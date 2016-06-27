@@ -23,6 +23,7 @@ public class Canvas {
     private int minY;
     private int maxX;
     private int maxY;
+    private ParcelElement model;
     public OriginDelegate o;
     public CenterDelegate c;
     public MiddleDelegate m;
@@ -54,7 +55,6 @@ public class Canvas {
     }
 
     public void addElement(final DrawElement element) {
-        System.out.println("efeeeeeefv" + (element instanceof ShapeElement));
         if (!init) {
             minX = element.getDx1();
             maxX = element.getDx2();
@@ -75,7 +75,12 @@ public class Canvas {
                 maxY = element.getDy2();
             }
         }
+        element.setSuperElement(model);
         elements.add(element);
+    }
+
+    public void setModel(final ParcelElement element) {
+        model = element;
     }
 
     public DrawDelegate mode(final DrawMode mode) {
@@ -92,7 +97,6 @@ public class Canvas {
     }
 
     public void display(final Graphics2D g) {
-        System.out.println(1);
         final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
             final Integer z = o1.getZ();
             return z.compareTo(o2.getZ());
@@ -100,7 +104,6 @@ public class Canvas {
         elements.sort(comparator);
         for (DrawElement element : elements) {
             element.draw(g);
-            System.out.println("awwfwfe" + (element instanceof ShapeElement));
         }
     }
 
@@ -204,17 +207,19 @@ public class Canvas {
         }
 
         public void text(final String line, final Color color, final Font font, final int x, final int y, final int z, final double angle) {
-            final FontMetrics fontMetrics = new FontMetrics(font) {};
+            final FontMetrics fontMetrics = StringSize.getFontMetrics(font);
             final int width = fontMetrics.stringWidth(line);
-            final int height = fontMetrics.getHeight();
+            final int height = fontMetrics.getAscent() - fontMetrics.getDescent();
             final Point position = getPos(x, y, width, height);
             final TextElement.TextElementPack pack = new TextElement.TextElementPack();
             final TextElement element;
             pack.line = line;
             pack.font = font;
             pack.color = color;
-            pack.x = x;
-            pack.y = y;
+            pack.x = position.x;
+            pack.y = position.y - height;
+            pack.width = width;
+            pack.height = height;
             pack.z = z;
             pack.angle = angle;
             element = new TextElement(pack);
@@ -222,30 +227,37 @@ public class Canvas {
         }
 
         public void parcel(final Parcel parcel, final int x, final int y, final int z, final double angle) {
-            final Canvas subCanvas = new Canvas();
-            parcel.parcelDraw(subCanvas);
-            canvas(subCanvas, x, y, subCanvas.getWidth(), subCanvas.getHeight(), z, angle);
+            parcel(parcel, x, y, 0, 0, z, angle, true);
         }
 
         public void parcel(final Parcel parcel, final int x, final int y, final int width, final int height, final int z, final double angle) {
-            final Canvas subCanvas = new Canvas();
-            parcel.parcelDraw(subCanvas);
-            canvas(subCanvas, x, y, width, height, z, angle);
+            parcel(parcel, x, y, width, height, z, angle, false);
         }
 
-        private void canvas(final Canvas canvas, final int x, final int y, final int width, final int height, final int z, final double angle) {
+        private void parcel(final Parcel parcel, final int x, final int y, int width, int height, final int z, final double angle, final boolean infer) {
             final ParcelElement.ParcelElementPack pack = new ParcelElement.ParcelElementPack();
             final ParcelElement element;
-            final List<DrawElement> elements = canvas.elements;
-            pack.elements = elements;
-            pack.x = x;
-            pack.y = y;
-            pack.width = width;
-            pack.height = height;
+            final Canvas canvas;
+            final Point position;
+            element = new ParcelElement();
+            canvas = new Canvas();
+            canvas.model = element;
+            parcel.parcelDraw(canvas);
+            if (infer) {
+                width = canvas.getWidth();
+                height = canvas.getHeight();
+            }
+            position = getPos(x, y, width, height);
+            pack.x = position.x;
+            pack.y = position.y;
             pack.z = z;
             pack.angle = angle;
-            element = new ParcelElement(pack);
-            //System.out.println("is it null?" + (element.getElements() == null));
+            pack.elements = canvas.elements;
+            pack.width = canvas.getWidth();
+            pack.height = canvas.getHeight();
+            pack.xSF = (double) width / canvas.getWidth();
+            pack.ySF = (double) height / canvas.getHeight();
+            element.define(pack);
             addElement(element);
         }
 

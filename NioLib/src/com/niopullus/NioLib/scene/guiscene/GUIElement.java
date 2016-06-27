@@ -3,6 +3,7 @@ package com.niopullus.NioLib.scene.guiscene;
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.*;
 import com.niopullus.app.Config;
 
@@ -47,6 +48,8 @@ public class GUIElement implements Parcel {
         this.bg = new ColorBackground(Color.WHITE);
         this.borderBG = new ColorBackground(Color.BLACK);
         this.justify = Justify.CENTER;
+        this.widthGap = widthGap;
+        this.heightGap = heightGap;
         lines.add(content);
         determineDimensions();
         updateBackgrounds();
@@ -208,24 +211,25 @@ public class GUIElement implements Parcel {
 
     public void setBorderSpacing(final int borderSpacing) {
         this.borderSpacing = borderSpacing;
+        determineDimensions();
         updateBackgrounds();
     }
 
     public void setBackground(final Background background) {
-        background.setWidth(Main.Width());
-        background.setHeight(Main.Height());
+        background.setWidth(fieldWidth);
+        background.setHeight(fieldHeight);
         bg = background;
     }
 
     public void setBorder(final Background background) {
-        background.setWidth(Main.Width());
-        background.setHeight(Main.Height());
+        background.setWidth(width);
+        background.setHeight(height);
         borderBG = background;
     }
 
     private void determineDimensions() {
-        final FontMetrics metrics = new FontMetrics(font) {};
-        final int stringHeight = metrics.getHeight() * getLineCount() + (lines.size() - 1) * lineGap;
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
+        final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * getLineCount() + (lines.size() - 1) * lineGap;
         int stringWidth = 0;
         for (String line : lines) {
             final int tempWidth = metrics.stringWidth(line);
@@ -240,7 +244,7 @@ public class GUIElement implements Parcel {
     }
 
     private void determineLineGap() {
-        final FontMetrics metrics = new FontMetrics(font) {};
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
         lineGap = metrics.getLeading();
     }
 
@@ -260,23 +264,27 @@ public class GUIElement implements Parcel {
     }
 
     public void parcelDraw(final Canvas canvas) {
-        canvas.o.parcel(borderBG, 0, 0, 0, 0);
-        canvas.o.parcel(bg, borderSpacing, borderSpacing, 10, 0);
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
+        final int height = metrics.getAscent() - metrics.getDescent();
+        canvas.o.parcel(borderBG, 0, 0, 20, 0);
+        canvas.o.parcel(bg, borderSpacing, borderSpacing, 0, 0);
         int yPos = borderSpacing + heightGap;
         for (int i = 0; i < lines.size(); i++) {
             final String line = lines.get(lines.size() - i - 1);
             final int xPos = getXPos(line);
             canvas.o.text(line, textColor, font, xPos, yPos, 20, 0);
-            yPos += lineGap;
+            yPos += lineGap + height;
         }
     }
 
     public int getXPos(final String line) {
-        final FontMetrics metrics = new FontMetrics(font) {};
-        final int diff = metrics.stringWidth(line);
-        int result = borderSpacing + widthGap;
-        if (justify == Justify.CENTER) {
-            result += diff / 2;
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
+        final int diff = fieldWidth - metrics.stringWidth(line) - widthGap;
+        int result = borderSpacing;
+        if (justify == Justify.LEFT) {
+            result += widthGap;
+        } else if (justify == Justify.CENTER) {
+            result += diff / 2 + widthGap / 2;
         } else if (justify == Justify.RIGHT) {
             result += diff;
         }
@@ -289,6 +297,12 @@ public class GUIElement implements Parcel {
         textColor = theme.getTextColor();
         setBorderSpacing(theme.getBorderWidth());
         setFontName(theme.getFontName());
+    }
+
+    public void setLineGap(final int gap) {
+        lineGap = gap;
+        determineDimensions();
+        updateBackgrounds();
     }
 
     public enum Justify {

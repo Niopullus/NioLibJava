@@ -5,6 +5,7 @@ import com.niopullus.NioLib.Main;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 /**Stores information about how to draw a specific item
  * Created by Owen on 3/29/2016.
@@ -17,12 +18,13 @@ public class DrawElement {
     private int dy2;
     private int z;
     private double angle;
+    private ParcelElement superElement;
 
     public DrawElement(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
         this.dx1 = dx1;
-        this.dy1 = Main.Height() - dy2;
+        this.dy1 = dy1;
         this.dx2 = dx2;
-        this.dy2 = dy1;
+        this.dy2 = dy2;
         this.z = z;
         this.angle = angle;
     }
@@ -59,6 +61,58 @@ public class DrawElement {
         return angle;
     }
 
+    public int getTDx1() {
+        if (superElement == null) {
+            return getDx1();
+        } else {
+            return (int) (superElement.getTDx1() + getDx1() * superElement.getxSF());
+        }
+    }
+
+    public int getTDy1() {
+        if (superElement == null) {
+            return getDy1();
+        } else {
+            return (int) (superElement.getTDy1() + getDy1() * superElement.getySF());
+        }
+    }
+
+    public int getTDx2() {
+        if (superElement == null) {
+            return getDx2();
+        } else {
+            return (int) (superElement.getTDx1() + getDx2() * superElement.getxSF());
+        }
+    }
+
+    public int getTDy2() {
+        if (superElement == null) {
+            return getDy2();
+        } else {
+            return (int) (superElement.getTDy1() + getDy2() * superElement.getySF());
+        }
+    }
+
+    public int getTZ() {
+        if (superElement == null) {
+            return getZ();
+        } else {
+            return getZ() + superElement.getTZ();
+        }
+    }
+
+    public double getTAngle() {
+        if (superElement == null) {
+            return getAngle();
+        } else {
+            return getAngle() + superElement.getTAngle();
+        }
+    }
+
+    public void setSuperElement(final ParcelElement element) {
+        superElement = element;
+    }
+
     public void setDx1(final int x) {
         dx1 = x;
     }
@@ -83,6 +137,15 @@ public class DrawElement {
         this.angle = angle;
     }
 
+    public void setPosition(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
+        setDx1(dx1);
+        setDy1(dy1);
+        setDx2(dx2);
+        setDy2(dy2);
+        setZ(z);
+        setAngle(angle);
+    }
+
     public void adjustGraphics(final Graphics2D g, final double angle) {
         final int transX = dx1 + getWidth() / 2;
         final int transY = dy1 + getHeight() / 2;
@@ -91,27 +154,29 @@ public class DrawElement {
         g.translate(-transX, -transY);
     }
 
-    private boolean isVisible() {
-        final boolean cond1 = dx1 <= Main.Width();
-        final boolean cond2 = dy1 <= Main.Height();
-        final boolean cond3 = dx2 >= 0;
-        final boolean cond4 = dy2 >= 0;
-        return cond1 && cond2 && cond3 && cond4;
-    }
-
     public final void draw(final Graphics2D g) {
-        System.out.println("1" + (this instanceof ShapeElement));
-        System.out.println(dx1 + "," + dy1 + "," + dx2 + "," + dy2 + "," + isVisible());
-        if (isVisible()) {
+        final DrawPosition drawPosition = getDrawPosition();
+        if (drawPosition.isVisible()) {
             final AffineTransform old = g.getTransform();
             adjustGraphics(g, angle);
-            display(g);
+            display(g, drawPosition);
             g.setTransform(old);
         }
     }
 
-    public void display(final Graphics2D g) {
+    public void display(final Graphics2D g, final DrawPosition drawPosition) {
         //To be overridden
+    }
+
+    public DrawPosition getDrawPosition() {
+        final DrawPosition result = new DrawPosition();
+        result.setDx1(getTDx1());
+        result.setDy1(Main.Height() - getTDy2());
+        result.setDx2(getTDx2());
+        result.setDy2(Main.Height() - getTDy1());
+        result.setZ(getTZ());
+        result.setAngle(getTAngle());
+        return result;
     }
 
 }

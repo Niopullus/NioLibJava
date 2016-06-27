@@ -23,8 +23,8 @@ public class ImageElement extends DrawElement {
         this.sy2 = pack.sy2;
     }
 
-    public void display(final Graphics g) {
-        g.drawImage(image, getDx1(), getDy1(), getDx2(), getDy2(), sx1, sy1, sx2, sy2, null);
+    public void display(final Graphics2D g, final DrawPosition drawPosition) {
+        g.drawImage(image, drawPosition.getDx1(), drawPosition.getDy1(), drawPosition.getDx2(), drawPosition.getDy2(), sx1, sy1, sx2, sy2, null);
     }
 
     public static class ImageElementPack {

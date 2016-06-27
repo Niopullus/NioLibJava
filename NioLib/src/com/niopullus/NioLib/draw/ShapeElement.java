@@ -14,10 +14,9 @@ public class ShapeElement extends DrawElement {
         this.color = pack.color;
     }
 
-    public void display(final Graphics g) {
+    public void display(final Graphics2D g, final DrawPosition drawPosition) {
         g.setColor(color);
-        g.fillRect(getDx1(), getDy1(), getWidth(), getHeight());
-        System.out.println("efnfue FEFEHEFHFEHFEHFEHEFHEFHFE");
+        g.fillRect(drawPosition.getDx1(), drawPosition.getDy1(), drawPosition.getWidth(), drawPosition.getHeight());
     }
 
     public static class ShapeElementPack {

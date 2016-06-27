@@ -2,7 +2,9 @@ package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.draw.ParcelElement;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
@@ -160,37 +162,42 @@ public class GUIScene extends Scene {
     }
 
     public void mouseMove(final MousePack pack) {
-        if (selectableElements.size() > 0) {
-            if (!selected.isOverrideMouse()) {
-                for (SelectableGUIElement element: selectableElements) {
-                    final Rectangle rect = element.getRectOrigin();
-                    if (Utilities.pointInRect(rect, getMousePos())) {
-                        element.select();
-                        selected = element;
-                    } else {
-                        if (selected != element) {
-                            element.deselect();
+        if (selected != null) {
+            if (selectableElements.size() > 0) {
+                if (!selected.isOverrideMouse()) {
+                    for (SelectableGUIElement element: selectableElements) {
+                        final Rectangle rect = element.getRectOrigin();
+                        if (Utilities.pointInRect(rect, getMousePos())) {
+                            element.select();
+                            selected = element;
+                        } else {
+                            if (selected != element) {
+                                element.deselect();
+                            }
                         }
                     }
+                } else {
+                    selected.moveMouse(pack);
                 }
-            } else {
-                selected.moveMouse(pack);
             }
         }
     }
 
     public void mousePress(final MousePack pack) {
-        if (!selected.isOverrideMouse()) {
-            activate();
-        } else {
-            selected.mousePress(pack);
+        if (selected != null) {
+            if (!selected.isOverrideMouse()) {
+                activate();
+            } else {
+                selected.mousePress(pack);
+            }
         }
-
     }
 
     public void mouseWheelMoved(final MouseWheelPack pack) {
-        if (selected.isOverrideMouseWheel()) {
-            selected.moveMouseWheel(pack);
+        if (selected != null) {
+            if (selected.isOverrideMouseWheel()) {
+                selected.moveMouseWheel(pack);
+            }
         }
     }
 
