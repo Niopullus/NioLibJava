@@ -23,11 +23,11 @@ public class PhysicsHandler {
     private boolean pause;
 
     public PhysicsHandler() {
-        this.nodes = new ArrayList<>();
-        this.partition = new NodePartitionManager(Config.NODEPARTSIZE, Config.NODEPARTRAD, Config.NODEPARTRAD);
-        this.gravitation = -10;
-        this.pause = false;
-        this.partition.setPhysicsHandler(this);
+        nodes = new ArrayList<>();
+        partition = new NodePartitionManager(Config.NODEPARTSIZE, Config.NODEPARTRAD, Config.NODEPARTRAD);
+        gravitation = -10;
+        pause = false;
+        partition.setPhysicsHandler(this);
     }
 
     public int getPhysicsSize() {
@@ -38,7 +38,7 @@ public class PhysicsHandler {
         return collisions;
     }
 
-    public ArrayList<Node> getNodesAt(final int x, final int y, final int width, final int height) {
+    public List<Node> getNodesAt(final int x, final int y, final int width, final int height) {
         return partition.getNodesAt(x, y, width, height);
     }
 

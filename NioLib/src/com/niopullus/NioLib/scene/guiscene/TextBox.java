@@ -1,9 +1,7 @@
 package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.draw.StringSize;
-import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.Scene;
-import com.niopullus.NioLib.utilities.EString;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -40,6 +38,17 @@ public class TextBox extends SelectableGUIElement {
         }
     }
 
+    public void deselect(final boolean force) {
+        if (expand) {
+            if (force) {
+                super.deselect(true);
+                expand = false;
+            }
+        } else {
+            super.deselect(force);
+        }
+    }
+
     public void activate() {
         if (!expand) {
             expand = true;
@@ -68,7 +77,7 @@ public class TextBox extends SelectableGUIElement {
             } else if (pack.letter != KeyEvent.CHAR_UNDEFINED) {
                 final String potLine = line + pack.letter;
                 final FontMetrics metrics = StringSize.getFontMetrics(getFont());
-                if (metrics.stringWidth(potLine) <= getFieldWidth()) {
+                if (metrics.stringWidth(potLine) + getWidthGap() * 2 <= getFieldWidth()) {
                     setContent(currentLine, potLine);
                 }
             }
@@ -82,6 +91,18 @@ public class TextBox extends SelectableGUIElement {
         setFieldHeight(lineLimit * height + getHeightGap() * 2 + (lineLimit - 1) * getLineGap());
         setWidth(width);
         setHeight(getFieldHeight() + 2 * getBorderSpacing());
+    }
+
+    public String getLineDisplay(final int index) {
+        if (expand && index == currentLine) {
+            if (tick < 20) {
+                tick++;
+            } else {
+                tick = 0;
+            }
+            return getLine(index) + (tick < 10 ? "|" : "");
+        }
+        return super.getLineDisplay(index);
     }
 
 }

@@ -21,15 +21,17 @@ public class NodePartitionManager implements Serializable {
     }
 
     public void updateNode(final Node node) {
-        final Point partPointMin = convertPointToPart(node.getCMinX(), node.getCMidY());
-        final Point partPointMax = convertPointToPart(node.getCMaxX(), node.getCMaxY());
-        final boolean s1 = partPointMin.x != node.getPartRangeX()[0];
-        final boolean s2 = partPointMax.x != node.getPartRangeX()[1];
-        final boolean s3 = partPointMin.y != node.getPartRangeY()[0];
-        final boolean s4 = partPointMax.y != node.getPartRangeY()[1];
-        if (s1 || s2 || s3 || s4) {
-            removeNode(node);
-            addNode(node);
+        if (node.getPartRangeX() != null && node.getPartRangeY() != null) {
+            final Point partPointMin = convertPointToPart(node.getCMinX(), node.getCMidY());
+            final Point partPointMax = convertPointToPart(node.getCMaxX(), node.getCMaxY());
+            final boolean s1 = partPointMin.x != node.getPartRangeX()[0];
+            final boolean s2 = partPointMax.x != node.getPartRangeX()[1];
+            final boolean s3 = partPointMin.y != node.getPartRangeY()[0];
+            final boolean s4 = partPointMax.y != node.getPartRangeY()[1];
+            if (s1 || s2 || s3 || s4) {
+                removeNode(node);
+                addNode(node);
+            }
         }
     }
 
@@ -56,7 +58,8 @@ public class NodePartitionManager implements Serializable {
         for (int i = node.getPartRangeX()[0]; i <= node.getPartRangeX()[1]; i++) {
             for (int j = node.getPartRangeY()[0]; j <= node.getPartRangeY()[1]; j++) {
                 if (partitions.isValidLoc(i, j)) {
-                    partitions.get(i, j).removeNode(node);
+                    final NodePartition partition = partitions.get(i, j);
+                    partition.removeNode(node);
                 }
             }
         }

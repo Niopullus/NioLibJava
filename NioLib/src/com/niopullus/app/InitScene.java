@@ -23,6 +23,8 @@ public class InitScene extends GUIScene {
         final Font font = new Font("Bold", Font.BOLD, 40);
         final Label label = new Label("Test Label", font, 0, 0, 10, 10);
         final TextBox textBox = new TextBox("(Sample Text)", font, 300, 400, 10, 10, 500, 3);
+        final SelectionBox selectionBox = new SelectionBox("First thingy", font, -600, 300, 15, 15);
+        setBackground(new ColorBackground(Color.orange));
         label.addLine("Tacos are good");
         label.addLine("frick u");
         label.addLine("jjjj");
@@ -36,21 +38,29 @@ public class InitScene extends GUIScene {
         button = new Button("Test Button", font, 0, 200, 10, 10);
         button2 = new Button("The Second Button", font, -200, -200, 10, 10);
         textBox.setLineGap(20);
+        textBox.setWidthGap(30);
+        textBox.setJustify(GUIElement.Justify.RIGHT);
+        selectionBox.addLine("fricku");
+        selectionBox.addLine("fefeeef");
+        selectionBox.addLine("pick me!");
+        selectionBox.addLine("the great balancer");
+        selectionBox.addLine("feeeeef");
         addElement(label);
         addElement(button);
         addElement(button2);
         addElement(textBox);
+        addElement(selectionBox);
     }
 
     /**
      * Runs when a button is activated
-     * @param element that was selected by the mouse/key board
+     * @param b that was selected by the mouse/keyboard
      */
-    public void buttonActivate(final SelectableGUIElement element) {
-        if (element == button) {
-            System.out.println("button 1 was pressed");
-        } else if (element == button2) {
-            System.out.println("effefefefe");
+    public void buttonActivate(final Button b) {
+        if (b == button) {
+            addSubScene(new TestSubScene());
+        } else if (b == button2) {
+            presentScene(new TestDScene());
         }
     }
 

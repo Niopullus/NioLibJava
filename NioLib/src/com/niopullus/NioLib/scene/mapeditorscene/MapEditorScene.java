@@ -46,7 +46,8 @@ public class MapEditorScene extends Scene implements NodeHandler {
 
     public MapEditorScene(String name) {
         super();
-        final World pack = World.generateWorld(worldName, this);
+        final World pack = World.generate(worldName);
+        pack.setScene(this);
         elementCount = Ref.getNodeCount() + Ref.getTileCount() + 1;
         fgMap = pack.getFgTilemap();
         bgMap = pack.getBgTilemap();
@@ -87,7 +88,7 @@ public class MapEditorScene extends Scene implements NodeHandler {
         return universe.getChildCount();
     }
 
-    public void parcelDraw(final Canvas canvas) {
+    public void drawScene(final Canvas canvas) {
         final int mmX = mapMode == 2 ? 0 : squareSize;
         final int ssX = (selectedSquare.x - 1) * squareSize, ssY = selectedSquare.y * squareSize;
         final int csX = (chosenSquare.x - 1) * squareSize, csY = chosenSquare.y * squareSize;

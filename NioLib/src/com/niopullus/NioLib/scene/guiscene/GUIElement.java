@@ -135,6 +135,10 @@ public class GUIElement implements Parcel {
         return lines.get(index);
     }
 
+    public String getLineDisplay(final int index) {
+        return getLine(index);
+    }
+
     public int getLineCount() {
         return lines.size();
     }
@@ -270,8 +274,8 @@ public class GUIElement implements Parcel {
         canvas.o.parcel(bg, borderSpacing, borderSpacing, 0, 0);
         int yPos = borderSpacing + heightGap;
         for (int i = 0; i < lines.size(); i++) {
-            final String line = lines.get(lines.size() - i - 1);
-            final int xPos = getXPos(line);
+            final String line = getLineDisplay(lines.size() - i - 1);
+            final int xPos = getXPos(getLine(lines.size() - i - 1));
             canvas.o.text(line, textColor, font, xPos, yPos, 20, 0);
             yPos += lineGap + height;
         }

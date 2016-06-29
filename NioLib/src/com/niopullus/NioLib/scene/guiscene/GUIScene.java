@@ -39,24 +39,40 @@ public class GUIScene extends Scene {
         this.selectedIndex = 0;
     }
 
-    public final void parcelDraw(final Canvas canvas) {
+    public final void drawScene(final Canvas canvas) {
         canvas.o.parcel(background, 0, 0, 0, 0);
         for (GUIElement guiElement : elements) {
-            canvas.c.parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
+            canvas.c(getWidth(), getHeight()).parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
         }
     }
 
     public void keyPress(final KeyPack pack) {
-        if (!selected.isOverrideKeys()) {
+        boolean override1;
+        if (selected == null) {
+            override1 = true;
+        } else {
+            override1 = !selected.isOverrideKeys();
+        }
+        if (pack.code == KeyEvent.VK_ENTER) {
+            if (selected != null) {
+                selected.activate();
+            }
+        } else if (override1) {
+            boolean override2;
+            if (selected == null) {
+                override2 = true;
+            } else {
+                override2 = !selected.isOverrideArrows();
+            }
             if (pack.code == KeyEvent.VK_UP) {
-                if (!selected.isOverrideArrows()) {
+                if (override2) {
                     arrow(Dir.N);
                 } else {
                     selected.upArrow();
                 }
             } else if (pack.code == KeyEvent.VK_DOWN) {
-                if (!selected.isOverrideArrows()) {
-                    arrow(Dir.S);
+                if (override2) {
+                    arrow(Dir.N);
                 } else {
                     selected.downArrow();
                 }
@@ -67,18 +83,23 @@ public class GUIScene extends Scene {
     }
 
     private void arrow(final Dir dir) {
-        if (dir == Dir.N) {
-            if (!invertDirection) {
-                pressUp();
-            } else {
-                pressDown();
+        if (selectableElements.size() != 1) {
+            if (dir == Dir.N) {
+                if (!invertDirection) {
+                    pressUp();
+                } else {
+                    pressDown();
+                }
+            } else if (dir == Dir.S) {
+                if (!invertDirection) {
+                    pressDown();
+                } else {
+                    pressUp();
+                }
             }
-        } else if (dir == Dir.S) {
-            if (!invertDirection) {
-                pressDown();
-            } else {
-                pressUp();
-            }
+        } else {
+            selected = selectableElements.get(0);
+            selected.select();
         }
     }
 
@@ -94,7 +115,9 @@ public class GUIScene extends Scene {
         if (selected != null && selected.isOverrideArrows()) {
             selected.downArrow();
         } else if (selectedIndex - 1 >= 0) {
-            selected.deselect();
+            if (selected != null) {
+                selected.deselect(false);
+            }
             selectedIndex--;
             selected = selectableElements.get(selectedIndex);
             selected.select();
@@ -105,7 +128,9 @@ public class GUIScene extends Scene {
         if (selected != null && selected.isOverrideArrows()) {
             selected.upArrow();
         } else if (selectedIndex + 1 < selectableElements.size()) {
-            selected.deselect();
+            if (selected != null) {
+                selected.deselect(false);
+            }
             selectedIndex++;
             selected = selectableElements.get(selectedIndex);
             selected.select();
@@ -113,6 +138,7 @@ public class GUIScene extends Scene {
     }
 
     public void activate() {
+        updateSelection(getMousePos(), true);
         if (selected != null) {
             final Rectangle rect = selected.getRectOrigin();
             if (Utilities.pointInRect(rect, getMousePos())) {
@@ -121,12 +147,8 @@ public class GUIScene extends Scene {
         }
     }
 
-    public void buttonActivate(final SelectableGUIElement element) {
+    public void buttonActivate(final Button button) {
         //To be overridden
-    }
-
-    public void setBackgroundColor(Color color) {
-        background.setColor(color);
     }
 
     public Color getBackgroundColor() {
@@ -135,6 +157,8 @@ public class GUIScene extends Scene {
 
     public void setBackground(final Background background) {
         this.background = background;
+        background.setWidth(getWidth());
+        background.setHeight(getHeight());
     }
 
     public SelectableGUIElement getSelected() {
@@ -161,19 +185,28 @@ public class GUIScene extends Scene {
         invertDirection = !invertDirection;
     }
 
+    private void updateSelection(final Point point, final boolean force) {
+        boolean chosen = false;
+        for (SelectableGUIElement element: selectableElements) {
+            final Rectangle rect = element.getRectOrigin();
+            if (Utilities.pointInRect(rect, point) && !chosen) {
+                element.select();
+                selected = element;
+                chosen = true;
+            } else {
+                element.deselect(force);
+            }
+        }
+    }
+
+    public void updateScene() {
+        background.setWidth(getWidth());
+        background.setHeight(getHeight());
+    }
+
     public void mouseMove(final MousePack pack) {
         if (selected == null || !selected.isOverrideMouse()) {
-            boolean chosen = false;
-            for (SelectableGUIElement element: selectableElements) {
-                final Rectangle rect = element.getRectOrigin();
-                if (Utilities.pointInRect(rect, pack.getPos()) && !chosen) {
-                    element.select();
-                    selected = element;
-                    chosen = true;
-                } else {
-                    element.deselect();
-                }
-            }
+            updateSelection(pack.getPos(), false);
         } else {
             selected.moveMouse(pack);
         }
@@ -189,7 +222,7 @@ public class GUIScene extends Scene {
         }
     }
 
-    public void mouseWheelMoved(final MouseWheelPack pack) {
+    public void mouseWheelMove(final MouseWheelPack pack) {
         if (selected != null) {
             if (selected.isOverrideMouseWheel()) {
                 selected.moveMouseWheel(pack);

@@ -20,7 +20,7 @@ import java.util.List;
 /**A scene variant that is designed to support physics, tilemaps, and nodes
  * Created by Owen on 3/5/2016.
  */
-public class DynamicScene extends Scene implements NodeHandler, Parcel {
+public class DynamicScene extends Scene implements NodeHandler {
 
     private String name;
     private Node universe;
@@ -39,6 +39,8 @@ public class DynamicScene extends Scene implements NodeHandler, Parcel {
         this.fgTilemap = world.getFgTilemap();
         this.bgTilemap = world.getBgTilemap();
         this.camera = world.getCamera();
+        universe.setScene(this);
+        this.world = universe.getChild(0);
     }
 
     public DynamicScene(final World world) {
@@ -123,11 +125,20 @@ public class DynamicScene extends Scene implements NodeHandler, Parcel {
         physicsHandler.setTilemap(fgTilemap);
     }
 
-    public final void tick() { //Called at the same rate that the game loop runs
-        final List<Collision> collisions = physicsHandler.getCollisions();
+    public Tilemap getFgTilemap() {
+        return fgTilemap;
+    }
+
+    public Tilemap getBgTilemap() {
+        return bgTilemap;
+    }
+
+    public final void tick() {
+        final List<Collision> collisions;
         if (physicsHandler != null) {
             physicsHandler.tick();
         }
+        collisions = physicsHandler.getCollisions();
         for (Collision collision : collisions) {
             oCollisionHandler(collision);
         }
@@ -153,7 +164,7 @@ public class DynamicScene extends Scene implements NodeHandler, Parcel {
         //To be overridden
     }
 
-    public final void parcelDraw(final Canvas canvas) {
+    public final void drawScene(final Canvas canvas) {
         final Scene subscene;
         canvas.o.parcel(background, 0, 0, 0, 0);
         canvas.o.parcel(fgTilemap, 0, 0, 10, 0);
@@ -224,7 +235,7 @@ public class DynamicScene extends Scene implements NodeHandler, Parcel {
 
     public void mousePress() {
         final Point inWorld = getMousePosInWorld();
-        final ArrayList<Node> nodes = physicsHandler.getNodesAt(inWorld.x, inWorld.y, 0, 0);
+        final List<Node> nodes = physicsHandler.getNodesAt(inWorld.x, inWorld.y, 0, 0);
         if (nodes.size() != 0) {
             final Node node = nodes.get(0);
             node.clickedOn();

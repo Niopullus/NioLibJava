@@ -2,10 +2,8 @@ package com.niopullus.NioLib.draw;
 
 import com.niopullus.NioLib.Animation;
 import com.niopullus.NioLib.Main;
-import com.niopullus.NioLib.scene.guiscene.GUIScene;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.awt.*;
@@ -23,11 +21,13 @@ public class Canvas {
     private int minY;
     private int maxX;
     private int maxY;
+    private int superWidth;
+    private int superHeight;
     private ParcelElement model;
     public OriginDelegate o;
-    public CenterDelegate c;
+    private CenterDelegate c;
     public MiddleDelegate m;
-    public TabDelegate t;
+    private TabDelegate t;
 
     public Canvas() {
         elements = new ArrayList<>();
@@ -40,6 +40,18 @@ public class Canvas {
         c = new CenterDelegate();
         m = new MiddleDelegate();
         t = new TabDelegate();
+    }
+
+    public CenterDelegate c(final int sw, final int sh) {
+        superWidth = sw;
+        superHeight = sh;
+        return c;
+    }
+
+    public TabDelegate t(final int sw, final int sh) {
+        superWidth = sw;
+        superHeight = sh;
+        return t;
     }
 
     public List<DrawElement> getElements() {
@@ -81,19 +93,6 @@ public class Canvas {
 
     public void setModel(final ParcelElement element) {
         model = element;
-    }
-
-    public DrawDelegate mode(final DrawMode mode) {
-        if (mode == DrawMode.ORIGIN) {
-            return o;
-        } else if (mode == DrawMode.CENTERED) {
-            return c;
-        } else if (mode == DrawMode.MIDDLE) {
-            return m;
-        } else if (mode == DrawMode.TAB) {
-            return t;
-        }
-        return null;
     }
 
     public void display(final Graphics2D g) {
@@ -277,9 +276,11 @@ public class Canvas {
 
     public class CenterDelegate extends DrawDelegate {
 
+
+
         public Point getPos(final int x, final int y, final int width, final int height) {
-            final int nX = Main.Width() / 2 - width / 2 + x;
-            final int nY = Main.Height() / 2 - height / 2 + y;
+            final int nX = superWidth / 2 - width / 2 + x;
+            final int nY = superHeight / 2 - height / 2 + y;
             return new Point(nX, nY);
         }
 
@@ -298,8 +299,8 @@ public class Canvas {
     public class TabDelegate extends DrawDelegate {
 
         public Point getPos(final int x, final int y, final int width, final int height) {
-            final int nX = Main.Width() / 2 + x;
-            final int nY = Main.Height() / 2 + y;
+            final int nX = superWidth / 2 + x;
+            final int nY = superHeight / 2 + y;
             return new Point(nX, nY);
         }
 

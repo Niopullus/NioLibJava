@@ -95,11 +95,11 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     public void select() {
-        this.selected = true;
+        selected = true;
     }
 
-    public void deselect() {
-        this.selected = false;
+    public void deselect(final boolean force) {
+        selected = false;
     }
 
     public void parcelDraw(final Canvas canvas) {
@@ -110,8 +110,8 @@ public class SelectableGUIElement extends GUIElement {
             canvas.o.parcel(selectedBG, getBorderSpacing(), getBorderSpacing(), 0, 0);
             int yPos = getBorderSpacing() + getHeightGap();
             for (int i = 0; i < getLineCount(); i++) {
-                final String line = getLine(getLineCount() - i - 1);
-                final int xPos = getXPos(line);
+                final String line = getLineDisplay(getLineCount() - i - 1);
+                final int xPos = getXPos(getLine(getLineCount() - i - 1));
                 canvas.o.text(line, getTextColor(), getFont(), xPos, yPos, 20, 0);
                 yPos += getLineGap() + height;
             }

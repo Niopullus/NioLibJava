@@ -31,10 +31,6 @@ public class Scene implements Parcel {
         this.height = Main.Height();
     }
 
-    public SceneManager getSceneManager() {
-        return sceneManager;
-    }
-
     public Scene getSubscene() {
         return subscene;
     }
@@ -55,19 +51,31 @@ public class Scene implements Parcel {
         return dy;
     }
 
+    public SceneManager getSceneManager() {
+        if (superScene == null) {
+            return sceneManager;
+        } else {
+            return superScene.sceneManager;
+        }
+    }
+
     public Point getMousePos() {
+        final SceneManager sceneManager = getSceneManager();
         return sceneManager.getMousePos();
     }
 
     public boolean getMouseHeld() {
+        final SceneManager sceneManager = getSceneManager();
         return sceneManager.getMouseHeld();
     }
 
     public boolean getMouseHeldRight() {
+        final SceneManager sceneManager = getSceneManager();
         return sceneManager.getRightMouseHeld();
     }
 
     public boolean getMouseHeldMiddle() {
+        final SceneManager sceneManager = getSceneManager();
         return sceneManager.getMiddleMouseHeld();
     }
 
@@ -109,7 +117,7 @@ public class Scene implements Parcel {
         this.dy = dy;
     }
 
-    private Scene surfaceScene() {
+    public Scene surfaceScene() {
         if (subscene == null) {
             return this;
         } else {
@@ -117,7 +125,14 @@ public class Scene implements Parcel {
         }
     }
 
-    public void parcelDraw(final Canvas canvas) {
+    public final void parcelDraw(final Canvas canvas) {
+        drawScene(canvas);
+        if (subscene != null) {
+            canvas.c(getWidth(), getHeight()).parcel(subscene, 0, 0, 100, 0);
+        }
+    }
+
+    public void drawScene(final Canvas canvas) {
         //To be overridden
     }
 
@@ -141,6 +156,13 @@ public class Scene implements Parcel {
     public void addSubScene(final Scene scene) {
         subscene = scene;
         scene.superScene = this;
+        scene.setWidth(getWidth() * 3 / 4);
+        scene.setHeight(getHeight() * 3 / 4);
+        scene.updateScene();
+    }
+
+    public void updateScene() {
+        //To be overridden
     }
 
     public void closeSubScene() {

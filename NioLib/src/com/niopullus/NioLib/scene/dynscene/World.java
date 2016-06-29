@@ -79,6 +79,10 @@ public class World {
         this.bgTilemap = bgTilemap;
     }
 
+    public void setScene(final NodeHandler handler) {
+        universe.setScene(handler);
+    }
+
     public void setCamera(final Node camera) {
         this.camera = camera;
     }
@@ -117,7 +121,7 @@ public class World {
         Root.writeToFileFromFile(dir, textData, true);
     }
 
-    public static World generateWorld(final String name, final NodeHandler scene) {
+    public static World generate(final String name) {
         final Node world = new Node("world");
         final Node universe = new Node("universe");
         final PhysicsHandler physicsHandler = new PhysicsHandler();
@@ -127,11 +131,11 @@ public class World {
         final World storedWorld = new World();
         fgtilemap.setZ(Config.FGTILEMAPZ);
         bgtilemap.setZ(Config.BGTILEMAPZ);
+        fgtilemap.setWorld(world);
+        bgtilemap.setWorld(world);
         physicsHandler.setTilemap(fgtilemap);
-        universe.setScene(scene);
         universe.addChild(world);
         universe.markUniverse();
-        universe.setScene(scene);
         world.markWorld();
         storedWorld.setName(name);
         storedWorld.setUniverse(universe);

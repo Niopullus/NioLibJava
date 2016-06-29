@@ -60,8 +60,8 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         this.physicsData = new PhysicsData();
         this.width = width;
         this.height = height;
-        this.partRangeX = new int[]{0,0};
-        this.partRangeY = new int[]{0,0};
+        this.partRangeX = null;
+        this.partRangeY = null;
         this.cx = 0;
         this.cy = 0;
         this.cwidth = 0;
@@ -293,7 +293,11 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     }
 
     public NodeHandler getScene() {
-        return scene;
+        if (parent == null) {
+            return scene;
+        } else {
+            return parent.getScene();
+        }
     }
 
     public Node getChild(final int index) {
