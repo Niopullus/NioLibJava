@@ -91,16 +91,24 @@ public class Canvas {
         elements.add(element);
     }
 
+    public List<DrawElement> retrieveElements() {
+        final List<DrawElement> result = new ArrayList<>();
+        for (DrawElement element : elements) {
+            if (element instanceof ParcelElement) {
+                final ParcelElement parcelElement = (ParcelElement) element;
+                result.addAll(parcelElement.retrieveElements());
+            } else {
+                result.add(element);
+            }
+        }
+        return result;
+    }
+
     public void setModel(final ParcelElement element) {
         model = element;
     }
 
     public void display(final Graphics2D g) {
-        final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
-            final Integer z = o1.getZ();
-            return z.compareTo(o2.getZ());
-        };
-        elements.sort(comparator);
         for (DrawElement element : elements) {
             element.draw(g);
         }
@@ -158,6 +166,10 @@ public class Canvas {
             pack.dy1 = position.y;
             pack.dx2 = position.x + width;
             pack.dy2 = position.y + height;
+            pack.sx1 = sx1;
+            pack.sy1 = sy1;
+            pack.sx2 = sx2;
+            pack.sy2 = sy2;
             pack.z = z;
             pack.angle = angle;
             element = new ImageElement(pack);

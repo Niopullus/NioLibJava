@@ -93,6 +93,8 @@ public class DynamicScene extends Scene implements NodeHandler {
 
     public void setBackground(final Background background) {
         this.background = background;
+        background.setWidth(getWidth());
+        background.setHeight(getHeight());
     }
 
     public void setMultiTileFG(final MultiTile multiTile, final int x, final int y) {
@@ -171,9 +173,6 @@ public class DynamicScene extends Scene implements NodeHandler {
         canvas.o.parcel(bgTilemap, 0, 0, 5, 0);
         canvas.o.parcel(universe, universe.getX(), universe.getY(), universe.getZ(), universe.getAngle());
         subscene = getSubscene();
-        if (subscene != null) {
-            canvas.o.parcel(subscene, 0, 0, 50, 0);
-        }
     }
 
     public void addChild(final Node node) {
@@ -198,6 +197,14 @@ public class DynamicScene extends Scene implements NodeHandler {
 
     public void fillTilesBG(final Tile t, final int x, final int y, final int width, final int height) {
         bgTilemap.fillTiles(x, y, width, height, t);
+    }
+
+    public void resetWorld() {
+        world = new Node();
+    }
+
+    public void resetUniverse() {
+        universe = new Node();
     }
 
     public void pause() {

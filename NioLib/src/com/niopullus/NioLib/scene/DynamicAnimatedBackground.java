@@ -22,6 +22,10 @@ public class DynamicAnimatedBackground extends Background {
         this.animation = animation;
     }
 
+    public DynamicAnimatedBackground(final Animation animation) {
+        this(0, 0, animation);
+    }
+
     public void parcelDraw(final Canvas canvas) {
         final int xBound = animation.getWidth();
         final int yBound = animation.getHeight();

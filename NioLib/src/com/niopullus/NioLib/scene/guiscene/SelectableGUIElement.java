@@ -106,8 +106,8 @@ public class SelectableGUIElement extends GUIElement {
         if (selected) {
             final FontMetrics metrics = StringSize.getFontMetrics(getFont());
             final int height = metrics.getAscent() - metrics.getDescent();
-            canvas.o.parcel(selectedBorderBG, 0, 0, 20, 0);
-            canvas.o.parcel(selectedBG, getBorderSpacing(), getBorderSpacing(), 0, 0);
+            canvas.o.parcel(selectedBorderBG, 0, 0, 5, 0);
+            canvas.o.parcel(selectedBG, getBorderSpacing(), getBorderSpacing(), 10, 0);
             int yPos = getBorderSpacing() + getHeightGap();
             for (int i = 0; i < getLineCount(); i++) {
                 final String line = getLineDisplay(getLineCount() - i - 1);

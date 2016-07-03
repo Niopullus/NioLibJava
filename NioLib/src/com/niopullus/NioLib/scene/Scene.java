@@ -9,6 +9,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**Stores data pertaining a specific group of items to be displayed
  * Created by Owen on 3/5/2016.
@@ -146,6 +148,7 @@ public class Scene implements Parcel {
     }
 
     public void presentScene(final Scene scene) {
+        final SceneManager sceneManager = getSceneManager();
         sceneManager.presentScene(scene);
     }
 

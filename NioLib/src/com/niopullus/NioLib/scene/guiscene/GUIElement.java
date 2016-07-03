@@ -270,8 +270,8 @@ public class GUIElement implements Parcel {
     public void parcelDraw(final Canvas canvas) {
         final FontMetrics metrics = StringSize.getFontMetrics(font);
         final int height = metrics.getAscent() - metrics.getDescent();
-        canvas.o.parcel(borderBG, 0, 0, 20, 0);
-        canvas.o.parcel(bg, borderSpacing, borderSpacing, 0, 0);
+        canvas.o.parcel(borderBG, 0, 0, 5, 0);
+        canvas.o.parcel(bg, borderSpacing, borderSpacing, 10, 0);
         int yPos = borderSpacing + heightGap;
         for (int i = 0; i < lines.size(); i++) {
             final String line = getLineDisplay(lines.size() - i - 1);

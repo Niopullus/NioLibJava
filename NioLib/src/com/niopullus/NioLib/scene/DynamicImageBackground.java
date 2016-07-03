@@ -22,6 +22,10 @@ public class DynamicImageBackground extends Background {
         this.image = image;
     }
 
+    public DynamicImageBackground(final BufferedImage image) {
+        this(image, 0, 0);
+    }
+
     public void parcelDraw(final Canvas canvas) {
         final int xBound = image.getWidth();
         final int yBound = image.getHeight();

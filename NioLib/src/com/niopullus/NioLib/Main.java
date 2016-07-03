@@ -1,6 +1,7 @@
 package com.niopullus.NioLib;
 
 import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.scene.SceneManager;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
@@ -9,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Comparator;
+import java.util.List;
 
 /**Manages the program
  * Created by Owen on 3/5/2016.
@@ -87,8 +90,9 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         running = true;
         sceneManager = new SceneManager(this);
         fileManager = new FileManager();
-        Data.init(fileManager);
-        setupConfig();
+        presentInitScene();
+        //Data.init(fileManager);
+        //setupConfig();
     }
 
     private void setupConfig() {
@@ -138,10 +142,12 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         init();
         while (running) {
             final Canvas canvas = new Canvas();
+            final List<DrawElement> drawElements;
             start = System.nanoTime();
             sceneManager.tick();
             sceneManager.parcelDraw(canvas);
-            canvas.display(g);
+            drawElements = canvas.retrieveElements();
+            iterateDrawElements(drawElements, g);
             drawToScreen();
             elapsed = System.nanoTime() - start;
             wait = targetTime - elapsed / 1000000;
@@ -153,6 +159,17 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void iterateDrawElements(final List<DrawElement> elements, final Graphics2D g) {
+        final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
+            final Integer z = o1.getZ();
+            return z.compareTo(o2.getZ());
+        };
+        elements.sort(comparator);
+        for (DrawElement element : elements) {
+            element.draw(g);
         }
     }
 

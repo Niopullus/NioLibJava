@@ -20,6 +20,7 @@ public class ShapeNode extends Node {
 
     public void parcelDraw(final Canvas canvas) {
         canvas.o.rect(color, 0, 0, getWidth(), getHeight(), 0);
+        super.parcelDraw(canvas);
     }
 
 }

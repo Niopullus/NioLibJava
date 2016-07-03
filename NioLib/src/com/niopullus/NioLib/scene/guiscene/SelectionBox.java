@@ -106,9 +106,9 @@ public class SelectionBox extends SelectableGUIElement {
             final int yPos = getBorderSpacing() + getHeightGap();
             final String line = getLineDisplay(selection);
             final int xPos = getXPos(getLine(selection));
-            canvas.o.parcel(border, 0, 0, 20, 0);
-            canvas.o.parcel(bg, getBorderSpacing(), getBorderSpacing(), 0, 0);
-            canvas.o.text(line, textColor, getFont(), xPos, yPos, 20, 0);
+            canvas.o.parcel(border, 0, 0, 10, 0);
+            canvas.o.parcel(bg, getBorderSpacing(), getBorderSpacing(), 20, 0);
+            canvas.o.text(line, textColor, getFont(), xPos, yPos, 30, 0);
         }
     }
 

@@ -673,6 +673,10 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         //To be overridden
     }
 
+    public void removeFromParent() {
+        parent.removeChild(this);
+    }
+
     public void causerCollision(final Collision collision) {
         //To be overridden
     }

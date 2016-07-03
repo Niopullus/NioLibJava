@@ -161,6 +161,10 @@ public class GUIScene extends Scene {
         background.setHeight(getHeight());
     }
 
+    public Background getBackground() {
+        return background;
+    }
+
     public SelectableGUIElement getSelected() {
         return selected;
     }

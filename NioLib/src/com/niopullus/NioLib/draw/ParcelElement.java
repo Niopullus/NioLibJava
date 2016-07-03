@@ -1,6 +1,7 @@
 package com.niopullus.NioLib.draw;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,18 @@ public class ParcelElement extends DrawElement {
         elements = pack.elements;
         xSF = pack.xSF;
         ySF = pack.ySF;
+    }
+
+    public List<DrawElement> retrieveElements() {
+        final List<DrawElement> result = new ArrayList<>();
+        for (DrawElement element : elements) {
+            result.add(element);
+            if (element instanceof ParcelElement) {
+                final ParcelElement parcelElement = (ParcelElement) element;
+                result.addAll(parcelElement.retrieveElements());
+            }
+        }
+        return result;
     }
 
     public int getWidth() {
