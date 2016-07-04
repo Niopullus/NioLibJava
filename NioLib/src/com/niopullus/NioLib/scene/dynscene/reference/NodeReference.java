@@ -11,7 +11,7 @@ public class NodeReference extends Reference {
     private double defaultXScale;
     private double defaultYScale;
 
-    public NodeReference(String name, double defaultXScale, double defaultYScale, int id, Node sample) {
+    public NodeReference(final String name, final double defaultXScale, final double defaultYScale, final int id, final Node sample) {
         super(name, id, sample);
         this.defaultXScale = defaultXScale;
         this.defaultYScale = defaultYScale;
@@ -30,15 +30,16 @@ public class NodeReference extends Reference {
     }
 
     public Node getSampleCopy() {
-        return getSample().copy();
+        final Node sample = getSample();
+        return sample.copy();
     }
 
     public double getDefaultXScale() {
-        return this.defaultXScale;
+        return defaultXScale;
     }
 
     public double getDefaultYScale() {
-        return this.defaultYScale;
+        return defaultYScale;
     }
 
 }

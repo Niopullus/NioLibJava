@@ -23,17 +23,17 @@ public class Tilemap implements Crushable, Parcel {
     private Scene scene;
     private SignedContainer<TileRegion> map;
 
-    public Tilemap(final Node world, final int tileSize, final int regSize, final int width, final int height) {
+    public Tilemap(final Node _world, final int _tileSize, final int _regSize, final int _width, final int _height) {
         final int xRegions;
         final int yRegions;
-        this.tileSize = tileSize;
-        this.width = width;
-        this.height = height;
-        this.regSize = regSize;
-        this.world = world;
+        tileSize = _tileSize;
+        width = _width;
+        height = _height;
+        regSize = _regSize;
+        world = _world;
         xRegions = (int) Math.ceil((double) width / regSize) + 3;
         yRegions = (int) Math.ceil((double) height / regSize) + 3;
-        this.map = new SignedContainer<>(xRegions, yRegions);
+        map = new SignedContainer<>(xRegions, yRegions);
     }
 
     public Tilemap(final int tileSize, final int regSize, final int width, final int height) {
@@ -70,7 +70,6 @@ public class Tilemap implements Crushable, Parcel {
      * @param y in Tile coordinates
      * @return a Point in Region coordinates
      */
-
     private Point getPointInRegion(final int x, final int y) {
         final int xinReg = Math.abs(x % regSize);
         final int yinReg = Math.abs(y % regSize);
@@ -82,7 +81,6 @@ public class Tilemap implements Crushable, Parcel {
      * @param y in tile-coordinates
      * @return a tile from the map
      */
-
     public Tile getTile(final int x, final int y) {
         final Point pointInRegion = getPointInRegion(x, y);
         final TileRegion reg = getRegion(x, y);
@@ -103,8 +101,7 @@ public class Tilemap implements Crushable, Parcel {
      * @param y in World coordinates
      * @return the requested Tile
      */
-
-    public Tile getTileRC(final int x, final int y) { //Gets a tile in world coordinates
+    public Tile getTileRC(final int x, final int y) {
         final TileRegion region = getRegion(x, y);
         Tile tile = null;
         if (region != null) {
@@ -114,7 +111,7 @@ public class Tilemap implements Crushable, Parcel {
         return tile;
     }
 
-    private TileRegion getRegion(final int x, final int y) { //Gets a region from the map in world coordinates
+    private TileRegion getRegion(final int x, final int y) {
         int xReg = x / regSize;
         int yReg = y / regSize;
         if (x < 0) {
@@ -126,7 +123,7 @@ public class Tilemap implements Crushable, Parcel {
         return this.map.get(xReg, yReg);
     }
 
-    public Tile ogetTile(final int x, final int y) { //Gets a tile, ignoring the MultiTile filter, in tile coordinates
+    public Tile ogetTile(final int x, final int y) {
         final Point pointInRegion = getPointInRegion(x, y);
         final TileRegion reg = getRegion(x, y);
         if (reg != null) {
@@ -136,20 +133,20 @@ public class Tilemap implements Crushable, Parcel {
         }
     }
 
-    public void setScene(final Scene scene) {
-        this.scene = scene;
+    public void setScene(final Scene _scene) {
+        scene = _scene;
     }
 
-    public void setZ(final int z) {
-        this.z = z;
+    public void setZ(final int _z) {
+        z = _z;
     }
 
     private void setRegion(final TileRegion reg, final int x, final int y) {
         map.set(x, y, reg);
     }
 
-    public void setWorld(final Node world) {
-        this.world = world;
+    public void setWorld(final Node _world) {
+        world = _world;
     }
 
     /**
@@ -223,7 +220,6 @@ public class Tilemap implements Crushable, Parcel {
      * @param y in World coordinates
      * @return a Point in Tile coordinates
      */
-
     public Point convertPointToTileLoc(final int x, final int y) {
         final int convertedX = ((int) Math.floor((double) x / tileSize));
         final int convertedY = ((int) Math.floor((double) y / tileSize));
@@ -259,7 +255,6 @@ public class Tilemap implements Crushable, Parcel {
      * @param height of the rectangle to fill
      * @param tile to fill
      */
-
     public void fillTiles(final int x, final int y, final int width, final int height, final Tile tile) {
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
@@ -283,7 +278,6 @@ public class Tilemap implements Crushable, Parcel {
      * }
      * @see Crushable
      */
-
     public DataTree crush() {
          final DataTree data = new DataTree();
          data.addData(regSize);

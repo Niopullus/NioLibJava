@@ -13,10 +13,10 @@ public class Reference implements Comparable<Reference> {
     private Object sample;
     private int id;
 
-    public Reference(final String name, final int id, final Object sample) {
-        this.name = name;
-        this.sample = sample;
-        this.id = id;
+    public Reference(final String _name, final int _id, final Object _sample) {
+        name = _name;
+        sample = _sample;
+        id = _id;
     }
 
     public Reference() {

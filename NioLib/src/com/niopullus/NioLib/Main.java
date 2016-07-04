@@ -103,7 +103,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         if (!Data.fileExists(config)) {
             Data.createFolderFromFile(programFiles, Config.DIRNAME);
             Data.createFileFromFile(folder, "config.txt");
-            Data.writeToFileFromFile(config, "Dir: null", true);
+            Data.writeToFileFromFile(config, "Direction: null", true);
             determineDir();
         } else {
             final String text = Data.getTextFromFile(config);

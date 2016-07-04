@@ -10,6 +10,10 @@ public class Ref {
 
     private static ReferenceManager referenceManager = new ReferenceManager();
 
+    private Ref() {
+        //Blank implementation
+    }
+
     public void setReferenceManager(final ReferenceManager referenceManager) {
         Ref.referenceManager = referenceManager;
     }

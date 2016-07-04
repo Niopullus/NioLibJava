@@ -1,16 +1,15 @@
 package com.niopullus.NioLib.draw;
 
 import com.niopullus.NioLib.Animation;
-import com.niopullus.NioLib.Main;
+import com.niopullus.NioLib.Sketch;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 
-/**Used to relay DrawElements to the DrawManager
+/**Used to invoke DrawElements
  * Created by Owen on 5/29/2016.
  */
 public class Canvas {
@@ -42,18 +41,6 @@ public class Canvas {
         t = new TabDelegate();
     }
 
-    public CenterDelegate c(final int sw, final int sh) {
-        superWidth = sw;
-        superHeight = sh;
-        return c;
-    }
-
-    public TabDelegate t(final int sw, final int sh) {
-        superWidth = sw;
-        superHeight = sh;
-        return t;
-    }
-
     public List<DrawElement> getElements() {
         return elements;
     }
@@ -64,6 +51,10 @@ public class Canvas {
 
     public int getHeight() {
         return maxY - minY;
+    }
+
+    public void setModel(final ParcelElement element) {
+        model = element;
     }
 
     public void addElement(final DrawElement element) {
@@ -91,6 +82,35 @@ public class Canvas {
         elements.add(element);
     }
 
+    /**
+     * Invokes the CenterDelegate via parameters
+     * @param sw is the expected width of this Canvas
+     * @param sh is the expected height of this Canvas
+     * @return a CenterDelegate to be used for generic parcelDraw calls
+     */
+    public CenterDelegate c(final int sw, final int sh) {
+        superWidth = sw;
+        superHeight = sh;
+        return c;
+    }
+
+    /**
+     * Invokes the TabDelegate via parameters
+     * @param sw is the expected width of this Canvas
+     * @param sh is the expected height of this Canvas
+     * @return a CenterDelegate to be used for generic parcelDraw calls
+     */
+    public TabDelegate t(final int sw, final int sh) {
+        superWidth = sw;
+        superHeight = sh;
+        return t;
+    }
+
+    /**
+     * Gets all DrawElements to be found within this object and also
+     * within derivative ParcelElements
+     * @return is the list of retrieved elements
+     */
     public List<DrawElement> retrieveElements() {
         final List<DrawElement> result = new ArrayList<>();
         for (DrawElement element : elements) {
@@ -104,16 +124,16 @@ public class Canvas {
         return result;
     }
 
-    public void setModel(final ParcelElement element) {
-        model = element;
-    }
-
     public void display(final Graphics2D g) {
         for (DrawElement element : elements) {
             element.draw(g);
         }
     }
 
+    /**
+     * Used to provide variety for the specific way that a parcel is to be
+     * drawn
+     */
     public class DrawDelegate {
 
         public List<DrawElement> getElements() {
@@ -155,7 +175,8 @@ public class Canvas {
             image(image, x, y, x + width, y + height, 0, 0, image.getWidth(), image.getHeight(), z, angle);
         }
 
-        public void image(final BufferedImage image, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1, final int sx2, final int sy2, final int z, final double angle) {
+        public void image(final BufferedImage image, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1,
+                          final int sx2, final int sy2, final int z, final double angle) {
             final int width = dx2 - dx1;
             final int height = dy2 - dy1;
             final Point position = getPos(dx1, dy1, width, height);
@@ -188,11 +209,13 @@ public class Canvas {
             animation(animation, x, y, width, height, z, 0);
         }
 
-        public void animation(final Animation animation, final int x, final int y, final int width, final int height, final int z, final double angle) {
+        public void animation(final Animation animation, final int x, final int y, final int width, final int height, final int z,
+                              final double angle) {
             animation(animation, x, y, x + width, y + height, 0, 0, animation.getWidth(), animation.getHeight(), z, angle);
         }
 
-        public void animation(final Animation animation, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1, final int sx2, final int sy2, final int z, final double angle) {
+        public void animation(final Animation animation, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1,
+                              final int sy1, final int sx2, final int sy2, final int z, final double angle) {
             final int width = dx2 - dx1;
             final int height = dy2 - dy1;
             final Point position = getPos(dx1, dy1, width, height);
@@ -209,11 +232,47 @@ public class Canvas {
             addElement(element);
         }
 
+        public void sketch(final Sketch sketch, final int x, final int y, final int z) {
+            sketch(sketch, x, y, 1, z);
+        }
+
+        public void sketch(final Sketch sketch, final int x, final int y, final double scaleFactor, final int z) {
+            sketch(sketch, x, y, (int) (sketch.getWidth() * scaleFactor), (int) (sketch.getHeight() * scaleFactor), z);
+        }
+
+        public void sketch(final Sketch sketch, final int x, final int y, final int width, final int height, final int z) {
+            sketch(sketch, x, y, width, height, z, 0);
+        }
+
+        public void sketch(final Sketch sketch, final int x, final int y, final int width, final int height, final int z,
+                              final double angle) {
+            sketch(sketch, x, y, x + width, y + height, 0, 0, sketch.getWidth(), sketch.getHeight(), z, angle);
+        }
+
+        public void sketch(final Sketch sketch, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1,
+                              final int sy1, final int sx2, final int sy2, final int z, final double angle) {
+            final int width = dx2 - dx1;
+            final int height = dy2 - dy1;
+            final Point position = getPos(dx1, dy1, width, height);
+            final ImageElement.ImageElementPack pack = new ImageElement.ImageElementPack();
+            final ImageElement element;
+            pack.image = sketch.getImage();
+            pack.dx1 = position.x;
+            pack.dy1 = position.y;
+            pack.dx2 = position.x + width;
+            pack.dy2 = position.y + height;
+            pack.z = z;
+            pack.angle = angle;
+            element = new ImageElement(pack);
+            addElement(element);
+        }
+
         public void text(final String line, final Color color, final String fontName, final int fontSize, final int x, final int y, final int z) {
             text(line, color, fontName, fontSize, x, y,  z, 0);
         }
 
-        public void text(final String line, final Color color, final String fontName, final int fontSize, final int x, final int y, final int z, final double angle) {
+        public void text(final String line, final Color color, final String fontName, final int fontSize, final int x, final int y, final int z,
+                         final double angle) {
             text(line, color, new Font(fontName, Font.BOLD, fontSize), x, y, z, angle);
         }
 
@@ -245,7 +304,8 @@ public class Canvas {
             parcel(parcel, x, y, width, height, z, angle, false);
         }
 
-        private void parcel(final Parcel parcel, final int x, final int y, int width, int height, final int z, final double angle, final boolean infer) {
+        private void parcel(final Parcel parcel, final int x, final int y, int width, int height, final int z, final double angle,
+                            final boolean infer) {
             final ParcelElement.ParcelElementPack pack = new ParcelElement.ParcelElementPack();
             final ParcelElement element;
             final Canvas canvas;
@@ -287,8 +347,6 @@ public class Canvas {
     }
 
     public class CenterDelegate extends DrawDelegate {
-
-
 
         public Point getPos(final int x, final int y, final int width, final int height) {
             final int nX = superWidth / 2 - width / 2 + x;

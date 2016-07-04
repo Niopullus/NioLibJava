@@ -20,14 +20,14 @@ public class MultiTileReference extends TileReference {
 
     public MultiTileReference(final MultiTileReferencePack pack) {
         super(pack.derive());
-        this.width = pack.images.getSize(0);
-        this.height = pack.images.getSize(1);
-        this.images = new MDArrayList<>(3);
+        width = pack.images.getSize(0);
+        height = pack.images.getSize(1);
+        images = new MDArrayList<>(3);
         pack.images.layerCheck(2);
         images.add(pack.images);
         images.restrict(1, width);
         images.restrict(2, height);
-        detirmineAnchor();
+        determineAnchor();
     }
 
     public int getWidth() {
@@ -62,9 +62,9 @@ public class MultiTileReference extends TileReference {
         return tileAnchor;
     }
 
-    public void setImages(final MDArrayList<BufferedImage> images) {
+    public void setImages(final MDArrayList<BufferedImage> _images) {
         images.layerCheck(this.images);
-        this.images = images;
+        images = _images;
     }
 
     public void setAnchorPoint(final Point anchor) {
@@ -75,13 +75,12 @@ public class MultiTileReference extends TileReference {
      * Adds a set of images
      * @param newSet 2 dimensional MDArrayList of images
      */
-
     public void addSet(final MDArrayList<BufferedImage> newSet) {
         newSet.layerCheck(2);
         images.add(newSet);
     }
 
-    private void detirmineAnchor() {
+    private void determineAnchor() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (images.get(i ,j) != null) {

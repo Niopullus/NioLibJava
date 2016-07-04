@@ -2,7 +2,7 @@ package com.niopullus.NioLib.draw;
 
 import com.niopullus.NioLib.Main;
 
-/**
+/**Denotes the position at which a DrawElement should be drawn
  * Created by Owen on 6/25/2016.
  */
 public class DrawPosition {
@@ -13,6 +13,15 @@ public class DrawPosition {
     private int dy2;
     private int z;
     private double angle;
+
+    public DrawPosition() {
+        dx1 = 0;
+        dy1 = 0;
+        dx2 = 0;
+        dy2 = 0;
+        z = 0;
+        angle = 0;
+    }
 
     public int getDx1() {
         return dx1;
@@ -46,28 +55,28 @@ public class DrawPosition {
         return getDy2() - getDy1();
     }
 
-    public void setDx1(int dx1) {
-        this.dx1 = dx1;
+    public void setDx1(final int _dx1) {
+        dx1 = _dx1;
     }
 
-    public void setDy1(int dy1) {
-        this.dy1 = dy1;
+    public void setDy1(final int _dy1) {
+        dy1 = _dy1;
     }
 
-    public void setDx2(int dx2) {
-        this.dx2 = dx2;
+    public void setDx2(final int _dx2) {
+        dx2 = _dx2;
     }
 
-    public void setDy2(int dy2) {
-        this.dy2 = dy2;
+    public void setDy2(final int _dy2) {
+        dy2 = _dy2;
     }
 
-    public void setZ(int z) {
-        this.z = z;
+    public void setZ(final int _z) {
+        z = _z;
     }
 
-    public void setAngle(double angle) {
-        this.angle = angle;
+    public void setAngle(final double _angle) {
+        angle = _angle;
     }
 
     public String toString() {

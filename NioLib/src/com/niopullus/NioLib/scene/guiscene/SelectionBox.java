@@ -4,7 +4,7 @@ import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.Scene;
-import com.niopullus.NioLib.scene.dynscene.Dir;
+import com.niopullus.NioLib.scene.dynscene.Direction;
 
 import java.awt.*;
 
@@ -72,10 +72,10 @@ public class SelectionBox extends SelectableGUIElement {
     }
 
     public void moveMouseWheel(final Scene.MouseWheelPack pack) {
-        final Dir dir = pack.direction;
-        if (dir == Dir.N) {
+        final Direction dir = pack.direction;
+        if (dir == Direction.N) {
             downArrow();
-        } else if (dir == Dir.S) {
+        } else if (dir == Direction.S) {
             upArrow();
         }
     }

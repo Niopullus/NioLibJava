@@ -19,9 +19,9 @@ public class MultiTile extends Tile {
 
     public MultiTile(final String refName, final Point refTP) {
         super(refName);
-        this.parts = new ArrayList<>();
-        this.refTilePoint = new Point();
-        this.tileType = 1;
+        parts = new ArrayList<>();
+        refTilePoint = new Point();
+        tileType = 1;
     }
 
     public int getTileType() {

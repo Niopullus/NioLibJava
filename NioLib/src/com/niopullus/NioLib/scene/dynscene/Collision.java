@@ -8,13 +8,13 @@ public class Collision {
     private CollideData data1;
     private CollideData data2;
     private boolean passive;
-    private Dir dir;
+    private Direction dir;
 
-    public Collision(final CollideData data1, final CollideData data2, final Dir dir, final boolean passive) {
-        this.data1 = data1;
-        this.data2 = data2;
-        this.dir = dir;
-        this.passive = passive;
+    public Collision(final CollideData _data1, final CollideData _data2, final Direction _dir, final boolean _passive) {
+        data1 = _data1;
+        data2 = _data2;
+        dir = _dir;
+        passive = _passive;
     }
 
     public CollideData getCauser() {
@@ -25,8 +25,12 @@ public class Collision {
         return data2;
     }
 
-    public Dir getDir() {
+    public Direction getDir() {
         return dir;
+    }
+
+    public boolean isPassive() {
+        return passive;
     }
 
     public boolean involves(final String name) {
@@ -53,10 +57,6 @@ public class Collision {
     public boolean isVictim(final String name) {
         final String name2 = data2.getName();
         return name2.equals(name);
-    }
-
-    public boolean isPassive() {
-        return passive;
     }
 
 }

@@ -12,17 +12,14 @@ public class CameraNode extends Node {
 
     public CameraNode() {
         super();
-        this.xMin = 0;
-        this.yMin = 0;
-        this.xMax = 0;
-        this.yMax = 0;
+        setBounds(0, 0, 0, 0);
     }
 
-    public void setBounds(final int xMin, final int yMin, final int xMax, final int yMax) {
-        this.xMin = xMin;
-        this.yMin = yMin;
-        this.xMax = xMax;
-        this.yMax = yMax;
+    public void setBounds(final int _xMin, final int _yMin, final int _xMax, final int _yMax) {
+        xMin = _xMin;
+        yMin = _yMin;
+        xMax = _xMax;
+        yMax = _yMax;
     }
 
     public void setX(final int x) {
@@ -35,11 +32,11 @@ public class CameraNode extends Node {
         }
     }
 
-    public void setY(int y) {
-        if (y > this.yMax) {
-            super.setY(this.yMax);
-        } else if (y < this.yMin) {
-            super.setY(this.yMin);
+    public void setY(final int y) {
+        if (y > yMax) {
+            super.setY(yMax);
+        } else if (y < yMin) {
+            super.setY(yMin);
         } else {
             super.setY(y);
         }

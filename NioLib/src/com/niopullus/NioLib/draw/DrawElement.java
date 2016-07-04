@@ -5,7 +5,6 @@ import com.niopullus.NioLib.Main;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 /**Stores information about how to draw a specific item
  * Created by Owen on 3/29/2016.
@@ -20,13 +19,13 @@ public class DrawElement {
     private double angle;
     private ParcelElement superElement;
 
-    public DrawElement(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
-        this.dx1 = dx1;
-        this.dy1 = dy1;
-        this.dx2 = dx2;
-        this.dy2 = dy2;
-        this.z = z;
-        this.angle = angle;
+    public DrawElement(final int x1, final int y1, final int x2, final int y2, final int _z, final double theta) {
+        dx1 = x1;
+        dy1 = y1;
+        dx2 = x2;
+        dy2 = y2;
+        z = _z;
+        angle = theta;
     }
 
     public int getDx1() {
@@ -65,7 +64,7 @@ public class DrawElement {
         if (superElement == null) {
             return getDx1();
         } else {
-            return (int) (superElement.getTDx1() + getDx1() * superElement.getxSF());
+            return (int) (superElement.getTDx1() + getDx1() * superElement.getXSF());
         }
     }
 
@@ -73,7 +72,7 @@ public class DrawElement {
         if (superElement == null) {
             return getDy1();
         } else {
-            return (int) (superElement.getTDy1() + getDy1() * superElement.getySF());
+            return (int) (superElement.getTDy1() + getDy1() * superElement.getYSF());
         }
     }
 
@@ -81,7 +80,7 @@ public class DrawElement {
         if (superElement == null) {
             return getDx2();
         } else {
-            return (int) (superElement.getTDx1() + getDx2() * superElement.getxSF());
+            return (int) (superElement.getTDx1() + getDx2() * superElement.getXSF());
         }
     }
 
@@ -89,7 +88,7 @@ public class DrawElement {
         if (superElement == null) {
             return getDy2();
         } else {
-            return (int) (superElement.getTDy1() + getDy2() * superElement.getySF());
+            return (int) (superElement.getTDy1() + getDy2() * superElement.getYSF());
         }
     }
 
@@ -107,6 +106,17 @@ public class DrawElement {
         } else {
             return getAngle() + superElement.getTAngle();
         }
+    }
+
+    public DrawPosition getDrawPosition() {
+        final DrawPosition result = new DrawPosition();
+        result.setDx1(getTDx1());
+        result.setDy1(Main.Height() - getTDy2());
+        result.setDx2(getTDx2());
+        result.setDy2(Main.Height() - getTDy1());
+        result.setZ(getTZ());
+        result.setAngle(getTAngle());
+        return result;
     }
 
     public void setSuperElement(final ParcelElement element) {
@@ -129,12 +139,12 @@ public class DrawElement {
         dy2 = y;
     }
 
-    public void setZ(final int z) {
-        this.z = z;
+    public void setZ(final int _z) {
+        z = _z;
     }
 
-    public void setAngle(final double angle) {
-        this.angle = angle;
+    public void setAngle(final double _angle) {
+        angle = _angle;
     }
 
     public void setPosition(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
@@ -146,6 +156,12 @@ public class DrawElement {
         setAngle(angle);
     }
 
+    /**
+     * Changes the angle of the graphics object such that it respects the
+     * angle of the DrawElement object
+     * @param g is the Graphics object
+     * @param angle is the angle at which the DrawElement should be drawn
+     */
     public void adjustGraphics(final Graphics2D g, final double angle) {
         final int transX = dx1 + getWidth() / 2;
         final int transY = dy1 + getHeight() / 2;
@@ -154,6 +170,10 @@ public class DrawElement {
         g.translate(-transX, -transY);
     }
 
+    /**
+     * Displays this to the screen
+     * @param g is the Graphics object
+     */
     public final void draw(final Graphics2D g) {
         final DrawPosition drawPosition = getDrawPosition();
         if (drawPosition.isVisible()) {
@@ -164,19 +184,14 @@ public class DrawElement {
         }
     }
 
+    /**
+     * Overridden to the specific needs of the various types of
+     * DrawElement objects
+     * @param g is the Graphics object
+     * @param drawPosition is the position at which this should be drawn
+     */
     public void display(final Graphics2D g, final DrawPosition drawPosition) {
         //To be overridden
-    }
-
-    public DrawPosition getDrawPosition() {
-        final DrawPosition result = new DrawPosition();
-        result.setDx1(getTDx1());
-        result.setDy1(Main.Height() - getTDy2());
-        result.setDx2(getTDx2());
-        result.setDy2(Main.Height() - getTDy1());
-        result.setZ(getTZ());
-        result.setAngle(getTAngle());
-        return result;
     }
 
 }

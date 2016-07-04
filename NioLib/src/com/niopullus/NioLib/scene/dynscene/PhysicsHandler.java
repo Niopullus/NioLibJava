@@ -93,20 +93,20 @@ public class PhysicsHandler {
         }
     }
 
-    private HalfCollision calcMoveDistNodes(final Node node, final Dir dir) {
+    private HalfCollision calcMoveDistNodes(final Node node, final Direction dir) {
         return partition.getHalfCollision(node, dir);
     }
 
-    private HalfCollision calcMoveDist(final Node node, final Dir dir) {
+    private HalfCollision calcMoveDist(final Node node, final Direction dir) {
         return Utilities.lesser(calcMoveDistNodes(node, dir), calcMoveDistTiles(node, dir));
     }
 
     private void executeMoveCalcs() {
         for (Node node : nodes) {
-            node.setColEast(calcMoveDist(node, Dir.E));
-            node.setColWest(calcMoveDist(node, Dir.W));
-            node.setColNorth(calcMoveDist(node, Dir.N));
-            node.setColSouth(calcMoveDist(node, Dir.S));
+            node.setColEast(calcMoveDist(node, Direction.E));
+            node.setColWest(calcMoveDist(node, Direction.W));
+            node.setColNorth(calcMoveDist(node, Direction.N));
+            node.setColSouth(calcMoveDist(node, Direction.S));
         }
     }
 
@@ -185,9 +185,9 @@ public class PhysicsHandler {
         }
     }
 
-    private HalfCollision calcMoveDistTiles(final Node node, final Dir dir) {
+    private HalfCollision calcMoveDistTiles(final Node node, final Direction dir) {
         HalfCollision col = new HalfCollision(NodePartition.AWARENESS_STANDARD, null);
-        if (dir == Dir.E) {
+        if (dir == Direction.E) {
             final Point p1;
             final Point p2;
             int awareness = tilemap.getTileSize() * 2;
@@ -210,7 +210,7 @@ public class PhysicsHandler {
                     }
                 }
             }
-        } else if (dir == Dir.W) {
+        } else if (dir == Direction.W) {
             final Point p1;
             final Point p2;
             int awareness = -tilemap.getTileSize() * 2;
@@ -233,7 +233,7 @@ public class PhysicsHandler {
                     }
                 }
             }
-        } else if (dir == Dir.N) {
+        } else if (dir == Direction.N) {
             int awareness = tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getYv());
@@ -254,7 +254,7 @@ public class PhysicsHandler {
                     }
                 }
             }
-        } else if (dir == Dir.S) {
+        } else if (dir == Direction.S) {
             int awareness = -tilemap.getTileSize() * 2;
             boolean cont = true;
             awareness += (int) Math.ceil(node.getYv());

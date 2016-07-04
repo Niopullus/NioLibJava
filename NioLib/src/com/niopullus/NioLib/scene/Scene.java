@@ -3,14 +3,12 @@ package com.niopullus.NioLib.scene;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.*;
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.scene.dynscene.Dir;
+import com.niopullus.NioLib.scene.dynscene.Direction;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**Stores data pertaining a specific group of items to be displayed
  * Created by Owen on 3/5/2016.
@@ -231,7 +229,7 @@ public class Scene implements Parcel {
     public final void mouseWheelMoved(final MouseWheelEvent e) {
         final Scene scene = surfaceScene();
         final MouseWheelPack pack = new MouseWheelPack();
-        pack.direction = e.getWheelRotation() > 0 ? Dir.N : e.getWheelRotation() < 0 ? Dir.S: null;
+        pack.direction = e.getWheelRotation() > 0 ? Direction.N : e.getWheelRotation() < 0 ? Direction.S: null;
         pack.notches = Math.abs(e.getWheelRotation());
         scene.mouseWheelMove(pack);
     }
@@ -296,7 +294,7 @@ public class Scene implements Parcel {
 
     public static class MouseWheelPack {
 
-        public Dir direction;
+        public Direction direction;
         public int notches;
 
     }

@@ -19,11 +19,11 @@ public class TileReference extends Reference {
 
     public TileReference(final TileReferencePack pack) {
         super(pack.name, pack.id, pack.sample);
-        this.images = new ArrayList<>();
-        this.friction = pack.friction;
-        this.elasticity = pack.elasticity;
-        this.collidable = pack.collidable;
-        this.images.add(pack.image);
+        images = new ArrayList<>();
+        friction = pack.friction;
+        elasticity = pack.elasticity;
+        collidable = pack.collidable;
+        images.add(pack.image);
     }
 
     public TileReference() {

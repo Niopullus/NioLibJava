@@ -11,7 +11,7 @@ public class ShapeElement extends DrawElement {
 
     public ShapeElement(final ShapeElementPack pack) {
         super(pack.x, pack.y, pack.x + pack.width, pack.y + pack.height, pack.z, pack.angle);
-        this.color = pack.color;
+        color = pack.color;
     }
 
     public void display(final Graphics2D g, final DrawPosition drawPosition) {

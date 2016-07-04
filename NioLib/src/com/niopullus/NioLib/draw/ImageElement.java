@@ -16,11 +16,11 @@ public class ImageElement extends DrawElement {
 
     public ImageElement(final ImageElementPack pack) {
         super(pack.dx1, pack.dy1, pack.dx2, pack.dy2, pack.z, pack.angle);
-        this.image = pack.image;
-        this.sx1 = pack.sx1;
-        this.sy1 = pack.sy1;
-        this.sx2 = pack.sx2;
-        this.sy2 = pack.sy2;
+        image = pack.image;
+        sx1 = pack.sx1;
+        sy1 = pack.sy1;
+        sx2 = pack.sx2;
+        sy2 = pack.sy2;
     }
 
     public void display(final Graphics2D g, final DrawPosition drawPosition) {

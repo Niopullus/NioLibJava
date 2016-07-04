@@ -2,13 +2,10 @@ package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.draw.DrawElement;
-import com.niopullus.NioLib.draw.Parcel;
-import com.niopullus.NioLib.draw.ParcelElement;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
-import com.niopullus.NioLib.scene.dynscene.Dir;
+import com.niopullus.NioLib.scene.dynscene.Direction;
 import com.niopullus.NioLib.utilities.Utilities;
 
 import java.awt.*;
@@ -46,6 +43,14 @@ public class GUIScene extends Scene {
         }
     }
 
+    public final void tick() {
+        update();
+    }
+
+    public void update() {
+        //To be overridden
+    }
+
     public void keyPress(final KeyPack pack) {
         boolean override1;
         if (selected == null) {
@@ -66,13 +71,13 @@ public class GUIScene extends Scene {
             }
             if (pack.code == KeyEvent.VK_UP) {
                 if (override2) {
-                    arrow(Dir.N);
+                    arrow(Direction.N);
                 } else {
                     selected.upArrow();
                 }
             } else if (pack.code == KeyEvent.VK_DOWN) {
                 if (override2) {
-                    arrow(Dir.N);
+                    arrow(Direction.N);
                 } else {
                     selected.downArrow();
                 }
@@ -82,15 +87,15 @@ public class GUIScene extends Scene {
         }
     }
 
-    private void arrow(final Dir dir) {
+    private void arrow(final Direction dir) {
         if (selectableElements.size() != 1) {
-            if (dir == Dir.N) {
+            if (dir == Direction.N) {
                 if (!invertDirection) {
                     pressUp();
                 } else {
                     pressDown();
                 }
-            } else if (dir == Dir.S) {
+            } else if (dir == Direction.S) {
                 if (!invertDirection) {
                     pressDown();
                 } else {

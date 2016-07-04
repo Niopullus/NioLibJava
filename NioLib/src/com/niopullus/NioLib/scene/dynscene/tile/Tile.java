@@ -29,23 +29,20 @@ public class Tile implements CollideData, Crushable, Parcel {
     private TileReference reference;
     private final int tiletype;
 
-    public Tile(final String refName, final DataTree data) {
-        TileReference ref = null;
-        this.data = data;
-        this.tileMapPos = new Point();
-        if (refName != null) {
-            ref = Ref.getTileRef(refName);
-        }
-        this.reference = ref;
-        this.tiletype = 0;
+    public Tile(final String refName, final DataTree _data) {
+        final TileReference ref = refName != null ? Ref.getTileRef(refName) : null;
+        data = _data;
+        tileMapPos = new Point();
+        reference = ref;
+        tiletype = 0;
     }
 
     public Tile(final String refName) {
         this(refName, new DataTree());
     }
 
-    private Tile() { //For cloning
-        this("unreferenced (clone in progress)");
+    private Tile() {
+        this("created by clone init");
     }
 
     public int getTileType() {
@@ -97,7 +94,6 @@ public class Tile implements CollideData, Crushable, Parcel {
      * the MultiTile
      * @return Position of the given multiTile in real-world coordinates
      */
-
     public Point getRWPos() {
         final Point result = new Point();
         final int tileSize = tilemap.getTileSize();
@@ -106,12 +102,12 @@ public class Tile implements CollideData, Crushable, Parcel {
         return result;
     }
 
-    public void setTilemap(final Tilemap tilemap) {
-        this.tilemap = tilemap;
+    public void setTilemap(final Tilemap _tilemap) {
+        tilemap = _tilemap;
     }
 
-    public void setReference(final TileReference reference) {
-        this.reference = reference;
+    public void setReference(final TileReference _reference) {
+        reference = _reference;
     }
 
     public void setTileMapPos(final Point point) {
@@ -146,7 +142,6 @@ public class Tile implements CollideData, Crushable, Parcel {
      * }
      * @see Crushable
      */
-
     public DataTree crush() {
         final DataTree result = new DataTree();
         result.addData(getTileType());

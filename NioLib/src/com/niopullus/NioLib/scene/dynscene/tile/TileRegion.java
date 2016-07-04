@@ -11,9 +11,9 @@ public class TileRegion implements Crushable {
     private Tilemap tilemap;
     private Tile[][] grid;
 
-    public TileRegion(final Tilemap tilemap) {
+    public TileRegion(final Tilemap _tilemap) {
         final int regSize;
-        this.tilemap = tilemap;
+        tilemap = _tilemap;
         grid = new Tile[getRegSize()][getRegSize()];
     }
 
@@ -41,7 +41,6 @@ public class TileRegion implements Crushable {
      * }
      * @see Crushable
      */
-
     public DataTree crush() {
         final DataTree data = new DataTree();
         for (int i = 0; i < getRegSize(); i++) {

@@ -33,11 +33,11 @@ public class NodePartition {
         return nodes;
     }
 
-    public HalfCollision getHalfCollision(final Node node1, final Dir dir) {
+    public HalfCollision getHalfCollision(final Node node1, final Direction dir) {
         int distance = this.AWARENESS_STANDARD;
         CollideData data = null;
         boolean override = false;
-        if (dir == Dir.E) {
+        if (dir == Direction.E) {
             for (Node node2 : nodes) {
                 if (override) {
                     break;
@@ -58,7 +58,7 @@ public class NodePartition {
                     }
                 }
             }
-        } else if (dir == Dir.W) {
+        } else if (dir == Direction.W) {
             for (Node node2 : nodes) {
                 if (override) {
                     break;
@@ -79,7 +79,7 @@ public class NodePartition {
                     }
                 }
             }
-        } else if (dir == Dir.N) {
+        } else if (dir == Direction.N) {
             for (Node node2 : nodes) {
                 if (override) {
                     break;
@@ -100,7 +100,7 @@ public class NodePartition {
                     }
                 }
             }
-        } else if (dir == Dir.S) {
+        } else if (dir == Direction.S) {
             for (Node node2 : nodes) {
                 if (override) {
                     break;

@@ -69,22 +69,22 @@ public class NodePartitionManager implements Serializable {
         return new Point(x / size, y / size);
     }
 
-    public HalfCollision getHalfCollision(final Node node, final Dir dir) {
+    public HalfCollision getHalfCollision(final Node node, final Direction dir) {
         Point p1 = null;
         Point p2 = null;
         int distance = NodePartition.AWARENESS_STANDARD;
         HalfCollision result = new HalfCollision(distance, null);
         boolean override = false;
-        if (dir == Dir.E) {
+        if (dir == Direction.E) {
             p1 = convertPointToPart(node.getCMaxX(), node.getCMinY());
             p2 = convertPointToPart((int) (node.getCMaxX() + node.getXv()), node.getCMaxY());
-        } else if (dir == Dir.W) {
+        } else if (dir == Direction.W) {
             p1 = convertPointToPart((int) (node.getCMinX() + node.getXv()), node.getCMinY());
             p2 = convertPointToPart(node.getCMinX(), node.getCMaxY());
-        } else if (dir == Dir.N) {
+        } else if (dir == Direction.N) {
             p1 = convertPointToPart(node.getCMinX(), node.getCMaxY());
             p2 = convertPointToPart(node.getCMaxX(), (int) (node.getCMaxY() + node.getYv()));
-        } else if (dir == Dir.S) {
+        } else if (dir == Direction.S) {
             p1 = convertPointToPart(node.getCMinX(), node.getCMinY());
             p2 = convertPointToPart(node.getCMaxX(), (int) (node.getCMinY() + node.getYv()));
         }
