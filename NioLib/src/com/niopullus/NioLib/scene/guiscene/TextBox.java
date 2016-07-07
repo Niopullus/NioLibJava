@@ -13,23 +13,25 @@ public class TextBox extends SelectableGUIElement {
 
     private boolean expand;
     private int tick;
-    private int maxLines;
     private int currentLine;
     private int width;
     private int height;
     private int lineLimit;
 
-    public TextBox(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap, final int w, final int limit) {
-        super(content, font, x, y, widthGap, heightGap);
+    public TextBox(final String content, final Font font, final int widthGap, final int heightGap, final int _width, final int lines) {
+        super(content, font, widthGap, heightGap);
         expand = false;
         tick = 0;
-        maxLines = 5;
         currentLine = 0;
-        width = w;
-        lineLimit = limit;
+        width = _width;
+        lineLimit = lines;
         determineDimensions();
         updateBackgrounds();
         fillLines();
+    }
+
+    public TextBox(final String content, final Theme theme, final int fontSize, final int width, final int lines) {
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), width, lines);
     }
 
     private void fillLines() {

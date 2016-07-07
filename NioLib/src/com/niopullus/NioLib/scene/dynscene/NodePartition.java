@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.utilities.Utilities;
+import com.niopullus.NioLib.Utilities;
 
 import java.awt.*;
 import java.util.ArrayList;

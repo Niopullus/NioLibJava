@@ -1,4 +1,4 @@
-package com.niopullus.NioLib.utilities;
+package com.niopullus.NioLib;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;

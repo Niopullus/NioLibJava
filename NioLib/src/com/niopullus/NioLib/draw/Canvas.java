@@ -287,7 +287,7 @@ public class Canvas {
             pack.font = font;
             pack.color = color;
             pack.x = position.x;
-            pack.y = position.y - height;
+            pack.y = position.y;
             pack.width = width;
             pack.height = height;
             pack.z = z;

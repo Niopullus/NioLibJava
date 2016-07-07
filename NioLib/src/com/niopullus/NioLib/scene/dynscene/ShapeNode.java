@@ -1,5 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import com.niopullus.NioLib.Sketch;
 import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;

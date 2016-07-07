@@ -21,7 +21,6 @@ public class GUIElement implements Parcel {
     private Background borderBG;
     private Background bg;
     private Color textColor;
-    private Canvas.DrawMode drawMode;
     private GUIScene scene;
     private Font font;
     private int x;
@@ -37,34 +36,34 @@ public class GUIElement implements Parcel {
     private int fieldHeight;
     private Justify justify;
 
-    public GUIElement(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap) {
-        this.lines = new ArrayList<>();
-        this.x = x;
-        this.y = y;
-        this.z = 0;
-        this.borderSpacing = 10;
-        this.textColor = Color.BLACK;
-        this.font = font;
-        this.bg = new ColorBackground(Color.WHITE);
-        this.borderBG = new ColorBackground(Color.BLACK);
-        this.justify = Justify.CENTER;
-        this.widthGap = widthGap;
-        this.heightGap = heightGap;
+    public GUIElement(final String content, final Font _font, final int _widthGap, final int _heightGap) {
+        lines = new ArrayList<>();
+        x = 0;
+        y = 0;
+        z = 0;
+        borderSpacing = 10;
+        textColor = Color.BLACK;
+        font = _font;
+        bg = new ColorBackground(Color.WHITE);
+        borderBG = new ColorBackground(Color.BLACK);
+        justify = Justify.CENTER;
+        widthGap = _widthGap;
+        heightGap = _heightGap;
         lines.add(content);
         determineDimensions();
         updateBackgrounds();
     }
 
-    public GUIElement(final String content, final String fontName, final int fontSize, final int x, final int y) {
-        this(content, new Font(fontName, Font.BOLD, fontSize), x, y, Config.DEFAULTELEMENTGAPHEIGHT, Config.DEFAULTELEMENTGAPHEIGHT);
+    public GUIElement(final String content, final String fontName, final int fontSize) {
+        this(content, new Font(fontName, Font.BOLD, fontSize), Config.DEFAULTELEMENTGAPHEIGHT, Config.DEFAULTELEMENTGAPHEIGHT);
+    }
+
+    public GUIElement(final String content, final Theme theme, final int fontSize, final int x, final int y) {
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap());
     }
 
     public String getContent() {
         return lines.get(0);
-    }
-
-    public Canvas.DrawMode getDrawMode() {
-        return drawMode;
     }
 
     public int getX() {
@@ -147,16 +146,25 @@ public class GUIElement implements Parcel {
         return textColor;
     }
 
+    public void setX(final int _x) {
+        x = _x;
+    }
+
+    public void setY(final int _y) {
+        y = _y;
+    }
+
+    public void setPosition(final int x, final int y) {
+        setX(x);
+        setY(y);
+    }
+
     public void setGUIScene(final GUIScene scene) {
         this.scene = scene;
     }
 
     public void setJustify(final Justify justify) {
         this.justify = justify;
-    }
-
-    public void setDrawMode(final Canvas.DrawMode mode) {
-        drawMode = mode;
     }
 
     public void setTextColor(final Color color) {
@@ -213,8 +221,8 @@ public class GUIElement implements Parcel {
         font = new Font(fontName, Font.BOLD, fontSize);
     }
 
-    public void setBorderSpacing(final int borderSpacing) {
-        this.borderSpacing = borderSpacing;
+    public void setBorderSpacing(final int _borderSpacing) {
+        borderSpacing = _borderSpacing;
         determineDimensions();
         updateBackgrounds();
     }
@@ -241,10 +249,10 @@ public class GUIElement implements Parcel {
                 stringWidth = tempWidth;
             }
         }
-        this.fieldWidth = stringWidth + 2 * widthGap;
-        this.fieldHeight = stringHeight + 2 * heightGap;
-        this.width = fieldWidth + borderSpacing * 2;
-        this.height = fieldHeight + borderSpacing * 2;
+        fieldWidth = stringWidth + 2 * widthGap;
+        fieldHeight = stringHeight + 2 * heightGap;
+        width = fieldWidth + borderSpacing * 2;
+        height = fieldHeight + borderSpacing * 2;
     }
 
     private void determineLineGap() {
@@ -299,7 +307,7 @@ public class GUIElement implements Parcel {
         bg.setColor(theme.getBgColor());
         borderBG.setColor(theme.getBorderColor());
         textColor = theme.getTextColor();
-        setBorderSpacing(theme.getBorderWidth());
+        setBorderSpacing(theme.getBorderGap());
         setFontName(theme.getFontName());
     }
 

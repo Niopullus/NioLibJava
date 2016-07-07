@@ -21,7 +21,7 @@ public class TextElement extends DrawElement {
     public void display(final Graphics2D g, final DrawPosition drawPosition) {
         g.setFont(font);
         g.setColor(color);
-        g.drawString(line, drawPosition.getDx1(), drawPosition.getDy1());
+        g.drawString(line, drawPosition.getDx1(), drawPosition.getDy1() + getHeight());
     }
 
     public static class TextElementPack {

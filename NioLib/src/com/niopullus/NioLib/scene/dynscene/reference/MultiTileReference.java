@@ -3,7 +3,7 @@ package com.niopullus.NioLib.scene.dynscene.reference;
 import com.niopullus.NioLib.Log;
 import com.niopullus.NioLib.LogManager;
 import com.niopullus.NioLib.scene.dynscene.tile.MultiTile;
-import com.niopullus.NioLib.utilities.MDArrayList;
+import com.niopullus.NioLib.MDArrayList;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -7,7 +7,7 @@ import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.*;
 import com.niopullus.NioLib.scene.dynscene.reference.*;
 import com.niopullus.NioLib.scene.dynscene.tile.*;
-import com.niopullus.NioLib.utilities.Utilities;
+import com.niopullus.NioLib.Utilities;
 import com.niopullus.app.InitScene;
 
 import java.awt.*;

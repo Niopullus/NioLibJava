@@ -21,11 +21,13 @@ public class ExitMenu extends GUIScene {
 
     public ExitMenu() {
         super();
-        final Font font = new Font("Bold", Font.BOLD, 40);
+        final Theme theme = new Theme();
         final Background background = new ColorBackground(new Color(61, 179, 255, 180));
-        final Label label = new Label("Exit?", font, 0, 200, 300, 100);
-        submitButton = new Button("Yes", font,  200, -200, 200, 100);
-        cancelButton = new Button("No", font, -200, -200, 200, 100);
+        final Label label = new Label("Exit?", theme, 40);
+        submitButton = new Button("Yes", theme, 40);
+        cancelButton = new Button("No", theme, 40);
+        submitButton.setPosition(0, 100);
+        cancelButton.setPosition(0, -100);
         setBackground(background);
         addElement(label);
         addElement(submitButton);

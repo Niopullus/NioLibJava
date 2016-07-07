@@ -1,13 +1,11 @@
-package com.niopullus.NioLib.utilities;
+package com.niopullus.NioLib;
 
-import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.dynscene.Node;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.function.ObjDoubleConsumer;
 
 /**
  * Created by Owen on 3/5/2016.
@@ -79,11 +77,11 @@ public abstract class Utilities {
     }
 
     public static boolean pointInRect(int x, int y, int width, int height, Point p) {
-        return p.x < x + width && p.y < y + height && p.x > x && p.y > y;
+        return p.x <= x + width && p.y <= y + height && p.x >= x && p.y >= y;
     }
 
     public static boolean rectIntersect(Rectangle r1, Rectangle r2) {
-        return r1.x < r2.getMaxX() && r1.getMaxX() > r2.x && r1.y < r2.getMaxY() && r1.getMaxY() > r2.y;
+        return r1.x <= r2.getMaxX() && r1.getMaxX() >= r2.x && r1.y <= r2.getMaxY() && r1.getMaxY() >= r2.y;
     }
 
     public static ArrayList<BufferedImage> loadImages(ArrayList<String> dirs) {

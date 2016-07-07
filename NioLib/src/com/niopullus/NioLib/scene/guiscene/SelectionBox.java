@@ -16,12 +16,16 @@ public class SelectionBox extends SelectableGUIElement {
     private int selection;
     private boolean expand;
 
-    public SelectionBox(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap) {
-        super(content, font, x, y, widthGap, heightGap);
+    public SelectionBox(final String content, final Font font, final int widthGap, final int heightGap) {
+        super(content, font, widthGap, heightGap);
         selection = 0;
         expand = false;
         determineDimensions();
         updateBackgrounds();
+    }
+
+    public SelectionBox(final String content, final Theme theme, final int fontSize) {
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap());
     }
 
     public String getContent() {

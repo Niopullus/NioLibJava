@@ -3,7 +3,7 @@ package com.niopullus.NioLib.scene.guiscene;
 
 import java.awt.*;
 
-/**
+/**Used as a convenience for common attributes of a GUIElement
  * Created by Owen on 4/6/2016.
  */
 public class Theme {
@@ -15,81 +15,105 @@ public class Theme {
     private Color textColor;
     private Color selectedTextColor;
     private String fontName;
-    private int borderWidth;
+    private int borderGap;
+    private int widthGap;
+    private int heightGap;
 
     public Theme() {
-        this.bgColor = Color.WHITE;
-        this.selectedBgColor = Color.WHITE;
-        this.borderColor = Color.BLACK;
-        this.selectedBorderColor = Color.CYAN;
-        this.textColor = Color.BLACK;
-        this.selectedTextColor = Color.black;
-        this.fontName = "Bold";
-        this.borderWidth = 15;
-    }
-
-    public void setBgColor(Color c) {
-        this.bgColor = c;
-    }
-
-    public void setSelectedBgColor(Color c) {
-        this.selectedBgColor = c;
-    }
-
-    public void setBorderColor(Color c) {
-        this.borderColor = c;
-    }
-
-    public void setSelectedBorderColor(Color c) {
-        this.selectedBorderColor = c;
-    }
-
-    public void setTextColor(Color c) {
-        this.textColor = c;
-    }
-
-    public void setSelectedTextColor(Color c) {
-        this.selectedTextColor = c;
-    }
-
-    public void setFontName(String n) {
-        this.fontName = n;
-    }
-
-    public void setBorderWidth(int width) {
-        this.borderWidth = width;
+        bgColor = Color.WHITE;
+        selectedBgColor = Color.WHITE;
+        borderColor = Color.BLACK;
+        selectedBorderColor = Color.CYAN;
+        textColor = Color.BLACK;
+        selectedTextColor = Color.black;
+        fontName = "Bold";
+        borderGap = 15;
+        widthGap = 10;
+        heightGap = 10;
     }
 
     public Color getBgColor() {
-        return this.bgColor;
+        return bgColor;
     }
 
     public Color getSelectedBgColor() {
-        return this.selectedBgColor;
+        return selectedBgColor;
     }
 
     public Color getBorderColor() {
-        return this.borderColor;
+        return borderColor;
     }
 
     public Color getSelectedBorderColor() {
-        return this.selectedBorderColor;
+        return selectedBorderColor;
     }
 
     public Color getTextColor() {
-        return this.textColor;
+        return textColor;
     }
 
     public Color getSelectedTextColor() {
-        return this.selectedTextColor;
+        return selectedTextColor;
     }
 
-    public int getBorderWidth() {
-        return this.borderWidth;
+    public int getBorderGap() {
+        return borderGap;
     }
 
     public String getFontName() {
-        return this.fontName;
+        return fontName;
+    }
+
+    public int getWidthGap() {
+        return widthGap;
+    }
+
+    public int getHeightGap() {
+        return heightGap;
+    }
+
+    public Font getFont(final int fontSize) {
+        return new Font(fontName, Font.BOLD, fontSize);
+    }
+
+    public void setBgColor(final Color c) {
+        bgColor = c;
+    }
+
+    public void setSelectedBgColor(final Color c) {
+        selectedBgColor = c;
+    }
+
+    public void setBorderColor(final Color c) {
+        borderColor = c;
+    }
+
+    public void setSelectedBorderColor(final Color c) {
+        selectedBorderColor = c;
+    }
+
+    public void setTextColor(final Color c) {
+        textColor = c;
+    }
+
+    public void setSelectedTextColor(final Color c) {
+        selectedTextColor = c;
+    }
+
+    public void setFontName(final String n) {
+        fontName = n;
+    }
+
+    public void setBorderWidth(final int gap) {
+        borderGap = gap;
+    }
+
+    public void setWidthGap(final int gap) {
+        widthGap = gap;
+    }
+
+    public void setHeightGap(final int gap) {
+        heightGap = gap;
     }
 
 }

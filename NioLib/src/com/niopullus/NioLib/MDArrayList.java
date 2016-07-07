@@ -1,7 +1,6 @@
-package com.niopullus.NioLib.utilities;
+package com.niopullus.NioLib;
 
-import com.niopullus.NioLib.DataPath;
-import static com.niopullus.NioLib.utilities.Utilities.placeHolder;
+import static com.niopullus.NioLib.Utilities.placeHolder;
 
 import java.util.*;
 

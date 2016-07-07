@@ -19,6 +19,7 @@ import java.util.List;
 public class Main extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private static JFrame jFrame;
+    private static Main main;
     private Thread thread;
     private boolean running;
     private int FPS = 30;
@@ -48,6 +49,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public Main() {
         super();
+        main = this;
         setPreferredSize(new Dimension((int) (WIDTH * SCALE), (int) (HEIGHT * SCALE)));
         setFocusable(Config.WINDOWRESIZABLE);
         requestFocus();
@@ -67,8 +69,8 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public Point getMousePos() {
         final Point point = new Point();
-        point.x = (int) (mousePos.getX() * ((double) Main.Width() / Main.getFrameWidth()));
-        point.y = (int) (Main.Height() - (mousePos.getY() * ((double) Main.Height() / Main.getFrameHeight())));
+        point.x = (int) (mousePos.getX() * ((double) Main.Width() / Main.getWindowWidth()));
+        point.y = (int) (Main.Height() - (mousePos.getY() * ((double) Main.Height() / Main.getWindowHeight())));
         return point;
     }
 
@@ -86,7 +88,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public void init() {
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        g = (Graphics2D) this.image.getGraphics();
+        g = (Graphics2D) image.getGraphics();
         running = true;
         sceneManager = new SceneManager(this);
         fileManager = new FileManager();
@@ -175,7 +177,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     private void drawToScreen() {
         final Graphics g2 = getGraphics();
-        g2.drawImage(image, 0, 0, Main.getFrameWidth(), Main.getFrameHeight(), null);
+        g2.drawImage(image, 0, 0, Main.getWindowWidth(), Main.getWindowHeight(), null);
         g2.dispose();
     }
 
@@ -201,6 +203,14 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public static int getFrameHeight() {
         return jFrame.getHeight();
+    }
+
+    public static int getWindowWidth() {
+        return main.getWidth();
+    }
+
+    public static int getWindowHeight() {
+        return main.getHeight();
     }
 
     public static int Width() {
@@ -254,5 +264,15 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     public void mouseWheelMoved(final MouseWheelEvent e) {
         sceneManager.mouseWheelMoved(e);
     }
+
+    //TODO:
+    //Fix the file root system for Macs and Windows computers
+    //Fix mouse button detection /
+    //Dynamic Sketch nodes /
+    //Sketch nodes /
+    //Dynamic backgrounds /
+    //Sketch backgrounds /
+    //GUIElementNode /
+    //Sort out fonts /
 
 }

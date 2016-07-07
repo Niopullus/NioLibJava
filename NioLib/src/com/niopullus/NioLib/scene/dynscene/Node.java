@@ -5,7 +5,7 @@ import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
-import com.niopullus.NioLib.utilities.Utilities;
+import com.niopullus.NioLib.Utilities;
 import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;

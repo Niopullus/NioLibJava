@@ -8,8 +8,12 @@ import java.awt.*;
  */
 public class Button extends SelectableGUIElement {
 
-    public Button(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap) {
-        super(content, font, x, y, widthGap, heightGap);
+    public Button(final String content, final Font font, final int widthGap, final int heightGap) {
+        super(content, font, widthGap, heightGap);
+    }
+
+    public Button(final String content, final Theme theme, final int fontSize) {
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap());
     }
 
     public void activate() {

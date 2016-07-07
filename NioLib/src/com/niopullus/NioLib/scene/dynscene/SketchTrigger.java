@@ -1,17 +1,19 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import com.niopullus.NioLib.Sketch;
+
 import java.awt.image.BufferedImage;
 
 /**Image Node that operates as a Trigger
  * Created by Owen on 4/6/2016.
  */
-public class ImageTrigger extends ImageNode implements Trigger {
+public class SketchTrigger extends SketchNode implements Trigger {
 
     private int xRad;
     private int yRad;
 
-    public ImageTrigger(final String name, final BufferedImage image, final int xRad, final int yRad) {
-        super(name, image);
+    public SketchTrigger(final String name, final Sketch sketch, final int xRad, final int yRad) {
+        super(name, sketch);
         this.xRad = xRad;
         this.yRad = yRad;
     }

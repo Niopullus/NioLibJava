@@ -20,13 +20,13 @@ public class SelectableGUIElement extends GUIElement {
     private boolean overrideKeys;
     private boolean overrideMouseWheel;
 
-    public SelectableGUIElement(final String content, final Font font, final int x, final int y, final int widthGap, final int heightGap) {
-        super(content, font, x, y, widthGap, heightGap);
-        this.selectedBG = new ColorBackground(Color.WHITE);
-        this.selectedBorderBG = new ColorBackground(Color.CYAN);
-        this.selectedTextColor = Color.black;
-        this.selected = false;
-        this.overrideArrows = false;
+    public SelectableGUIElement(final String content, final Font font, final int widthGap, final int heightGap) {
+        super(content, font, widthGap, heightGap);
+        selectedBG = new ColorBackground(Color.WHITE);
+        selectedBorderBG = new ColorBackground(Color.CYAN);
+        selectedTextColor = Color.black;
+        selected = false;
+        overrideArrows = false;
         updateSelectedBorder();
         updateSelectedBG();
     }

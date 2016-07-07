@@ -1,5 +1,6 @@
 package com.niopullus.app;
 
+import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.guiscene.*;
 import com.niopullus.NioLib.scene.guiscene.Button;
@@ -20,10 +21,13 @@ public class InitScene extends GUIScene {
      * Scene setup
      */
     public InitScene() {
-        final Font font = new Font("Bold", Font.BOLD, 40);
-        final Label label = new Label("Test Label", font, 0, 0, 10, 10);
-        final TextBox textBox = new TextBox("(Sample Text)", font, 300, 400, 10, 10, 500, 3);
-        final SelectionBox selectionBox = new SelectionBox("First thingy", font, -600, 300, 15, 15);
+        final Theme theme = new Theme();
+        final Label label = new Label("Test Label", theme, 40);
+        final TextBox textBox = new TextBox("(Sample Text)", theme, 40, 500, 3);
+        final SelectionBox selectionBox = new SelectionBox("First thingy", theme, 40);
+        label.setPosition(-200, -200);
+        textBox.setPosition(200, 200);
+        selectionBox.setPosition(200, -200);
         setBackground(new ColorBackground(Color.orange));
         label.addLine("Tacos are good");
         label.addLine("frick u");
@@ -35,8 +39,10 @@ public class InitScene extends GUIScene {
         label.setBorder(new ColorBackground(Color.GREEN));
         label.setTextColor(Color.MAGENTA);
         label.setBorderSpacing(20);
-        button = new Button("Test Button", font, 0, 200, 10, 10);
-        button2 = new Button("The Second Button", font, -200, -200, 10, 10);
+        button = new Button("Test Button", theme, 40);
+        button.setPosition(0, 0);
+        button2 = new Button("The Second Button", theme, 40);
+        button2.setPosition(-600, 200);
         textBox.setLineGap(20);
         textBox.setWidthGap(30);
         textBox.setJustify(GUIElement.Justify.RIGHT);
@@ -45,11 +51,11 @@ public class InitScene extends GUIScene {
         selectionBox.addLine("pick me!");
         selectionBox.addLine("the great balancer");
         selectionBox.addLine("feeeeef");
-        addElement(label);
+        //addElement(label);
         addElement(button);
-        addElement(button2);
-        addElement(textBox);
-        addElement(selectionBox);
+        //addElement(button2);
+        //addElement(textBox);
+        //addElement(selectionBox);
     }
 
     /**
@@ -58,10 +64,14 @@ public class InitScene extends GUIScene {
      */
     public void buttonActivate(final Button b) {
         if (b == button) {
-            addSubScene(new TestSubScene());
+            //addSubScene(new TestSubScene());
         } else if (b == button2) {
-            presentScene(new TestDScene());
+            //presentScene(new TestDScene());
         }
+    }
+
+    public void update() {
+        //System.out.println(getMousePos() + " - " + button.getRectOrigin());
     }
 
 }

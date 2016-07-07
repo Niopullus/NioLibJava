@@ -4,7 +4,7 @@ import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Node;
-import com.niopullus.NioLib.utilities.SignedContainer;
+import com.niopullus.NioLib.SignedContainer;
 import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;

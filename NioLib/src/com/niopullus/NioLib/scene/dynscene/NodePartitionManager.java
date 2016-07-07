@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene;
 
-import com.niopullus.NioLib.utilities.SignedContainer;
+import com.niopullus.NioLib.SignedContainer;
 
 import java.awt.*;
 import java.io.Serializable;

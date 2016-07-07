@@ -6,7 +6,7 @@ import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Direction;
-import com.niopullus.NioLib.utilities.Utilities;
+import com.niopullus.NioLib.Utilities;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -28,18 +28,18 @@ public class GUIScene extends Scene {
 
     public GUIScene() {
         super();
-        this.elements = new ArrayList<>();
-        this.selectableElements = new ArrayList<>();
-        this.selected = null;
-        this.invertDirection = false;
-        this.background = new ColorBackground(Color.GRAY, Main.Width(), Main.Height());
-        this.selectedIndex = 0;
+        elements = new ArrayList<>();
+        selectableElements = new ArrayList<>();
+        selected = null;
+        invertDirection = false;
+        background = new ColorBackground(Color.GRAY, Main.Width(), Main.Height());
+        selectedIndex = 0;
     }
 
     public final void drawScene(final Canvas canvas) {
         canvas.o.parcel(background, 0, 0, 0, 0);
         for (GUIElement guiElement : elements) {
-            canvas.c(getWidth(), getHeight()).parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
+            canvas.c(Main.Width(), Main.Height()).parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
         }
     }
 
