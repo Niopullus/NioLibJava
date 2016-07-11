@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class DynamicScene extends Scene implements NodeHandler {
 
-    private String name;
     private Node universe;
     private Node world;
     private PhysicsHandler physicsHandler;
@@ -30,17 +29,22 @@ public class DynamicScene extends Scene implements NodeHandler {
     private Tilemap fgTilemap;
     private Tilemap bgTilemap;
     private Node camera;
+    private NodePartitionManager partitionManager;
 
-    public DynamicScene(final String name, final World world) {
-        this.name = name;
-        this.universe = world.getUniverse();
-        this.physicsHandler = world.getPhysicsHandler();
-        this.background = world.getBackground();
-        this.fgTilemap = world.getFgTilemap();
-        this.bgTilemap = world.getBgTilemap();
-        this.camera = world.getCamera();
+    public DynamicScene(final String _name, final World _world) {
+        universe = _world.getUniverse();
+        physicsHandler = _world.getPhysicsHandler();
+        fgTilemap = _world.getFgTilemap();
+        bgTilemap = _world.getBgTilemap();
+        camera = _world.getCamera();
         universe.setScene(this);
-        this.world = universe.getChild(0);
+        world = universe.getChild(0);
+        partitionManager = new NodePartitionManager(Config.NODEPARTSIZE, Config.NODEPARTRAD, Config.NODEPARTRAD);
+        physicsHandler.setPartitionManager(partitionManager);
+        partitionManager.setWorld(world);
+        universe.setPartitionManager(partitionManager);
+        universe.wideUpdate();
+        setBackground(new ColorBackground(Color.white));
     }
 
     public DynamicScene(final World world) {
@@ -57,10 +61,6 @@ public class DynamicScene extends Scene implements NodeHandler {
 
     public PhysicsHandler getPhysicsHandler() {
         return physicsHandler;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public int getNodeCount() {
@@ -171,8 +171,7 @@ public class DynamicScene extends Scene implements NodeHandler {
         canvas.o.parcel(background, 0, 0, 0, 0);
         canvas.o.parcel(fgTilemap, 0, 0, 10, 0);
         canvas.o.parcel(bgTilemap, 0, 0, 5, 0);
-        canvas.o.parcel(universe, universe.getX(), universe.getY(), universe.getZ(), universe.getAngle());
-        subscene = getSubscene();
+        canvas.o.parcel(partitionManager, 0, 0, 0, 0);
     }
 
     public void addChild(final Node node) {

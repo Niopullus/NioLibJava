@@ -1,5 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene.reference;
 
+import com.niopullus.NioLib.Picture;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
 
 import java.awt.image.BufferedImage;
@@ -15,7 +16,7 @@ public class TileReference extends Reference {
     private boolean collidable;
     private double friction;
     private double elasticity;
-    private ArrayList<BufferedImage> images;
+    private ArrayList<Picture> images;
 
     public TileReference(final TileReferencePack pack) {
         super(pack.name, pack.id, pack.sample);
@@ -38,11 +39,11 @@ public class TileReference extends Reference {
         return friction;
     }
 
-    public BufferedImage getImage() {
+    public Picture getImage() {
         return images.get(0);
     }
 
-    public BufferedImage getImage(final int set) {
+    public Picture getImage(final int set) {
         return images.get(set);
     }
 
@@ -62,7 +63,7 @@ public class TileReference extends Reference {
         return getSample().copy();
     }
 
-    public void addImage(final BufferedImage image) {
+    public void addImage(final Picture image) {
         images.add(image);
     }
 
@@ -70,7 +71,7 @@ public class TileReference extends Reference {
 
         public String name;
         public int id;
-        public BufferedImage image;
+        public Picture image;
         public double friction;
         public double elasticity;
         public boolean collidable;

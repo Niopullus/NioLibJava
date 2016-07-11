@@ -141,10 +141,11 @@ public class Canvas {
         }
 
         public void rect(final Color color, final int x, final int y, final int width, final int height, final int z) {
-            rect(color, x, y, width, height, z, 0);
+            rect(color, x, y, width, height, z, 0, 1);
         }
 
-        public void rect(final Color color, final int x, final int y, final int width, final int height, final int z, final double angle) {
+        public void rect(final Color color, final int x, final int y, final int width, final int height, final int z, final double angle,
+                         final float opacity) {
             final Point position = getPos(x, y, width, height);
             final ShapeElement.ShapeElementPack pack = new ShapeElement.ShapeElementPack();
             final ShapeElement element;
@@ -155,6 +156,7 @@ public class Canvas {
             pack.height = height;
             pack.z = z;
             pack.angle = angle;
+            pack.opacity = opacity;
             element = new ShapeElement(pack);
             addElement(element);
         }
@@ -172,11 +174,11 @@ public class Canvas {
         }
 
         public void image(final BufferedImage image, final int x, final int y, final int width, final int height, final int z, final double angle) {
-            image(image, x, y, x + width, y + height, 0, 0, image.getWidth(), image.getHeight(), z, angle);
+            image(image, x, y, x + width, y + height, 0, 0, image.getWidth(), image.getHeight(), z, angle, 1);
         }
 
         public void image(final BufferedImage image, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1,
-                          final int sx2, final int sy2, final int z, final double angle) {
+                          final int sx2, final int sy2, final int z, final double angle, final float opacity) {
             final int width = dx2 - dx1;
             final int height = dy2 - dy1;
             final Point position = getPos(dx1, dy1, width, height);
@@ -193,6 +195,7 @@ public class Canvas {
             pack.sy2 = sy2;
             pack.z = z;
             pack.angle = angle;
+            pack.opacity = opacity;
             element = new ImageElement(pack);
             addElement(element);
         }
@@ -211,23 +214,28 @@ public class Canvas {
 
         public void animation(final Animation animation, final int x, final int y, final int width, final int height, final int z,
                               final double angle) {
-            animation(animation, x, y, x + width, y + height, 0, 0, animation.getWidth(), animation.getHeight(), z, angle);
+            animation(animation, x, y, x + width, y + height, 0, 0, animation.getWidth(), animation.getHeight(), z, angle, 1);
         }
 
         public void animation(final Animation animation, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1,
-                              final int sy1, final int sx2, final int sy2, final int z, final double angle) {
+                              final int sy1, final int sx2, final int sy2, final int z, final double angle, final float opacity) {
             final int width = dx2 - dx1;
             final int height = dy2 - dy1;
             final Point position = getPos(dx1, dy1, width, height);
             final ImageElement.ImageElementPack pack = new ImageElement.ImageElementPack();
             final ImageElement element;
-            pack.image = animation.runFrame();
+            pack.image = animation.getImage();
             pack.dx1 = position.x;
             pack.dy1 = position.y;
             pack.dx2 = position.x + width;
             pack.dy2 = position.y + height;
+            pack.sx1 = sx1;
+            pack.sy1 = sy1;
+            pack.sx2 = sx2;
+            pack.sy2 = sy2;
             pack.z = z;
             pack.angle = angle;
+            pack.opacity = opacity;
             element = new ImageElement(pack);
             addElement(element);
         }
@@ -246,11 +254,11 @@ public class Canvas {
 
         public void sketch(final Sketch sketch, final int x, final int y, final int width, final int height, final int z,
                               final double angle) {
-            sketch(sketch, x, y, x + width, y + height, 0, 0, sketch.getWidth(), sketch.getHeight(), z, angle);
+            sketch(sketch, x, y, x + width, y + height, 0, 0, sketch.getPictureWidth(), sketch.getPictureHeight(), z, angle, 1);
         }
 
         public void sketch(final Sketch sketch, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1,
-                              final int sy1, final int sx2, final int sy2, final int z, final double angle) {
+                              final int sy1, final int sx2, final int sy2, final int z, final double angle, final float opacity) {
             final int width = dx2 - dx1;
             final int height = dy2 - dy1;
             final Point position = getPos(dx1, dy1, width, height);
@@ -261,8 +269,13 @@ public class Canvas {
             pack.dy1 = position.y;
             pack.dx2 = position.x + width;
             pack.dy2 = position.y + height;
+            pack.sx1 = sx1;
+            pack.sy1 = sy1;
+            pack.sx2 = sx2;
+            pack.sy2 = sy2;
             pack.z = z;
             pack.angle = angle;
+            pack.opacity = opacity;
             element = new ImageElement(pack);
             addElement(element);
         }
@@ -273,10 +286,11 @@ public class Canvas {
 
         public void text(final String line, final Color color, final String fontName, final int fontSize, final int x, final int y, final int z,
                          final double angle) {
-            text(line, color, new Font(fontName, Font.BOLD, fontSize), x, y, z, angle);
+            text(line, color, new Font(fontName, Font.BOLD, fontSize), x, y, z, angle, 1);
         }
 
-        public void text(final String line, final Color color, final Font font, final int x, final int y, final int z, final double angle) {
+        public void text(final String line, final Color color, final Font font, final int x, final int y, final int z, final double angle,
+                         final float opacity) {
             final FontMetrics fontMetrics = StringSize.getFontMetrics(font);
             final int width = fontMetrics.stringWidth(line);
             final int height = fontMetrics.getAscent() - fontMetrics.getDescent();
@@ -292,20 +306,22 @@ public class Canvas {
             pack.height = height;
             pack.z = z;
             pack.angle = angle;
+            pack.opacity = opacity;
             element = new TextElement(pack);
             addElement(element);
         }
 
         public void parcel(final Parcel parcel, final int x, final int y, final int z, final double angle) {
-            parcel(parcel, x, y, 0, 0, z, angle, true);
+            parcel(parcel, x, y, 0, 0, z, angle, 1, true);
         }
 
-        public void parcel(final Parcel parcel, final int x, final int y, final int width, final int height, final int z, final double angle) {
-            parcel(parcel, x, y, width, height, z, angle, false);
+        public void parcel(final Parcel parcel, final int x, final int y, final int width, final int height, final int z, final double angle,
+                           final float opacity) {
+            parcel(parcel, x, y, width, height, z, angle, opacity, false);
         }
 
         private void parcel(final Parcel parcel, final int x, final int y, int width, int height, final int z, final double angle,
-                            final boolean infer) {
+                            final float opacity, final boolean infer) {
             final ParcelElement.ParcelElementPack pack = new ParcelElement.ParcelElementPack();
             final ParcelElement element;
             final Canvas canvas;
@@ -323,6 +339,7 @@ public class Canvas {
             pack.y = position.y;
             pack.z = z;
             pack.angle = angle;
+            pack.opacity = opacity;
             pack.elements = canvas.elements;
             pack.width = canvas.getWidth();
             pack.height = canvas.getHeight();

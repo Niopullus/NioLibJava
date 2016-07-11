@@ -39,7 +39,7 @@ public class ReferenceManager {
     }
 
     public int getTileCount() {
-        return tileRefs.size();
+        return tileRefs.size() + 1;
     }
 
     public int getNodeCount() {
@@ -96,20 +96,22 @@ public class ReferenceManager {
 
     public void registerTile(final TileReference.TileReferencePack pack) {
         final TileReference ref;
+        pack.id = getCurIDTile();
         ref = new TileReference(pack);
         tileRefs.add(ref);
         sortedTileRefs.add(ref);
         Collections.sort(sortedTileRefs);
-        pack.sample.setReference(getTileRef(pack.name));
+        pack.sample.setReference(ref);
     }
 
     public void registerMultiTile(final MultiTileReference.MultiTileReferencePack pack) {
         final MultiTileReference ref;
+        pack.id = getCurIDTile();
         ref = new MultiTileReference(pack);
         tileRefs.add(ref);
         sortedTileRefs.add(ref);
         Collections.sort(sortedTileRefs);
-        pack.sample.setReference(getTileRef(pack.name));
+        pack.sample.setReference(ref);
     }
 
     public void registerNode(final String name, final double defaultXScale, final double defaultYScale, final Node sample) {
@@ -117,19 +119,7 @@ public class ReferenceManager {
         nodeRefs.add(ref);
         sortedNodeRefs.add(ref);
         Collections.sort(sortedNodeRefs);
-        sample.setReference(getNodeRef(name));
-    }
-
-    public void registerTile(final String name, final TileReference reference) {
-        tileRefs.add(reference);
-        sortedTileRefs.add(reference);
-        Collections.sort(sortedNodeRefs);
-    }
-
-    public void registerNode(final String name, final NodeReference reference) {
-        nodeRefs.add(reference);
-        sortedNodeRefs.add(reference);
-        Collections.sort(sortedNodeRefs);
+        sample.setReference(ref);
     }
 
 }

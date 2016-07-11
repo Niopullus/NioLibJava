@@ -14,7 +14,7 @@ public class ParcelElement extends DrawElement {
     private double ySF;
 
     public ParcelElement() {
-        super(0, 0, 0, 0, 0, 0);
+        super(0, 0, 0, 0, 0, 0, 0);
     }
 
     public List<DrawElement> getElements() {
@@ -54,6 +54,7 @@ public class ParcelElement extends DrawElement {
         setDy2(pack.y + pack.height);
         setZ(pack.z);
         setAngle(pack.angle);
+        setOpacity(pack.opacity);
         elements = pack.elements;
         xSF = pack.xSF;
         ySF = pack.ySF;
@@ -86,6 +87,7 @@ public class ParcelElement extends DrawElement {
         public double ySF;
         public int z;
         public double angle;
+        public float opacity;
         public List<DrawElement> elements;
 
     }

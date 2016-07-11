@@ -93,8 +93,15 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         sceneManager = new SceneManager(this);
         fileManager = new FileManager();
         presentInitScene();
-        //Data.init(fileManager);
-        //setupConfig();
+        Data.init(fileManager);
+        setupConfig();
+        loadImages();
+    }
+
+    private void loadImages() {
+        Picture.loadPictureFromJar("build.png", "buildMode");
+        Picture.loadPictureFromJar("delete.png", "deleteMode");
+        Picture.loadPictureFromJar("edit.png", "editMode");
     }
 
     private void setupConfig() {
@@ -105,14 +112,13 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         if (!Data.fileExists(config)) {
             Data.createFolderFromFile(programFiles, Config.DIRNAME);
             Data.createFileFromFile(folder, "config.txt");
-            Data.writeToFileFromFile(config, "Direction: null", true);
+            Data.writeToFileFromFile(config, "Directory: null", true);
             determineDir();
         } else {
             final String text = Data.getTextFromFile(config);
-            final String dir = text.substring(5);
+            final String dir = text.substring(11);
             Root.init(fileManager, dir);
             presentInitScene();
-            System.out.println("Initialized Root");
         }
     }
 
@@ -120,12 +126,17 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         if (Config.PROMPTFOLDERDIRECTORY) {
             presentSelectDirScene();
         } else {
+            final String programFilesDir = System.getenv("APPDATA");
+            final String programFiles = programFilesDir.replace("\\", "/");
+            final String configFolder = programFiles + "/" + Config.DIRNAME;
+            final String config = configFolder + "/" + "config.txt";
             final String folderDir = Data.getJarFolder();
             final String folder = folderDir + "/" + Config.DIRNAME;
             Data.createFolderFromFile(folderDir, Config.DIRNAME);
+            Data.createFolderFromFile(folder, "worlds");
+            Data.writeToFileFromFile(config, "Directory: " + folder, true);
             Root.init(fileManager, folder);
             presentInitScene();
-            System.out.println("Initialized Root");
         }
     }
 

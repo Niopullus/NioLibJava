@@ -5,11 +5,7 @@ package com.niopullus.NioLib;
  */
 public class Log {
 
-    private static LogManager logManager;
-
-    public static void setLogManager(final LogManager logManager) {
-        Log.logManager = logManager;
-    }
+    private static final LogManager logManager = new LogManager();
 
     public static void doc(final String message, final String source, final LogManager.LogType type) {
         logManager.doc(message, source, type);

@@ -55,7 +55,7 @@ public class FileManager {
             final InputStream stream = Main.class.getResourceAsStream(jarDir);
             final InputStreamReader inputStreamReader = new InputStreamReader(stream);
             final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String line = null;
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 result += line;
             }
@@ -120,7 +120,6 @@ public class FileManager {
     }
 
     public void createFileFromFile(final String fileDir, final String fileName) {
-        System.out.println(fileDir + "/" + fileName);
         try {
             final File file = new File(fileDir + "/" + fileName);
             if (!file.exists()) {
@@ -132,7 +131,6 @@ public class FileManager {
     }
 
     public void createFolderFromFile(final String fileDir, final String folderName) {
-        System.out.println(fileDir + "/" + folderName);
         final File file = new File(fileDir + "/" + folderName);
         if (!file.exists()) {
             file.mkdir();

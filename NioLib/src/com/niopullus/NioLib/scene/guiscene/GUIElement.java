@@ -36,7 +36,7 @@ public class GUIElement implements Parcel {
     private int fieldHeight;
     private Justify justify;
 
-    public GUIElement(final String content, final Font _font, final int _widthGap, final int _heightGap) {
+    public GUIElement(final String content, final Font _font, final int _widthGap, final int _heightGap, final Theme theme) {
         lines = new ArrayList<>();
         x = 0;
         y = 0;
@@ -52,14 +52,7 @@ public class GUIElement implements Parcel {
         lines.add(content);
         determineDimensions();
         updateBackgrounds();
-    }
-
-    public GUIElement(final String content, final String fontName, final int fontSize) {
-        this(content, new Font(fontName, Font.BOLD, fontSize), Config.DEFAULTELEMENTGAPHEIGHT, Config.DEFAULTELEMENTGAPHEIGHT);
-    }
-
-    public GUIElement(final String content, final Theme theme, final int fontSize, final int x, final int y) {
-        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap());
+        applyTheme(theme);
     }
 
     public String getContent() {
@@ -219,6 +212,8 @@ public class GUIElement implements Parcel {
     public void setFontSize(final int fontSize) {
         final String fontName = font.getFontName();
         font = new Font(fontName, Font.BOLD, fontSize);
+        determineDimensions();
+        updateBackgrounds();
     }
 
     public void setBorderSpacing(final int _borderSpacing) {
@@ -237,6 +232,12 @@ public class GUIElement implements Parcel {
         background.setWidth(width);
         background.setHeight(height);
         borderBG = background;
+    }
+
+    private void applyTheme(final Theme theme) {
+        if (theme != null) {
+            setTheme(theme);
+        }
     }
 
     public void determineDimensions() {
@@ -284,7 +285,7 @@ public class GUIElement implements Parcel {
         for (int i = 0; i < lines.size(); i++) {
             final String line = getLineDisplay(lines.size() - i - 1);
             final int xPos = getXPos(getLine(lines.size() - i - 1));
-            canvas.o.text(line, textColor, font, xPos, yPos, 20, 0);
+            canvas.o.text(line, textColor, font, xPos, yPos, 20, 0, 1);
             yPos += lineGap + height;
         }
     }

@@ -16,16 +16,20 @@ public class SelectionBox extends SelectableGUIElement {
     private int selection;
     private boolean expand;
 
-    public SelectionBox(final String content, final Font font, final int widthGap, final int heightGap) {
-        super(content, font, widthGap, heightGap);
+    public SelectionBox(final String content, final Font font, final int widthGap, final int heightGap, final Theme theme) {
+        super(content, font, widthGap, heightGap, theme);
         selection = 0;
         expand = false;
         determineDimensions();
         updateBackgrounds();
     }
 
+    public SelectionBox(final String content, final Font font, final int widthGap, final int heightGap) {
+        this(content, font, widthGap, heightGap, null);
+    }
+
     public SelectionBox(final String content, final Theme theme, final int fontSize) {
-        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap());
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), theme);
     }
 
     public String getContent() {
@@ -98,7 +102,7 @@ public class SelectionBox extends SelectableGUIElement {
                 textColor = i != selection ? getTextColor() : getSelectedTextColor();
                 canvas.o.parcel(border, 0, yPos, 20, 0);
                 canvas.o.parcel(bg, getBorderSpacing(), yPos + getBorderSpacing(), 30, 0);
-                canvas.o.text(line, textColor, getFont(), xPos, yPos + getBorderSpacing() + getHeightGap(), 40, 0);
+                canvas.o.text(line, textColor, getFont(), xPos, yPos + getBorderSpacing() + getHeightGap(), 40, 0, 1);
                 yPos += getHeight();
             }
         } else {
@@ -112,7 +116,7 @@ public class SelectionBox extends SelectableGUIElement {
             final int xPos = getXPos(getLine(selection));
             canvas.o.parcel(border, 0, 0, 10, 0);
             canvas.o.parcel(bg, getBorderSpacing(), getBorderSpacing(), 20, 0);
-            canvas.o.text(line, textColor, getFont(), xPos, yPos, 30, 0);
+            canvas.o.text(line, textColor, getFont(), xPos, yPos, 30, 0, 1);
         }
     }
 

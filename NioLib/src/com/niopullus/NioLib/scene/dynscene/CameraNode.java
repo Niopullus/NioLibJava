@@ -10,9 +10,25 @@ public class CameraNode extends Node {
     private int xMax;
     private int yMax;
 
+    public CameraNode(final String name, final int xMin, final int yMin, final int xMax, final int yMax) {
+        super(name);
+        setup(xMin, yMin, xMax, yMax);
+    }
+
     public CameraNode() {
-        super();
-        setBounds(0, 0, 0, 0);
+        this("unnamed node", 0, 0, 0, 0);
+    }
+
+    public void init(final Node node) {
+        super.init(node);
+        if (node instanceof CameraNode) {
+            final CameraNode cameraNode = (CameraNode) node;
+            setup(cameraNode.xMin, cameraNode.yMin, cameraNode.xMax, cameraNode.yMax);
+        }
+    }
+
+    public void setup(final int xMin, final int yMin, final int xMax, final int yMax) {
+        setBounds(xMin, yMin, xMax, yMax);
     }
 
     public void setBounds(final int _xMin, final int _yMin, final int _xMax, final int _yMax) {

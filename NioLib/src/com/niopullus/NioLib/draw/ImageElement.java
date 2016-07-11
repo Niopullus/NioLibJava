@@ -15,7 +15,7 @@ public class ImageElement extends DrawElement {
     private int sy2;
 
     public ImageElement(final ImageElementPack pack) {
-        super(pack.dx1, pack.dy1, pack.dx2, pack.dy2, pack.z, pack.angle);
+        super(pack.dx1, pack.dy1, pack.dx2, pack.dy2, pack.z, pack.angle, pack.opacity);
         image = pack.image;
         sx1 = pack.sx1;
         sy1 = pack.sy1;
@@ -40,6 +40,7 @@ public class ImageElement extends DrawElement {
         public int sy2;
         public int z;
         public double angle;
+        public float opacity;
 
     }
 

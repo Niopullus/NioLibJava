@@ -1,5 +1,6 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
+import com.niopullus.NioLib.Picture;
 import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
 import com.niopullus.NioLib.draw.Canvas;
 
@@ -64,7 +65,7 @@ public class MultiTile extends Tile {
      * @return the image of a particular part of the MultiTile
      */
 
-    public BufferedImage getImage(final int relX, final int relY) {
+    public Picture getImage(final int relX, final int relY) {
         final MultiTileReference ref = getReference();
         return ref.getImage(relX, relY);
     }
@@ -122,9 +123,9 @@ public class MultiTile extends Tile {
     public void parcelDraw(final Canvas canvas) {
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                final BufferedImage image = getImage(i, j);
+                final Picture image = getImage(i, j);
                 if (image != null) {
-                    canvas.o.image(image, i * getTileSize(), j * getTileSize(), getTileSize(), getTileSize());
+                    canvas.o.sketch(image, i * getTileSize(), j * getTileSize(), getTileSize(), getTileSize());
                 }
             }
         }

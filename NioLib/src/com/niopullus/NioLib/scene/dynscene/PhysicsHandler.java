@@ -24,10 +24,8 @@ public class PhysicsHandler {
 
     public PhysicsHandler() {
         nodes = new ArrayList<>();
-        partition = new NodePartitionManager(Config.NODEPARTSIZE, Config.NODEPARTRAD, Config.NODEPARTRAD);
         gravitation = -10;
         pause = false;
-        partition.setPhysicsHandler(this);
     }
 
     public int getPhysicsSize() {
@@ -38,12 +36,21 @@ public class PhysicsHandler {
         return collisions;
     }
 
+    public Tilemap getTilemap() {
+        return tilemap;
+    }
+
     public List<Node> getNodesAt(final int x, final int y, final int width, final int height) {
         return partition.getNodesAt(x, y, width, height);
     }
 
-    public void setTilemap(final Tilemap tilemap) {
-        this.tilemap = tilemap;
+    public void setPartitionManager(final NodePartitionManager partitionManager) {
+        partition = partitionManager;
+        partitionManager.setPhysicsHandler(this);
+    }
+
+    public void setTilemap(final Tilemap _tilemap) {
+        tilemap = _tilemap;
     }
 
     public void setGravitation(final double g) {

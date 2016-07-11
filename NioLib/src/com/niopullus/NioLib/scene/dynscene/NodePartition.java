@@ -1,30 +1,40 @@
 package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Utilities;
+import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**Keeps track of nodes for a specific area
  * Created by Owen on 3/23/2016.
  */
-public class NodePartition {
+public class NodePartition implements Parcel {
 
-    private ArrayList<Node> nodes;
+    private List<NodeEntry> nodes;
+    private List<Node> collidableNodes;
     private NodePartitionManager partitionManager;
-    public static final int AWARENESS_STANDARD = 100; //Making this value too big could result in large amounts of lag
+    public static final int AWARENESS_STANDARD = 100;
 
     public NodePartition() {
-        this.nodes = new ArrayList<Node>();
+        nodes = new ArrayList<>();
+        collidableNodes = new ArrayList<>();
     }
 
-    public ArrayList<Node> getNodes() {
-        return nodes;
+    public List<Node> getNodes() {
+        final List<Node> _nodes = new ArrayList<>();
+        for (NodeEntry entry : nodes) {
+            _nodes.add(entry.node);
+        }
+        return _nodes;
     }
 
-    public ArrayList<Node> getNodes(final Rectangle rect) {
-        final ArrayList<Node> nodes = new ArrayList<Node>();
+    public List<Node> getNodes(final Rectangle rect) {
+        final List<Node> nodes = new ArrayList<>();
         for (Node node : nodes) {
             if (Utilities.rectIntersect(rect, node.getWRect())) {
                 nodes.add(node);
@@ -34,11 +44,11 @@ public class NodePartition {
     }
 
     public HalfCollision getHalfCollision(final Node node1, final Direction dir) {
-        int distance = this.AWARENESS_STANDARD;
+        int distance = AWARENESS_STANDARD;
         CollideData data = null;
         boolean override = false;
         if (dir == Direction.E) {
-            for (Node node2 : nodes) {
+            for (Node node2 : collidableNodes) {
                 if (override) {
                     break;
                 }
@@ -59,7 +69,7 @@ public class NodePartition {
                 }
             }
         } else if (dir == Direction.W) {
-            for (Node node2 : nodes) {
+            for (Node node2 : collidableNodes) {
                 if (override) {
                     break;
                 }
@@ -80,7 +90,7 @@ public class NodePartition {
                 }
             }
         } else if (dir == Direction.N) {
-            for (Node node2 : nodes) {
+            for (Node node2 : collidableNodes) {
                 if (override) {
                     break;
                 }
@@ -101,7 +111,7 @@ public class NodePartition {
                 }
             }
         } else if (dir == Direction.S) {
-            for (Node node2 : nodes) {
+            for (Node node2 : collidableNodes) {
                 if (override) {
                     break;
                 }
@@ -125,23 +135,60 @@ public class NodePartition {
         return new HalfCollision(distance, data);
     }
 
-    public void setPartitionManager(final NodePartitionManager partitionManager) {
-        this.partitionManager = partitionManager;
+    public void setPartitionManager(final NodePartitionManager _partitionManager) {
+        partitionManager = _partitionManager;
     }
 
     public void addNode(final Node node) {
-        nodes.add(node);
+        final NodeEntry entry = new NodeEntry();
+        entry.node = node;
+        entry.collidable = node.getCollidableOut();
+        nodes.add(entry);
         Collections.sort(nodes);
+        if (entry.collidable) {
+            collidableNodes.add(node);
+            Collections.sort(collidableNodes);
+        }
     }
 
     public void removeNode(final Node node) {
-        final int index = Collections.binarySearch(nodes, node);
+        int index;
+        NodeEntry entry = null;
+        final NodeEntry key = new NodeEntry();
+        key.node = node;
+        index = Collections.binarySearch(nodes, key);
         if (index != -1) {
-            nodes.remove(index);
+            entry = nodes.remove(index);
         } else {
             System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT");
         }
         Collections.sort(nodes);
+        if (entry.collidable) {
+            index = Collections.binarySearch(collidableNodes, node);
+            if (index != -1) {
+                collidableNodes.remove(index);
+            } else {
+                System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT");
+            }
+        }
+    }
+
+    public void parcelDraw(final Canvas canvas) {
+        for (NodeEntry entry : nodes) {
+            final Node node = entry.node;
+            canvas.o.parcel(node, node.getX(), node.getY(), node.getWidth(), node.getHeight(), node.getZ(), node.getAngle(), 1f);
+        }
+    }
+
+    private class NodeEntry implements Comparable<NodeEntry> {
+
+        public Node node;
+        public boolean collidable;
+
+        public int compareTo(final NodeEntry entry) {
+            return node.compareTo(entry.node);
+        }
+
     }
 
 }

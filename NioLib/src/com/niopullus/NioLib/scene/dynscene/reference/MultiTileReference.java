@@ -2,6 +2,7 @@ package com.niopullus.NioLib.scene.dynscene.reference;
 
 import com.niopullus.NioLib.Log;
 import com.niopullus.NioLib.LogManager;
+import com.niopullus.NioLib.Picture;
 import com.niopullus.NioLib.scene.dynscene.tile.MultiTile;
 import com.niopullus.NioLib.MDArrayList;
 
@@ -15,7 +16,7 @@ public class MultiTileReference extends TileReference {
 
     private int width;
     private int height;
-    private MDArrayList<BufferedImage> images; //Dim1: Set, Dim2: x, Dim3: y
+    private MDArrayList<Picture> images; //Dim1: Set, Dim2: x, Dim3: y
     private Point tileAnchor;
 
     public MultiTileReference(final MultiTileReferencePack pack) {
@@ -38,11 +39,11 @@ public class MultiTileReference extends TileReference {
         return height;
     }
 
-    public BufferedImage getImage(final int x, final int y) {
+    public Picture getImage(final int x, final int y) {
         return images.get(0, x, y);
     }
 
-    public BufferedImage getImage(final int set, final int x, final int y) {
+    public Picture getImage(final int set, final int x, final int y) {
         return images.get(set, x, y);
     }
 
@@ -62,7 +63,7 @@ public class MultiTileReference extends TileReference {
         return tileAnchor;
     }
 
-    public void setImages(final MDArrayList<BufferedImage> _images) {
+    public void setImages(final MDArrayList<Picture> _images) {
         images.layerCheck(this.images);
         images = _images;
     }
@@ -75,7 +76,7 @@ public class MultiTileReference extends TileReference {
      * Adds a set of images
      * @param newSet 2 dimensional MDArrayList of images
      */
-    public void addSet(final MDArrayList<BufferedImage> newSet) {
+    public void addSet(final MDArrayList<Picture> newSet) {
         newSet.layerCheck(2);
         images.add(newSet);
     }
@@ -98,7 +99,7 @@ public class MultiTileReference extends TileReference {
 
         public String name;
         public int id;
-        public MDArrayList<BufferedImage> images; //2 Dimensional
+        public MDArrayList<Picture> images; //2 Dimensional
         public double friction;
         public double elasticity;
         public boolean collidable;

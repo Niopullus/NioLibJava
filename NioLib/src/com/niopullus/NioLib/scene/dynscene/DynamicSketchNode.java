@@ -15,6 +15,8 @@ public class DynamicSketchNode extends SketchNode {
     private List<Sketch> sketches;
     private Sketch currentSketch;
     private OffsetMode currentOffsetMode;
+    private int dx;
+    private int dy;
 
     public DynamicSketchNode(final String name, final Sketch sketch) {
         this(name, sketch, sketch.getWidth(), sketch.getHeight());
@@ -22,6 +24,19 @@ public class DynamicSketchNode extends SketchNode {
 
     public DynamicSketchNode(final String name, final Sketch sketch, final int width, final int height) {
         super(name, sketch, width, height);
+        setup();
+    }
+
+    public DynamicSketchNode() {
+        this("unnamed node", null);
+    }
+
+    public void init(final Node node) {
+        super.init(node);
+        setup();
+    }
+
+    public void setup() {
         sketches = new ArrayList<>();
         currentSketch = null;
         currentOffsetMode = null;
@@ -52,9 +67,11 @@ public class DynamicSketchNode extends SketchNode {
         sketchHeight = currentSketch.getHeight();
         widthDifference = sketchWidth - width;
         heightDifference = sketchHeight - height;
+        final int sX = deriveCX(widthDifference);
+        final int sY = deriveCY(heightDifference);
+        dx = sX;
+        dy = sY;
         if (changeCollision) {
-            final int sX = deriveCX(widthDifference);
-            final int sY = deriveCY(heightDifference);
             setCWidth(widthDifference);
             setCHeight(heightDifference);
             setCX(sX);
@@ -90,7 +107,8 @@ public class DynamicSketchNode extends SketchNode {
     }
 
     public void parcelDraw(final Canvas canvas) {
-
+        final Sketch sketch = getCurrentSketch();
+        canvas.o.sketch(sketch, dx, dy, getWidth(), getHeight(), 0);
     }
 
     private class CollisionOffset {

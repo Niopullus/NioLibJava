@@ -69,8 +69,6 @@ public class SceneManager implements Parcel {
         }
         currentScene = scene;
         scene.setSceneManager(this);
-        scene.setDx(0);
-        scene.setDy(0);
         scene.setWidth(Main.Width());
         scene.setHeight(Main.Height());
         return index;

@@ -1,23 +1,28 @@
 package com.niopullus.NioLib.scene.dynscene;
 
+import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.SignedContainer;
+import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**Manages the various Node Partitions
  * Created by Owen on 3/23/2016.
  */
-public class NodePartitionManager implements Serializable {
+public class NodePartitionManager implements Serializable, Parcel {
 
     private int size;
     private SignedContainer<NodePartition> partitions;
     private PhysicsHandler physicsHandler;
+    private Node world;
 
     public NodePartitionManager(final int partSize, final int width, final int height) {
-        this.size = partSize;
-        this.partitions = new SignedContainer<NodePartition>(width, height);
+        size = partSize;
+        partitions = new SignedContainer<>(width, height);
     }
 
     public void updateNode(final Node node) {
@@ -32,6 +37,8 @@ public class NodePartitionManager implements Serializable {
                 removeNode(node);
                 addNode(node);
             }
+        } else {
+            addNode(node);
         }
     }
 
@@ -52,6 +59,10 @@ public class NodePartitionManager implements Serializable {
                 }
             }
         }
+    }
+
+    public void setWorld(final Node _world) {
+        world = _world;
     }
 
     private void removeNode(final Node node) {
@@ -106,16 +117,16 @@ public class NodePartitionManager implements Serializable {
         return result;
     }
 
-    public void setPhysicsHandler(final PhysicsHandler physicsHandler) {
-        this.physicsHandler = physicsHandler;
+    public void setPhysicsHandler(final PhysicsHandler _physicsHandler) {
+        physicsHandler = _physicsHandler;
     }
 
     public void addCollision(final Collision collision) {
-        this.physicsHandler.addCollision(collision);
+        physicsHandler.addCollision(collision);
     }
 
-    public ArrayList<Node> getNodesAt(final int x, final int y, final int width, final int height) {
-        final ArrayList<Node> nodes = new ArrayList<Node>();
+    public List<Node> getNodesAt(final int x, final int y, final int width, final int height) {
+        final List<Node> nodes = new ArrayList<>();
         final Point p1 = convertPointToPart(x, y);
         final Point p2 = convertPointToPart(x + width, y + height);
         for (int i = p1.x; i <= p2.x; i++) {
@@ -130,6 +141,19 @@ public class NodePartitionManager implements Serializable {
             }
         }
         return nodes;
+    }
+
+    public void parcelDraw(final Canvas canvas) {
+        final Point p1 = convertPointToPart(-world.getX(), -world.getY());
+        final Point p2 = convertPointToPart(-world.getX() + Main.Width(), -world.getY() + Main.Height());
+        for (int i = p1.x; i <= p2.x; i++) {
+            for (int j = p1.y; j < p2.y; j++) {
+                final NodePartition partition = partitions.get(i, j);
+                if (partition != null) {
+                    canvas.o.parcel(partition, 0, 0, 0, 0, 0, 0, 1f);
+                }
+            }
+        }
     }
 
 }

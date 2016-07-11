@@ -18,7 +18,6 @@ public class World {
     private String name;
     private Node universe;
     private PhysicsHandler physicsHandler;
-    private Background background;
     private Tilemap fgTilemap;
     private Tilemap bgTilemap;
     private Node camera;
@@ -29,10 +28,6 @@ public class World {
 
     public PhysicsHandler getPhysicsHandler() {
         return physicsHandler;
-    }
-
-    public Background getBackground() {
-        return background;
     }
 
     public Tilemap getFgTilemap() {
@@ -67,10 +62,6 @@ public class World {
         this.physicsHandler = physicsHandler;
     }
 
-    public void setBackground(final Background background) {
-        this.background = background;
-    }
-
     public void setFgTilemap(final Tilemap fgTilemap) {
         this.fgTilemap = fgTilemap;
     }
@@ -89,18 +80,26 @@ public class World {
 
     public static World loadWorld(final String fileName, final DynamicScene scene) {
         final World result = new World();
+        final PhysicsHandler physicsHandler = new PhysicsHandler();
+        final Tilemap fgMap;
+        final Tilemap bgMap;
         String textData;
         final DataTree data;
         final Node universe;
-        textData = Data.getTextFromFile("worlds/" + fileName);
+        textData = Root.getTextFromFile("/worlds/" + fileName);
         if (textData == null) {
-            textData = Data.getTextFromJar("worlds/" + fileName);
+            textData = Data.getTextFromJar("/worlds/" + fileName);
         }
         data = DataTree.decompress(textData);
-        universe = Node.uncrush(new DataTree(data.getF(2)), scene);
+        universe = Node.uncrush(new DataTree(data.getF(3)), scene);
+        fgMap = Tilemap.uncrush(new DataTree(data.getF(1)), universe.getChild(0), Config.TILESIZE);
+        bgMap = Tilemap.uncrush(new DataTree(data.getF(2)), universe.getChild(0), Config.TILESIZE);
+        physicsHandler.setTilemap(fgMap);
         result.setUniverse(universe);
-        result.setFgTilemap(Tilemap.uncrush(new DataTree((List) data.get(0)), universe.getChild(0), Config.TILESIZE));
-        result.setBgTilemap(Tilemap.uncrush(new DataTree((List) data.get(1)), universe.getChild(0), Config.TILESIZE));
+        result.setFgTilemap(fgMap);
+        result.setBgTilemap(bgMap);
+        result.setName(data.getS(0));
+        result.physicsHandler = physicsHandler;
         return result;
     }
 
@@ -110,14 +109,19 @@ public class World {
 
     public static void saveWorld(final World world) {
         final DataTree data = new DataTree();
+        final String name = world.getName();
         final Tilemap fg = world.getFgTilemap();
         final Tilemap bg = world.getBgTilemap();
+        final Node universe = world.getUniverse();
+        final String fileName = world.getName() + ".niolibworld";
+        final String dir = "/worlds/" + fileName;
         final String textData;
+        data.addData(name);
         data.addData(fg);
         data.addData(bg);
+        data.addData(universe);
         textData = data.compress();
-        final String dir = "worlds/" + world.getName();
-        Root.createFileFromFile("worlds/", world.getName());
+        Root.createFileFromFile("/worlds/", fileName);
         Root.writeToFileFromFile(dir, textData, true);
     }
 
@@ -140,7 +144,6 @@ public class World {
         storedWorld.setName(name);
         storedWorld.setUniverse(universe);
         storedWorld.setPhysicsHandler(physicsHandler);
-        storedWorld.setBackground(background);
         storedWorld.setFgTilemap(fgtilemap);
         storedWorld.setBgTilemap(bgtilemap);
         return storedWorld;

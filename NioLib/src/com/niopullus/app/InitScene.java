@@ -5,6 +5,7 @@ import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.guiscene.*;
 import com.niopullus.NioLib.scene.guiscene.Button;
 import com.niopullus.NioLib.scene.guiscene.Label;
+import com.niopullus.NioLib.scene.mapeditorscene.WorldPickScene;
 
 import java.awt.*;
 
@@ -16,12 +17,19 @@ public class InitScene extends GUIScene {
 
     private Button button;
     private Button button2;
+    private Button button3;
 
     /**
      * Scene setup
      */
     public InitScene() {
         final Theme theme = new Theme();
+        theme.setBgColor(Color.blue);
+        theme.setTextColor(Color.ORANGE);
+        theme.setBorderColor(Color.red);
+        theme.setSelectedBgColor(Color.MAGENTA);
+        theme.setSelectedBorderColor(Color.PINK);
+        theme.setSelectedTextColor(Color.YELLOW);
         final Label label = new Label("Test Label", theme, 40);
         final TextBox textBox = new TextBox("(Sample Text)", theme, 40, 500, 3);
         final SelectionBox selectionBox = new SelectionBox("First thingy", theme, 40);
@@ -51,11 +59,15 @@ public class InitScene extends GUIScene {
         selectionBox.addLine("pick me!");
         selectionBox.addLine("the great balancer");
         selectionBox.addLine("feeeeef");
-        //addElement(label);
+        button3 = new Button("make the WORLD!", theme, 40);
+        button3.setPosition(-350, 400);
+        button3.setZ(40000);
+        addElement(label);
         addElement(button);
-        //addElement(button2);
-        //addElement(textBox);
-        //addElement(selectionBox);
+        addElement(button2);
+        addElement(textBox);
+        addElement(selectionBox);
+        addElement(button3);
     }
 
     /**
@@ -64,14 +76,12 @@ public class InitScene extends GUIScene {
      */
     public void buttonActivate(final Button b) {
         if (b == button) {
-            //addSubScene(new TestSubScene());
+            addSubScene(new TestSubScene());
         } else if (b == button2) {
-            //presentScene(new TestDScene());
+            presentScene(new TestDScene());
+        } else if (b == button3) {
+            presentScene(new WorldPickScene());
         }
-    }
-
-    public void update() {
-        //System.out.println(getMousePos() + " - " + button.getRectOrigin());
     }
 
 }

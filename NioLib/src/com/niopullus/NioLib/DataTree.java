@@ -34,11 +34,11 @@ public class DataTree implements Crushable {
             return folder.size() - 1;
         } else {
             int folderDir = path.get();
-            if (!(folder.get(folderDir) instanceof ArrayList)) {
+            if (!(folder.get(folderDir) instanceof List)) {
                 complain();
                 return -1;
             }
-            return addData(object, path, (ArrayList) folder.get(folderDir));
+            return addData(object, path, (List) folder.get(folderDir));
         }
     }
 
@@ -86,7 +86,8 @@ public class DataTree implements Crushable {
         final List list = new ArrayList<>();
         final DataPath path = new DataPath(pathcontent);
         for (Crushable object : f) {
-            list.add(object.crush());
+            final DataTree subData = object.crush();
+            list.add(subData.get());
         }
         return addData(list, path, data);
     }
@@ -94,7 +95,8 @@ public class DataTree implements Crushable {
     public int addData(final List<? extends Crushable> f) {
         final List list = new ArrayList<>();
         for (Crushable object : f) {
-            list.add(object.crush());
+            final DataTree subData = object.crush();
+            list.add(subData.get());
         }
         data.add(list);
         return data.size() - 1;
@@ -111,17 +113,17 @@ public class DataTree implements Crushable {
     }
 
     public int addData(final Crushable object, final int... pathcontent) {
-        final DataTree data = object.crush();
-        final List folderContent = data.get();
+        final DataTree _data = object.crush();
+        final List folderContent = _data.get();
         final DataPath path = new DataPath(pathcontent);
-        return addData(folderContent, path, this.data);
+        return addData(folderContent, path, data);
     }
 
     public int addObject(final Crushable object) {
-        final DataTree data = object.crush();
-        final List folderContent = data.get();
-        data.addData(folderContent);
-        return this.data.size() - 1;
+        final DataTree _data = object.crush();
+        final List folderContent = _data.get();
+        addData(folderContent);
+        return data.size() - 1;
     }
 
     private Object get(final DataPath path, final List folder) {
@@ -131,7 +133,7 @@ public class DataTree implements Crushable {
             return folder.get(path.get());
         } else {
             final int folderDir = path.get();
-            return get(path, (ArrayList) folder.get(folderDir));
+            return get(path, (List) folder.get(folderDir));
         }
     }
 
@@ -197,7 +199,7 @@ public class DataTree implements Crushable {
         String data = "";
         for (Object o : folder) {
             if (o instanceof ArrayList) {
-                data += ",f(" + compress((ArrayList) o) + ")";
+                data += ",f(" + compress((List) o) + ")";
             } else {
                 char type = 'i';
                 if (o instanceof Double) {

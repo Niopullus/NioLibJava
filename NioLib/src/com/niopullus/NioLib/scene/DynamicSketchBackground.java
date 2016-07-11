@@ -78,22 +78,22 @@ public class DynamicSketchBackground extends SketchBackground {
         sx2 = wX + wWidth;
         sy2 = wY + wHeight;
         if (sx2 <= xBound && sy2 <= yBound) {
-            canvas.o.sketch(sketch, 0, 0, getWidth(), getHeight(), sx1, sy1, sx2, sy2, 0, 0);
+            canvas.o.sketch(sketch, 0, 0, getWidth(), getHeight(), sx1, sy1, sx2, sy2, 0, 0, 1);
         } else if (sx2 >= xBound && sy2 <= yBound) {
             final int xBound2 = (int) ((double) (xBound - sx1) / (sx2 - sx1) * getWidth());
-            canvas.o.sketch(sketch, 0, 0, xBound2, getHeight(), sx1, sy1, xBound, sy2, 0, 0);
-            canvas.o.sketch(sketch, xBound2, 0, getWidth(), getHeight(), 0, sy1, sx2 - xBound, sy2, 0, 0);
+            canvas.o.sketch(sketch, 0, 0, xBound2, getHeight(), sx1, sy1, xBound, sy2, 0, 0, 1);
+            canvas.o.sketch(sketch, xBound2, 0, getWidth(), getHeight(), 0, sy1, sx2 - xBound, sy2, 0, 0, 1);
         } else if (sx2 <= xBound && sy2 >= yBound) {
             final int yBound2 = (int) ((double) (yBound - sy1) / (sy2 - sy1) * getHeight());
-            canvas.o.sketch(sketch, 0, 0, getWidth(), yBound2, sx1, sy1, sx2, yBound, 0, 0);
-            canvas.o.sketch(sketch, 0, yBound2, getWidth(), getHeight(), sx1, 0, sx2, sy2 - yBound, 0, 0);
+            canvas.o.sketch(sketch, 0, 0, getWidth(), yBound2, sx1, sy1, sx2, yBound, 0, 0, 1);
+            canvas.o.sketch(sketch, 0, yBound2, getWidth(), getHeight(), sx1, 0, sx2, sy2 - yBound, 0, 0, 1);
         } else if (sx2 >= xBound && sy2 >= yBound) {
             final int xBound2 = (int) ((double) (xBound - sx1) / (sx2 - sx1) * getWidth());
             final int yBound2 = (int) ((double) (yBound - sy1) / (sy2 - sy1) * getHeight());
-            canvas.o.sketch(sketch, 0, 0, xBound2, yBound2, sx1, sy1, xBound, yBound, 0, 0);
-            canvas.o.sketch(sketch, xBound2, 0, getWidth(), getHeight(), 0, sy1, sx2 - xBound, sy2, 0, 0);
-            canvas.o.sketch(sketch, 0, yBound2, getWidth(), getHeight(), sx1, 0, sx2, sy2 - yBound, 0, 0);
-            canvas.o.sketch(sketch, xBound2, yBound2, getWidth(), getHeight(), 0, 0, sx2 - xBound, sy2 - yBound, 0, 0);
+            canvas.o.sketch(sketch, 0, 0, xBound2, yBound2, sx1, sy1, xBound, yBound, 0, 0, 1);
+            canvas.o.sketch(sketch, xBound2, 0, getWidth(), getHeight(), 0, sy1, sx2 - xBound, sy2, 0, 0, 1);
+            canvas.o.sketch(sketch, 0, yBound2, getWidth(), getHeight(), sx1, 0, sx2, sy2 - yBound, 0, 0, 1);
+            canvas.o.sketch(sketch, xBound2, yBound2, getWidth(), getHeight(), 0, 0, sx2 - xBound, sy2 - yBound, 0, 0, 1);
         }
     }
 

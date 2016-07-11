@@ -10,5 +10,7 @@ public interface Sketch {
     BufferedImage getImage();
     int getWidth();
     int getHeight();
+    int getPictureWidth();
+    int getPictureHeight();
 
 }

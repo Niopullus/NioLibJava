@@ -3,21 +3,24 @@ package com.niopullus.NioLib;
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.draw.Parcel;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.*;
 
-/**
+/**Class wrapper for BufferedImage to implement several interfaces and
+ * add additional NioLib support
  * Created by Owen on 7/4/2016.
  */
 public class Picture implements Sketch, Parcel {
 
     private BufferedImage image;
+    private String name;
+    private final static List<Picture> pictures = new ArrayList<>();
 
-    public Picture(final BufferedImage _image) {
+    public Picture(final BufferedImage _image, final String _name) {
         image = _image;
-    }
-
-    public Picture(final String fileName) {
-        image = Utilities.loadImage(fileName);
+        name = _name;
     }
 
     public BufferedImage getImage() {
@@ -32,8 +35,58 @@ public class Picture implements Sketch, Parcel {
         return image.getHeight();
     }
 
+    public int getPictureWidth() {
+        return getWidth();
+    }
+
+    public int getPictureHeight() {
+        return getHeight();
+    }
+
     public void parcelDraw(final Canvas canvas) {
         canvas.o.image(image, 0, 0, image.getWidth(), image.getHeight(), 0);
+    }
+
+    private static Comparator<Picture> getComparator() {
+        return (final Picture p1, final Picture p2) -> {
+            final String name1 = p1.name;
+            final String name2 = p2.name;
+            return name1.compareTo(name2);
+        };
+    }
+
+    private static void sortPictures() {
+        final Comparator<Picture> comparator = getComparator();
+        Collections.sort(pictures, comparator);
+    }
+
+    public static void loadPictureFromJar(final String fileName, final String picName) {
+        final BufferedImage image = Utilities.loadImage(fileName);
+        final Picture picture = new Picture(image, picName);
+        pictures.add(picture);
+        sortPictures();
+    }
+
+    public static void loadPictureFromFile(final String fileDir, final String picName) {
+        try {
+            final File file = Root.getFile(fileDir);
+            final BufferedImage image = ImageIO.read(file);
+            final Picture picture = new Picture(image, picName);
+            pictures.add(picture);
+            sortPictures();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Picture getPicture(final String picName) {
+        final Comparator<Picture> comparator = getComparator();
+        final Picture sample = new Picture(null, picName);
+        final int index = Collections.binarySearch(pictures, sample, comparator);
+        if (index != -1) {
+            return pictures.get(index);
+        }
+        return null;
     }
 
 }

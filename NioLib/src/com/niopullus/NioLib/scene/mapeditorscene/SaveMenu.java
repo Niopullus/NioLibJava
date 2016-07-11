@@ -18,18 +18,18 @@ public class SaveMenu extends GUIScene {
     private Button submitButton;
     private Button cancelButton;
 
-    public SaveMenu(String curFileName) {
+    public SaveMenu(final String curFileName) {
         super();
         final Theme theme = new Theme();
         final Background background = new ColorBackground(new Color(61, 179, 255, 180));
         final Label label = new Label("Save World", theme, 40);
-        label.setPosition(300, 100);
-        textBox = new TextBox(curFileName.substring(0, curFileName.length() - 12), theme, 40, 500, 1);
-        textBox.setPosition(500, 100);
+        label.setPosition(0, 300);
+        textBox = new TextBox(curFileName, theme, 40, 500, 1);
+        textBox.setPosition(0, 100);
         submitButton = new Button("Submit", theme, 40);
-        submitButton.setPosition(200, 100);
+        submitButton.setPosition(0, -200);
         cancelButton = new Button("Cancel", theme, 40);
-        cancelButton.setPosition(200, 100);
+        cancelButton.setPosition(0, -300);
         setBackground(background);
         addElement(label);
         addElement(textBox);
@@ -43,11 +43,11 @@ public class SaveMenu extends GUIScene {
         submitButton.setSelectedColor(Color.orange);
     }
 
-    public void buttonActivate(final SelectableGUIElement element) {
-        if (element == submitButton) {
+    public void buttonActivate(final Button b) {
+        if (b == submitButton) {
             final MapEditorScene scene = (MapEditorScene) getSuperScene();
-            scene.saveMap();
-        } else if (element == cancelButton) {
+            scene.saveMap(textBox.getContent());
+        } else if (b == cancelButton) {
             closeSubScene();
         }
     }

@@ -7,12 +7,16 @@ import java.awt.*;
  */
 public class Label extends GUIElement {
 
+    public Label(final String content, final Font font, final int widthGap, final int heightGap, final Theme theme) {
+        super(content, font, widthGap, heightGap, theme);
+    }
+
     public Label(final String content, final Font font, final int widthGap, final int heightGap) {
-        super(content, font, widthGap, heightGap);
+        this(content, font, widthGap, heightGap, null);
     }
 
     public Label(final String content, final Theme theme, final int fontSize) {
-        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap());
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), theme);
     }
 
 }

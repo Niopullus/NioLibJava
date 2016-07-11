@@ -1,15 +1,13 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
-import com.niopullus.NioLib.Crushable;
-import com.niopullus.NioLib.DataTree;
-import com.niopullus.NioLib.Log;
-import com.niopullus.NioLib.LogManager;
+import com.niopullus.NioLib.*;
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.dynscene.CollideData;
 import com.niopullus.NioLib.scene.dynscene.Collision;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
 import com.niopullus.NioLib.scene.dynscene.reference.TileReference;
+import com.niopullus.app.Config;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -27,14 +25,14 @@ public class Tile implements CollideData, Crushable, Parcel {
     private Point tileMapPos;
     private Tilemap tilemap;
     private TileReference reference;
-    private final int tiletype;
+    private int tileType;
 
     public Tile(final String refName, final DataTree _data) {
         final TileReference ref = refName != null ? Ref.getTileRef(refName) : null;
         data = _data;
         tileMapPos = new Point();
         reference = ref;
-        tiletype = 0;
+        tileType = 0;
     }
 
     public Tile(final String refName) {
@@ -46,7 +44,7 @@ public class Tile implements CollideData, Crushable, Parcel {
     }
 
     public int getTileType() {
-        return tiletype;
+        return tileType;
     }
 
     public double getElasticity() {
@@ -65,7 +63,7 @@ public class Tile implements CollideData, Crushable, Parcel {
         return reference.getId();
     }
 
-    public BufferedImage getImage() {
+    public Picture getImage() {
         return reference.getImage();
     }
 
@@ -85,10 +83,6 @@ public class Tile implements CollideData, Crushable, Parcel {
         return tileMapPos;
     }
 
-    public int getTileSize() {
-        return tilemap.getTileSize();
-    }
-
     /**
      * Gets the in-world position of the (x-center, y-center) of
      * the MultiTile
@@ -100,6 +94,14 @@ public class Tile implements CollideData, Crushable, Parcel {
         result.x = tileMapPos.x * tileSize;
         result.y = tileMapPos.y * tileSize;
         return result;
+    }
+
+    public int getTileSize() {
+        if (tilemap != null) {
+            return tilemap.getTileSize();
+        } else {
+            return Config.TILESIZE;
+        }
     }
 
     public void setTilemap(final Tilemap _tilemap) {
@@ -191,7 +193,8 @@ public class Tile implements CollideData, Crushable, Parcel {
     }
 
     public void parcelDraw(final Canvas canvas) {
-        canvas.o.image(getImage(), 0, 0, tilemap.getTileSize(), tilemap.getTileSize(), 0);
+        final int tileSize = getTileSize();
+        canvas.o.sketch(getImage(), 0, 0, tileSize, tileSize, 0);
     }
 
 }

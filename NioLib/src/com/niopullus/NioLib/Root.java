@@ -21,11 +21,11 @@ public class Root {
     }
 
     public static String getTextFromFile(final String fileDir) {
-        return fileManager.getTextFromFile(fileDir);
+        return fileManager.getTextFromFile(root + fileDir);
     }
 
     public static List<String> getTextByLineFromFile(final String fileDir) {
-        return fileManager.getTextByLineFromFile(fileDir);
+        return fileManager.getTextByLineFromFile(root + fileDir);
     }
 
     public static String getTextFromJar(final String jarDir) {
@@ -37,15 +37,15 @@ public class Root {
     }
 
     public static List<String> getFileNamesFromFile(final String fileDir) {
-        return fileManager.getFileNamesFromFile(fileDir);
+        return fileManager.getFileNamesFromFile(root + fileDir);
     }
 
     public static void writeToFileFromFile(final String fileDir, final List<String> data, final boolean overwrite) {
-        fileManager.writeToFileFromFile(fileDir, data, overwrite);
+        fileManager.writeToFileFromFile(root + fileDir, data, overwrite);
     }
 
     public static void writeToFileFromFile(final String fileDir, final String data, final boolean overwrite) {
-        fileManager.writeToFileFromFile(fileDir, data, overwrite);
+        fileManager.writeToFileFromFile(root + fileDir, data, overwrite);
     }
 
     public static void createFileFromFile(final String fileDir, final String fileName) {
@@ -65,11 +65,11 @@ public class Root {
     }
 
     public static void deleteFileFromFile(final String fileDir) {
-        fileManager.deleteFileFromFile(fileDir);
+        fileManager.deleteFileFromFile(root + fileDir);
     }
 
     public static boolean fileExists(final String fileDir) {
-        return fileManager.fileExists(fileDir);
+        return fileManager.fileExists(root + fileDir);
     }
 
 }

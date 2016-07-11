@@ -18,8 +18,8 @@ public class TextBox extends SelectableGUIElement {
     private int height;
     private int lineLimit;
 
-    public TextBox(final String content, final Font font, final int widthGap, final int heightGap, final int _width, final int lines) {
-        super(content, font, widthGap, heightGap);
+    public TextBox(final String content, final Font font, final int widthGap, final int heightGap, final int _width, final int lines, final Theme theme) {
+        super(content, font, widthGap, heightGap, theme);
         expand = false;
         tick = 0;
         currentLine = 0;
@@ -30,8 +30,12 @@ public class TextBox extends SelectableGUIElement {
         fillLines();
     }
 
+    public TextBox(final String content, final Font font, final int widthGap, final int heightGap, final int width, final int lines) {
+        this(content, font, widthGap, heightGap, width, lines, null);
+    }
+
     public TextBox(final String content, final Theme theme, final int fontSize, final int width, final int lines) {
-        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), width, lines);
+        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), width, lines, theme);
     }
 
     private void fillLines() {

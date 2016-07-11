@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Animation implements Sketch, Parcel {
 
-    private List<BufferedImage> frames;
+    private List<Picture> frames;
     private double currentFrame;
     private double frameRate;
     private int width;
@@ -35,7 +35,7 @@ public class Animation implements Sketch, Parcel {
         return height;
     }
 
-    public BufferedImage getImage() {
+    public Picture getPicture() {
         return frames.get((int) currentFrame);
     }
 
@@ -43,19 +43,32 @@ public class Animation implements Sketch, Parcel {
         frameRate = _frameRate;
     }
 
-    public void addFrame(final BufferedImage image) {
-        frames.add(image);
+    public void addFrame(final Picture picture) {
+        frames.add(picture);
         if (!init) {
-            width = image.getWidth();
-            height = image.getHeight();
+            width = picture.getWidth();
+            height = picture.getHeight();
             init = true;
         }
     }
 
-    public BufferedImage runFrame() {
-        final BufferedImage image = frames.get((int) currentFrame);
+    public int getPictureWidth() {
+        final Picture picture = getPicture();
+        return picture.getWidth();
+    }
+
+    public int getPictureHeight() {
+        final Picture picture = getPicture();
+        return picture.getHeight();
+    }
+
+    public BufferedImage getImage() {
+        final Picture picture = getPicture();
         currentFrame += frameRate;
-        return image;
+        if ((int) currentFrame > frames.size() - 1) {
+            currentFrame = 0;
+        }
+        return picture.getImage();
     }
 
     public int calcRunOnceTime() {

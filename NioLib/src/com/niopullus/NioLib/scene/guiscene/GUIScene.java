@@ -39,7 +39,7 @@ public class GUIScene extends Scene {
     public final void drawScene(final Canvas canvas) {
         canvas.o.parcel(background, 0, 0, 0, 0);
         for (GUIElement guiElement : elements) {
-            canvas.c(Main.Width(), Main.Height()).parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
+            canvas.c(getWidth(), getHeight()).parcel(guiElement, guiElement.getX(), guiElement.getY(), guiElement.getZ(), 0);
         }
     }
 

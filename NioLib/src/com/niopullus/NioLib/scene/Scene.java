@@ -20,15 +20,11 @@ public class Scene implements Parcel {
     private Scene superScene;
     private int width;
     private int height;
-    private int dx;
-    private int dy;
     private boolean isSubScene;
 
     public Scene() {
-        this.dx = 0;
-        this.dy = 0;
-        this.width = Main.Width();
-        this.height = Main.Height();
+        width = Main.Width();
+        height = Main.Height();
     }
 
     public Scene getSubscene() {
@@ -41,14 +37,6 @@ public class Scene implements Parcel {
 
     public int getHeight() {
         return height;
-    }
-
-    public int getDx() {
-        return dx;
-    }
-
-    public int getDy() {
-        return dy;
     }
 
     public SceneManager getSceneManager() {
@@ -100,21 +88,8 @@ public class Scene implements Parcel {
         height = _height;
     }
 
-    public void setDx(final int _dx) {
-        dx = _dx;
-    }
-
-    public void setDy(final int _dy) {
-        dy = _dy;
-    }
-
     public void setSceneManager(final SceneManager sceneManager) {
         this.sceneManager = sceneManager;
-    }
-
-    public void setOffSet(final int dx, final int dy) {
-        setDx(dx);
-        setDy(dy);
     }
 
     public Scene surfaceScene() {
@@ -194,7 +169,7 @@ public class Scene implements Parcel {
         final Scene scene = surfaceScene();
         final MousePack pack = new MousePack();
         pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getWindowWidth()));
-        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / (Main.getWindowHeight() + 6))));
+        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getWindowHeight())));
         scene.mouseMove(pack);
     }
 
@@ -202,7 +177,7 @@ public class Scene implements Parcel {
         final Scene scene = surfaceScene();
         final MousePack pack = new MousePack();
         pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getWindowWidth()));
-        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / (Main.getWindowHeight() + 6))));
+        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getWindowHeight())));
         if (e.getButton() == 1) {
             scene.mousePress(pack);
         } else if (e.getButton() == 2) {
@@ -216,7 +191,7 @@ public class Scene implements Parcel {
         final Scene scene = surfaceScene();
         final MousePack pack = new MousePack();
         pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getWindowWidth()));
-        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / (Main.getWindowHeight() + 6))));
+        pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getWindowHeight())));
         if (e.getButton() == 1) {
             scene.mouseRelease(pack);
         } else if (e.getButton() == 2) {

@@ -18,14 +18,16 @@ public class DrawElement {
     private int z;
     private double angle;
     private ParcelElement superElement;
+    private float opacity;
 
-    public DrawElement(final int x1, final int y1, final int x2, final int y2, final int _z, final double theta) {
+    public DrawElement(final int x1, final int y1, final int x2, final int y2, final int _z, final double theta, final float _opacity) {
         dx1 = x1;
         dy1 = y1;
         dx2 = x2;
         dy2 = y2;
         z = _z;
         angle = theta;
+        opacity = _opacity;
     }
 
     public int getDx1() {
@@ -58,6 +60,10 @@ public class DrawElement {
 
     public double getAngle() {
         return angle;
+    }
+
+    public float getOpacity() {
+        return opacity;
     }
 
     public int getTDx1() {
@@ -108,6 +114,14 @@ public class DrawElement {
         }
     }
 
+    public float getTOpacity() {
+        if (superElement == null) {
+            return getOpacity();
+        } else {
+            return getOpacity() * superElement.getTOpacity();
+        }
+    }
+
     public DrawPosition getDrawPosition() {
         final DrawPosition result = new DrawPosition();
         result.setDx1(getTDx1());
@@ -147,13 +161,18 @@ public class DrawElement {
         angle = _angle;
     }
 
-    public void setPosition(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle) {
+    public void setOpacity(final float _opacity) {
+        opacity = _opacity;
+    }
+
+    public void setPosition(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle, final float opacity) {
         setDx1(dx1);
         setDy1(dy1);
         setDx2(dx2);
         setDy2(dy2);
         setZ(z);
         setAngle(angle);
+        setOpacity(opacity);
     }
 
     /**
@@ -161,13 +180,20 @@ public class DrawElement {
      * angle of the DrawElement object
      * @param g is the Graphics object
      * @param angle is the angle at which the DrawElement should be drawn
+     * @param opacity is the opacity for which the DrawElement should be drawn
      */
-    public void adjustGraphics(final Graphics2D g, final double angle) {
-        final int transX = dx1 + getWidth() / 2;
-        final int transY = dy1 + getHeight() / 2;
-        g.translate(transX, transY);
-        g.rotate(angle);
-        g.translate(-transX, -transY);
+    public void adjustGraphics(final Graphics2D g, final double angle, final float opacity) {
+        if (angle != 0) {
+            final int transX = dx1 + getWidth() / 2;
+            final int transY = dy1 + getHeight() / 2;
+            g.translate(transX, transY);
+            g.rotate(angle);
+            g.translate(-transX, -transY);
+        }
+        if (opacity != 1) {
+            final AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity);
+            g.setComposite(ac);
+        }
     }
 
     /**
@@ -178,9 +204,11 @@ public class DrawElement {
         final DrawPosition drawPosition = getDrawPosition();
         if (drawPosition.isVisible()) {
             final AffineTransform old = g.getTransform();
-            adjustGraphics(g, angle);
+            final Composite oldComp = g.getComposite();
+            adjustGraphics(g, getTAngle(), getTOpacity());
             display(g, drawPosition);
             g.setTransform(old);
+            g.setComposite(oldComp);
         }
     }
 

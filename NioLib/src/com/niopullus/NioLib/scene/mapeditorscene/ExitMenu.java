@@ -28,6 +28,7 @@ public class ExitMenu extends GUIScene {
         cancelButton = new Button("No", theme, 40);
         submitButton.setPosition(0, 100);
         cancelButton.setPosition(0, -100);
+        label.setPosition(0, 300);
         setBackground(background);
         addElement(label);
         addElement(submitButton);
@@ -39,10 +40,10 @@ public class ExitMenu extends GUIScene {
         submitButton.setSelectedColor(Color.orange);
     }
 
-    public void buttonActivate(final SelectableGUIElement element) {
-        if (element == submitButton) {
+    public void buttonActivate(final Button b) {
+        if (b == submitButton) {
             presentScene(new InitScene());
-        } else if (element == cancelButton) {
+        } else if (b == cancelButton) {
             closeSubScene();
         }
     }

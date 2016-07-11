@@ -1,6 +1,7 @@
 package com.niopullus.NioLib.scene.dynscene.tile;
 
 import com.niopullus.NioLib.DataTree;
+import com.niopullus.NioLib.Picture;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -40,7 +41,7 @@ public class MultiTilePart extends Tile {
      * @return the image of the multitile that corresponds with this part
      */
 
-    public BufferedImage getImage() {
+    public Picture getImage() {
         return multiTile.getImage(relX, relY);
     }
 

@@ -7,6 +7,7 @@ import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
 import com.niopullus.NioLib.Utilities;
 import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.scene.dynscene.reference.Reference;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     private double angle;
     private NodeReference reference;
     private DataTree data;
+    private NodePartitionManager partitionManager;
 
     public Node() {
         this("unnamedNode");
@@ -55,17 +57,31 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     }
 
     public Node(final String name, final int width, final int height) {
-        this.children = new ArrayList<>();
-        this.id = new UUID(name);
-        this.physicsData = new PhysicsData();
-        this.width = width;
-        this.height = height;
-        this.partRangeX = null;
-        this.partRangeY = null;
-        this.cx = 0;
-        this.cy = 0;
-        this.cwidth = 0;
-        this.cheight = 0;
+        setup(name, width, height, null, new DataTree());
+    }
+
+    public void init(final Node node) {
+        setup(node.getName(), node.width, node.height, node.reference, node.data.copy());
+    }
+
+    public void setup(final String name, final int _width, final int _height, final NodeReference _reference, final DataTree _data) {
+        children = new ArrayList<>();
+        id = new UUID(name);
+        physicsData = new PhysicsData();
+        width = _width;
+        height = _height;
+        partRangeX = null;
+        partRangeY = null;
+        cx = 0;
+        cy = 0;
+        cwidth = 0;
+        cheight = 0;
+        reference = _reference;
+        data = _data;
+    }
+
+    public NodeReference getReference() {
+        return reference;
     }
 
     public UUID getId() {
@@ -338,83 +354,93 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     }
 
     public int getWY() {
-        if (isWorld) {
+        if (isWorld || isUniverse) {
             return 0;
         } else {
             return parent.getWY() + y;
         }
     }
 
-    public void setCX(final int cx) {
-        this.cx = cx;
+    public void setCX(final int _cx) {
+        cx = _cx;
+        updateNode();
     }
 
-    public void setCY(final int cy) {
-        this.cy = cy;
+    public void setCY(final int _cy) {
+        cy = _cy;
+        updateNode();
     }
 
-    public void setCWidth(final int cwidth) {
-        this.cwidth = cwidth;
+    public void setCWidth(final int _cwidth) {
+        cwidth = _cwidth;
+        updateNode();
     }
 
-    public void setCHeight(final int cheight) {
-        this.cheight = cheight;
+    public void setCHeight(final int _cheight) {
+        cheight = _cheight;
+        updateNode();
     }
 
-    public void setX(final int x) {
-        this.x = x;
+    public void setX(final int _x) {
+        x = _x;
+        updateNode();
     }
 
-    public void setY(final int y) {
-        this.y = y;
+    public void setY(final int _y) {
+        y = _y;
+        updateNode();
     }
 
-    public void setZ(final int z) {
-        this.z = z;
+    public void setZ(final int _z) {
+        z = _z;
+    }
+
+    public void setPartitionManager(final NodePartitionManager manager) {
+        partitionManager = manager;
     }
 
     public void setXv(final double xv) {
-        this.physicsData.setXv(xv);
+        physicsData.setXv(xv);
     }
 
     public void setYv(final double yv) {
-        this.physicsData.setYv(yv);
+        physicsData.setYv(yv);
     }
 
-    public void setScene(final NodeHandler scene) {
-        this.scene = scene;
+    public void setScene(final NodeHandler _scene) {
+        scene = _scene;
     }
 
     public void setGravityCoefficient(final double coefficient) {
-        this.physicsData.setGravityCoefficient(coefficient);
+        physicsData.setGravityCoefficient(coefficient);
     }
 
     public void setElasticity(final double elasticity) {
-        this.physicsData.setElasticity(elasticity);
+        physicsData.setElasticity(elasticity);
     }
 
     public void setFriction(final double friction) {
-        this.physicsData.setFriction(friction);
+        physicsData.setFriction(friction);
     }
 
     public void setMass(final double mass) {
-        this.physicsData.setMass(mass);
+        physicsData.setMass(mass);
     }
 
     public void setxStrength(final double xStrength) {
-        this.physicsData.setxStrength(xStrength);
+        physicsData.setxStrength(xStrength);
     }
 
     public void setyStrength(final double yStrength) {
-        this.physicsData.setyStrength(yStrength);
+        physicsData.setyStrength(yStrength);
     }
 
     public void setxSpeedLim(final double xSpeedLim) {
-        this.physicsData.setxSpeedLim(xSpeedLim);
+        physicsData.setxSpeedLim(xSpeedLim);
     }
 
     public void setySpeedLim(final double ySpeedLim) {
-        this.physicsData.setySpeedLim(ySpeedLim);
+        physicsData.setySpeedLim(ySpeedLim);
     }
 
     public void disableGravity() {
@@ -426,27 +452,27 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     }
 
     public void setColEast(final HalfCollision halfCollision) {
-        this.physicsData.setColEast(halfCollision);
+        physicsData.setColEast(halfCollision);
     }
 
     public void setColWest(final HalfCollision halfCollision) {
-        this.physicsData.setColWest(halfCollision);
+        physicsData.setColWest(halfCollision);
     }
 
     public void setColNorth(final HalfCollision halfCollision) {
-        this.physicsData.setColNorth(halfCollision);
+        physicsData.setColNorth(halfCollision);
     }
 
     public void setColSouth(final HalfCollision halfCollision) {
-        this.physicsData.setColSouth(halfCollision);
+        physicsData.setColSouth(halfCollision);
     }
 
     public void setPartRangeX(final int[] rangeX) {
-        this.partRangeX = rangeX;
+        partRangeX = rangeX;
     }
 
     public void setPartRangeY(final int[] rangeY) {
-        this.partRangeY = rangeY;
+        partRangeY = rangeY;
     }
 
     public void enableCollisionIn() {
@@ -465,28 +491,28 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         physicsData.disableCollisionOut();
     }
 
-    public void setWidth(final int width) {
-        this.width = width;
+    public void setWidth(final int _width) {
+        width = _width;
     }
 
-    public void setHeight(final int height) {
-        this.height = height;
+    public void setHeight(final int _height) {
+        height = _height;
     }
 
-    public void csetXScale(final double xScale) {
-        this.xScale = xScale;
+    public void csetXScale(final double _xScale) {
+        xScale = _xScale;
     }
 
-    public void csetYScale(final double yScale) {
-        this.yScale = yScale;
+    public void csetYScale(final double _yScale) {
+        yScale = _yScale;
     }
 
     public void osetWidth(final int width) {
-        this.oWidth = width;
+        oWidth = width;
     }
 
     public void osetHeight(final int height) {
-        this.oHeight = height;
+        oHeight = height;
     }
 
     public void removeParent() {
@@ -501,63 +527,41 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         isWorld = true;
     }
 
-    public void setRotatation(final double angle) {
-        this.angle = angle;
+    public void setRotatation(final double _angle) {
+        angle = _angle;
     }
 
-    public void setReference(final NodeReference reference) {
-        this.reference = reference;
+    public void setReference(final NodeReference _reference) {
+        reference = _reference;
     }
 
     public void setName(final String name) {
         id = new UUID(name);
     }
 
-    public void setSize(final int width, final int height) {
-        this.width = width;
-        this.height = height;
+    public void setSize(final int _width, final int _height) {
+        width = _width;
+        height = _height;
     }
 
-    public void setXScale(final double xScale) {
-        this.xScale = xScale;
-        this.width = (int) (this.oWidth * xScale);
+    public void setXScale(final double _xScale) {
+        xScale = _xScale;
+        width = (int) (oWidth * xScale);
     }
 
-    public void setYScale(final double yScale) {
-        this.yScale = yScale;
-        this.height = (int) (this.oHeight * yScale);
+    public void setYScale(final double _yScale) {
+        yScale = _yScale;
+        height = (int) (oHeight * yScale);
     }
 
     public void setPosition(final int x, final int y) {
-        this.setX(x);
-        this.setY(y);
+        setX(x);
+        setY(y);
     }
 
     public void update() {
         for (Node node : children) {
             node.update();
-        }
-        translate();
-    }
-
-    private void translate() {
-        if (movePos != null) {
-            final double angle = Utilities.invtrig(movePos.getY() - y, movePos.getX() - x);
-            final int newX = (int) (x + moveSpeed * Math.cos(angle));
-            final int newY = (int) (y + moveSpeed * Math.sin(angle));
-            if (newX < x && newX < this.movePos.getX() || newX > x && newX > movePos.getX()) {
-                x = (int) movePos.getX();
-            } else {
-                x = newX;
-            }
-            if (newY < y && newY < movePos.getY() || newY > y && newY > movePos.getY()) {
-                y = (int) movePos.getY();
-            } else {
-                y = newY;
-            }
-        }
-        if (getPosition().equals(movePos)) {
-            movePos = null;
         }
     }
 
@@ -570,6 +574,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
             final DynamicScene dynamicScene = (DynamicScene) scene;
             dynamicScene.addPhysicsNode(node);
         }
+        node.updateNode();
     }
 
     public void removeChild(final Node node) {
@@ -663,10 +668,29 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         return Math.sqrt(Math.pow(node.getWX() - (getWX() + width / 2), 2) + Math.pow(node.getWY() - (getWY() + height / 2), 2));
     }
 
-    public void parcelDraw(final Canvas canvas) {
-        for (Node node : children) {
-            canvas.o.parcel(node, node.getX(), node.getY(), node.getZ(), node.getAngle());
+    public void updateNode() {
+        updateNode(this);
+    }
+
+    public void updateNode(final Node node) {
+        if (parent == null) {
+            if (partitionManager != null) {
+                partitionManager.updateNode(node);
+            }
+        } else {
+            parent.updateNode(node);
         }
+    }
+
+    public void wideUpdate() {
+        updateNode();
+        for (Node child : children) {
+            child.wideUpdate();
+        }
+    }
+
+    public void parcelDraw(final Canvas canvas) {
+        //To be overridden
     }
 
     public void clickedOn() {
@@ -693,14 +717,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         try {
             final Class<?> nodeClass = getClass();
             final Node node = (Node) nodeClass.newInstance();
-            final List<Node> newChildren = new ArrayList();
-            for (Node child : children) {
-                newChildren.add(child.copy());
-            }
-            node.id = new UUID(id.getName());
-            node.children = newChildren;
-            node.physicsData = physicsData.copy();
-            node.data = data.copy();
+            node.init(this);
             return node;
         } catch (Exception e) {
             e.printStackTrace();
@@ -709,6 +726,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     }
 
     /**
+     * Crush Diagram:
      * root {
      *     i - id
      *     f - nodeData
@@ -721,10 +739,9 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
      *     f - children
      * }
      */
-
     public DataTree crush() {
         final DataTree result = new DataTree();
-        result.addData(reference.getId());
+        result.addData(reference != null ? reference.getId() : 0);
         result.addData(data);
         result.addFolder();
         result.addData(x, 2);
@@ -744,7 +761,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         final int state = data.getI(2, 3);
         final List<List> children = data.getF(3);
         final List<Node> decompressedChildren = new ArrayList<>();
-        final NodeReference ref = Ref.getNodeRef(id);
+        final NodeReference ref = state == 0 ? Ref.getNodeRef(id) : null;
         final Node node;
         PhysicsHandler physicsHandler;
         for (List child : children) {
@@ -756,8 +773,6 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         } else {
             final Node sample = ref.getSample();
             node = sample.copy();
-            node.setXScale(ref.getDefaultXScale());
-            node.setYScale(ref.getDefaultYScale());
         }
         node.data = nodeData;
         node.reference = Ref.getNodeRef(id);

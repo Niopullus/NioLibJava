@@ -20,8 +20,8 @@ public class SelectableGUIElement extends GUIElement {
     private boolean overrideKeys;
     private boolean overrideMouseWheel;
 
-    public SelectableGUIElement(final String content, final Font font, final int widthGap, final int heightGap) {
-        super(content, font, widthGap, heightGap);
+    public SelectableGUIElement(final String content, final Font font, final int widthGap, final int heightGap, final Theme theme) {
+        super(content, font, widthGap, heightGap, theme);
         selectedBG = new ColorBackground(Color.WHITE);
         selectedBorderBG = new ColorBackground(Color.CYAN);
         selectedTextColor = Color.black;
@@ -29,6 +29,7 @@ public class SelectableGUIElement extends GUIElement {
         overrideArrows = false;
         updateSelectedBorder();
         updateSelectedBG();
+        setTheme(theme);
     }
 
     public Color getSelectedColor() {
@@ -64,14 +65,16 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     public void setSelectedTextColor(final Color color) {
-        this.selectedTextColor = color;
+        selectedTextColor = color;
     }
 
     public void setTheme(final Theme t) {
         super.setTheme(t);
-        selectedBG.setColor(t.getSelectedBgColor());
-        selectedBorderBG.setColor(t.getSelectedBorderColor());
-        selectedTextColor = t.getSelectedTextColor();
+        if (selectedBG != null && selectedBorderBG != null) {
+            selectedBG.setColor(t.getSelectedBgColor());
+            selectedBorderBG.setColor(t.getSelectedBorderColor());
+            selectedTextColor = t.getSelectedTextColor();
+        }
     }
 
     public void updateBackgrounds() {
@@ -112,7 +115,7 @@ public class SelectableGUIElement extends GUIElement {
             for (int i = 0; i < getLineCount(); i++) {
                 final String line = getLineDisplay(getLineCount() - i - 1);
                 final int xPos = getXPos(getLine(getLineCount() - i - 1));
-                canvas.o.text(line, getTextColor(), getFont(), xPos, yPos, 20, 0);
+                canvas.o.text(line, getSelectedTextColor(), getFont(), xPos, yPos, 20, 0, 1);
                 yPos += getLineGap() + height;
             }
         } else {

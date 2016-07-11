@@ -10,7 +10,7 @@ public class ShapeElement extends DrawElement {
     private Color color;
 
     public ShapeElement(final ShapeElementPack pack) {
-        super(pack.x, pack.y, pack.x + pack.width, pack.y + pack.height, pack.z, pack.angle);
+        super(pack.x, pack.y, pack.x + pack.width, pack.y + pack.height, pack.z, pack.angle, pack.opacity);
         color = pack.color;
     }
 
@@ -28,6 +28,7 @@ public class ShapeElement extends DrawElement {
         public int height;
         public int z;
         public double angle;
+        public float opacity;
 
     }
 

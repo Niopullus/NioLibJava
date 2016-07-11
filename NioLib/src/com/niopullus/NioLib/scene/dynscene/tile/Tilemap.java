@@ -154,7 +154,6 @@ public class Tilemap implements Crushable, Parcel {
      * @param x is the x tile coordinate
      * @param y is the y tile coordainte
      */
-
     public void setTile(final Tile tile, final int x, final int y) {
         int xReg = x / regSize;
         int yReg = y / regSize;
@@ -200,13 +199,15 @@ public class Tilemap implements Crushable, Parcel {
         for (int i = -map.getWidth(); i < map.getWidth(); i++) {
             for (int j = -map.getHeight(); j < map.getHeight(); j++) {
                 final TileRegion region = map.get(i, j);
-                for (int k = 0; k < regSize; k++) {
-                    for (int l = 0; l < regSize; l++) {
-                        final Tile tile = region.get(k, l);
-                        if (tile != null && tile instanceof MultiTile) {
-                            final MultiTile multiTile = (MultiTile) tile;
-                            region.set(null, k, l);
-                            setMultiTile(multiTile, i * regSize + k, j * regSize + l);
+                if (region != null) {
+                    for (int k = 0; k < regSize; k++) {
+                        for (int l = 0; l < regSize; l++) {
+                            final Tile tile = region.get(k, l);
+                            if (tile != null && tile instanceof MultiTile) {
+                                final MultiTile multiTile = (MultiTile) tile;
+                                region.set(null, k, l);
+                                setMultiTile(multiTile, i * regSize + k, j * regSize + l);
+                            }
                         }
                     }
                 }
@@ -240,7 +241,7 @@ public class Tilemap implements Crushable, Parcel {
                 final Tile tile = ogetTile(i, j);
                 if (tile != null && tile.getImage() != null) {
                     final int x = i * tileSize + world.getX();
-                    final int y = Main.Height() - ((j + 1) * tileSize) - world.getY();
+                    final int y = j * tileSize + world.getY();
                     canvas.o.parcel(tile, x, y, 0, 0);
                 }
             }

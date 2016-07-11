@@ -12,7 +12,7 @@ public class TextElement extends DrawElement {
     private Color color;
 
     public TextElement(final TextElementPack pack) {
-        super(pack.x, pack.y, pack.x + pack.width, pack.y + pack.height, pack.z, pack.angle);
+        super(pack.x, pack.y, pack.x + pack.width, pack.y + pack.height, pack.z, pack.angle, pack.opacity);
         line = pack.line;
         font = pack.font;
         color = pack.color;
@@ -35,6 +35,7 @@ public class TextElement extends DrawElement {
         public int width;
         public int height;
         public double angle;
+        public float opacity;
 
     }
 
