@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**Used to Universally identify an object
  * Created by Owen on 3/5/2016.
  */
-public class UUID implements Comparable<UUID>, Serializable {
+public class UUID implements Comparable<UUID> {
 
     private static int currentID = 0;
     private String name;

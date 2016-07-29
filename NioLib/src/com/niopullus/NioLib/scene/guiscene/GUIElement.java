@@ -1,13 +1,16 @@
 package com.niopullus.NioLib.scene.guiscene;
 
+import com.niopullus.NioLib.UUID;
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.*;
 import com.niopullus.app.Config;
+import javafx.geometry.Point3D;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import java.awt.*;
@@ -15,44 +18,47 @@ import java.awt.*;
 /**Display item for GUI scenes
  * Created by Owen on 3/6/2016.
  */
-public class GUIElement implements Parcel {
+public class GUIElement implements Parcel, Comparable<GUIElement> {
 
     private List<String> lines;
+    private List<Integer> displayChars;
+    private int displayLines;
     private Background borderBG;
     private Background bg;
     private Color textColor;
     private GUIScene scene;
-    private Font font;
     private int x;
     private int y;
     private int z;
-    private int width;
-    private int height;
     private int borderSpacing;
-    private int widthGap;
-    private int heightGap;
     private int lineGap;
-    private int fieldWidth;
-    private int fieldHeight;
     private Justify justify;
+    private Object tag;
+    private UUID id;
+    private GUISize size;
+    private String fontName;
+    private int fontSize;
 
-    public GUIElement(final String content, final Font _font, final int _widthGap, final int _heightGap, final Theme theme) {
+    public GUIElement(final String content, final Theme theme, final int _fontSize, final GUISize _size) {
         lines = new ArrayList<>();
+        displayChars = new ArrayList<>();
+        displayLines = 0;
+        borderSpacing = 0;
+        fontSize = _fontSize;
+        justify = Justify.CENTER;
+        if (content != null) {
+            lines.add(content);
+        }
+        textColor = Color.BLACK;
         x = 0;
         y = 0;
         z = 0;
-        borderSpacing = 10;
-        textColor = Color.BLACK;
-        font = _font;
-        bg = new ColorBackground(Color.WHITE);
-        borderBG = new ColorBackground(Color.BLACK);
-        justify = Justify.CENTER;
-        widthGap = _widthGap;
-        heightGap = _heightGap;
-        lines.add(content);
-        determineDimensions();
-        updateBackgrounds();
+        size = _size;
+        id = new UUID("guiElement");
+        setupBackgrounds();
         applyTheme(theme);
+        updateDimensions();
+        updateBackgrounds();
     }
 
     public String getContent() {
@@ -72,11 +78,15 @@ public class GUIElement implements Parcel {
     }
 
     public int getWidth() {
-        return width;
+        return size.getWidth();
     }
 
     public int getHeight() {
-        return height;
+        return size.getHeight();
+    }
+
+    public Object getTag() {
+        return tag;
     }
 
     public int getBorderSpacing() {
@@ -88,11 +98,11 @@ public class GUIElement implements Parcel {
     }
 
     public int getWidthGap() {
-        return widthGap;
+        return size.getWidthGap();
     }
 
     public int getHeightGap() {
-        return heightGap;
+        return size.getHeightGap();
     }
 
     public Justify getJustify() {
@@ -103,15 +113,23 @@ public class GUIElement implements Parcel {
         return borderBG;
     }
 
-    public Font getFont() {
-        return font;
+    public boolean isKeepWidth() {
+        return size.isKeepWidth();
+    }
+
+    public boolean isKeepHeight() {
+        return size.isKeepHeight();
     }
 
     public Rectangle getRect() {
+        final int width = getWidth();
+        final int height = getHeight();
         return new Rectangle(x, y, width, height);
     }
 
     public Rectangle getRectOrigin() {
+        final int width = getWidth();
+        final int height = getHeight();
         return new Rectangle(Main.Width() / 2 - width / 2 + x, Main.Height() / 2 - height / 2 + y, width, height);
     }
 
@@ -139,6 +157,31 @@ public class GUIElement implements Parcel {
         return textColor;
     }
 
+    public Font getFont() {
+        return new Font(fontName, Font.BOLD, fontSize);
+    }
+
+    public int getDisplayLines() {
+        return displayLines;
+    }
+
+    public List<Integer> getDisplayChars() {
+        return displayChars;
+    }
+
+    public GUISize getSize() {
+        return size;
+    }
+
+    public void setSize(final GUISize _size) {
+        size.setWidth(_size.getWidth());
+        size.setHeight(_size.getHeight());
+        size.setWidthGap(_size.getWidthGap());
+        size.setHeightGap(_size.getHeightGap());
+        size.setKeepWidth(_size.isKeepWidth());
+        size.setKeepHeight(_size.isKeepHeight());
+    }
+
     public void setX(final int _x) {
         x = _x;
     }
@@ -150,6 +193,10 @@ public class GUIElement implements Parcel {
     public void setPosition(final int x, final int y) {
         setX(x);
         setY(y);
+    }
+
+    public void setTag(final Object _tag) {
+        tag = _tag;
     }
 
     public void setGUIScene(final GUIScene scene) {
@@ -172,77 +219,190 @@ public class GUIElement implements Parcel {
         borderBG.setColor(color);
     }
 
-    public void setZ(final int z) {
-        this.z = z;
+    public void setZ(final int _z) {
+        z = _z;
     }
 
     public void setContent(final int index, final String text) {
         lines.set(index, text);
+        updateDimensions();
+        updateBackgrounds();
     }
 
     public void setWidthGap(final int gap) {
-        widthGap = gap;
-        determineDimensions();
+        size.setWidthGap(gap);
+        updateDimensions();
         updateBackgrounds();
     }
 
     public void setHeightGap(final int gap) {
-        heightGap = gap;
-        determineDimensions();
+        size.setHeightGap(gap);
+        updateDimensions();
         updateBackgrounds();
     }
 
     public void addLine(final String content) {
         lines.add(content);
-        determineDimensions();
+        updateDimensions();
         updateBackgrounds();
     }
 
     public void removeLine(final int index) {
         lines.remove(index);
-        determineDimensions();
+        updateDimensions();
         updateBackgrounds();
     }
 
-    public void setFontName(final String fontName) {
-        final int fontSize = font.getSize();
-        font = new Font(fontName, Font.BOLD, fontSize);
+    public void setFontName(final String _fontName) {
+        fontName = _fontName;
     }
 
-    public void setFontSize(final int fontSize) {
-        final String fontName = font.getFontName();
-        font = new Font(fontName, Font.BOLD, fontSize);
-        determineDimensions();
+    public void setFontSize(final int _fontSize) {
+        fontSize = _fontSize;
+        updateDimensions();
         updateBackgrounds();
     }
 
     public void setBorderSpacing(final int _borderSpacing) {
         borderSpacing = _borderSpacing;
-        determineDimensions();
+        updateDimensions();
         updateBackgrounds();
     }
 
     public void setBackground(final Background background) {
+        final int fieldWidth = getFieldWidth();
+        final int fieldHeight = getFieldHeight();
         background.setWidth(fieldWidth);
         background.setHeight(fieldHeight);
         bg = background;
     }
 
     public void setBorder(final Background background) {
+        final int width = getWidth();
+        final int height = getHeight();
         background.setWidth(width);
         background.setHeight(height);
         borderBG = background;
     }
 
+    public void setupBackgrounds() {
+        bg = new ColorBackground(Color.WHITE);
+        borderBG = new ColorBackground(Color.BLACK);
+    }
+
+    private void setupUUID() {
+        id = new UUID("element");
+    }
+
+    public void setDisplayLines(final int lines) {
+        displayLines = lines;
+    }
+
     private void applyTheme(final Theme theme) {
         if (theme != null) {
+            final int width = getWidth();
+            final int height = getHeight();
             setTheme(theme);
+            setFieldWidth(width - theme.getBorderGap() * 2);
+            setFieldHeight(height - theme.getBorderGap() * 2);
         }
     }
 
-    public void determineDimensions() {
+    public void updateDimensions() {
+        initWidth();
+        initHeight();
+    }
+
+    public void initWidth() {
+        final boolean keepWidth = isKeepWidth();
+        if (keepWidth) {
+            shortenContent();
+        } else {
+            determineWidth();
+        }
+    }
+
+    public void initHeight() {
+        final boolean keepHeight = isKeepHeight();
+        if (keepHeight) {
+            linePotential();
+        } else {
+            determineHeight();
+        }
+    }
+
+    public void shortenContent() {
+        fillDisplayChars();
+        for (int i = 0; i < lines.size(); i++) {
+            shortenLine(i);
+        }
+    }
+
+    public void shortenLine(final int index) {
+        final int fieldWidth = getFieldWidth();
+        final int widthGap = getWidthGap();
+        final String line = lines.get(index);
+        final int widthFree = getWidthFree();
+        final Integer chars = shortenTo(line, widthFree);
+        displayChars.set(index, chars);
+    }
+
+    public int getWidthFree() {
+        final int fieldWidth = getFieldWidth();
+        final int widthGap = getWidthGap();
+        return fieldWidth - widthGap * 2;
+    }
+
+    public void fillDisplayChars() {
+        displayChars = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            displayChars.add(null);
+        }
+    }
+
+    public Integer shortenTo(final String line, final int width) {
+        if (line != null) {
+            final Font font = getFont();
+            final FontMetrics metrics = StringSize.getFontMetrics(font);
+            String result;
+            if (metrics.stringWidth(line) <= width) {
+                return null;
+            }
+            for (int i = 0; i < line.length(); i++) {
+                final String modLine = line.substring(0, i + 1) + "...";
+                final int modWidth = metrics.stringWidth(modLine);
+                if (modWidth > width) {
+                    return i - 1;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public void linePotential() {
+        final Font font = getFont();
+        final int heightGap = getHeightGap();
+        final int fieldHeight = getFieldHeight();
+        final int heightSpace = fieldHeight - heightGap * 2 + lineGap;
+        displayLines = getLinePotential(font, heightSpace, lineGap);
+        if (displayLines > lines.size()) {
+            displayLines = lines.size();
+        }
+    }
+
+    public int getLinePotential(final Font font, final int heightSpace, final int lineGap) {
         final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * getLineCount() + (lines.size() - 1) * lineGap;
+        final int lineHeight = metrics.getAscent() - metrics.getDescent() + lineGap;
+        return heightSpace / lineHeight;
+    }
+
+    public void determineWidth() {
+        final Font font = getFont();
+        final int widthGap = getWidthGap();
+        final int width = getWidth();
+        final int fieldWidth;
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
         int stringWidth = 0;
         for (String line : lines) {
             final int tempWidth = metrics.stringWidth(line);
@@ -251,12 +411,25 @@ public class GUIElement implements Parcel {
             }
         }
         fieldWidth = stringWidth + 2 * widthGap;
+        setFieldWidth(fieldWidth);
+        setWidth(fieldWidth + borderSpacing * 2);
+        fillDisplayChars();
+    }
+
+    public void determineHeight() {
+        final Font font = getFont();
+        final int heightGap = getHeightGap();
+        final int fieldHeight;
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
+        final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * getLineCount() + (lines.size() - 1) * lineGap;
         fieldHeight = stringHeight + 2 * heightGap;
-        width = fieldWidth + borderSpacing * 2;
-        height = fieldHeight + borderSpacing * 2;
+        setFieldHeight(fieldHeight);
+        setHeight(fieldHeight + borderSpacing * 2);
+        displayLines = lines.size();
     }
 
     private void determineLineGap() {
+        final Font font = getFont();
         final FontMetrics metrics = StringSize.getFontMetrics(font);
         lineGap = metrics.getLeading();
     }
@@ -267,79 +440,120 @@ public class GUIElement implements Parcel {
     }
 
     private void updateBG() {
+        final int fieldWidth = getFieldWidth();
+        final int fieldHeight = getFieldHeight();
         bg.setWidth(fieldWidth);
         bg.setHeight(fieldHeight);
     }
 
     private void updateBorder() {
+        final int width = getWidth();
+        final int height = getHeight();
         borderBG.setWidth(width);
         borderBG.setHeight(height);
     }
 
     public void parcelDraw(final Canvas canvas) {
+        final Font font = getFont();
+        final int heightGap = getHeightGap();
+        final int fieldHeight = getFieldHeight();
         final FontMetrics metrics = StringSize.getFontMetrics(font);
         final int height = metrics.getAscent() - metrics.getDescent();
+        final int linesHeight = displayLines * (height + lineGap) - lineGap;
+        final int hrGap = (fieldHeight - heightGap * 2 - linesHeight) / 2;
+        int yPos;
         canvas.o.parcel(borderBG, 0, 0, 5, 0);
         canvas.o.parcel(bg, borderSpacing, borderSpacing, 10, 0);
-        int yPos = borderSpacing + heightGap;
-        for (int i = 0; i < lines.size(); i++) {
-            final String line = getLineDisplay(lines.size() - i - 1);
-            final int xPos = getXPos(getLine(lines.size() - i - 1));
-            canvas.o.text(line, textColor, font, xPos, yPos, 20, 0, 1);
-            yPos += lineGap + height;
+        yPos = getHeight() - borderSpacing - heightGap - hrGap - height;
+        for (int i = 0; i < displayLines; i++) {
+            final String line = getLineDisplay(i);
+            final String initLine = getLine(i);
+            final Integer chars = displayChars.get(i);
+            final String displayLine;
+            final String initDisplayLine;
+            final int xPos;
+            if (chars != null) {
+                displayLine = line.substring(0, chars + 1) + "...";
+                initDisplayLine = initLine.substring(0, chars + 1) + "...";
+            } else {
+                displayLine = line;
+                initDisplayLine = initLine;
+            }
+            xPos = getXPos(initDisplayLine);
+            canvas.o.text(displayLine, textColor, font, xPos, yPos, 20, 0, 1);
+            yPos -= lineGap + height;
         }
     }
 
+    public void removeFromScene() {
+        final GUIScene scene = getGUIScene();
+        scene.removeElement(this);
+    }
+
     public int getXPos(final String line) {
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int diff = fieldWidth - metrics.stringWidth(line) - widthGap;
-        int result = borderSpacing;
-        if (justify == Justify.LEFT) {
-            result += widthGap;
-        } else if (justify == Justify.CENTER) {
-            result += diff / 2 + widthGap / 2;
-        } else if (justify == Justify.RIGHT) {
-            result += diff;
+        final int widthGap = getWidthGap();
+        final int fieldWidth = getFieldWidth();
+        return calcXPos(line, fieldWidth - widthGap * 2);
+    }
+
+    public int calcXPos(final String line, final int space) {
+        if (line != null) {
+            final Font font = getFont();
+            final FontMetrics metrics = StringSize.getFontMetrics(font);
+            final int diff = space - metrics.stringWidth(line);
+            final int widthGap = getWidthGap();
+            int result = borderSpacing + widthGap;
+             if (justify == Justify.CENTER) {
+                result += diff / 2;
+            } else if (justify == Justify.RIGHT) {
+                result += diff;
+            }
+            return result;
         }
-        return result;
+        return 0;
     }
 
     public void setTheme(final Theme theme) {
         bg.setColor(theme.getBgColor());
         borderBG.setColor(theme.getBorderColor());
         textColor = theme.getTextColor();
-        setBorderSpacing(theme.getBorderGap());
-        setFontName(theme.getFontName());
+        borderSpacing = theme.getBorderGap();
+        fontName = theme.getFontName();
+        lineGap = theme.getLineGap();
     }
 
     public void setLineGap(final int gap) {
         lineGap = gap;
-        determineDimensions();
+        updateDimensions();
         updateBackgrounds();
     }
 
     public void setFieldWidth(final int width) {
-        fieldWidth = width;
+        size.setFieldWidth(width);
     }
 
     public void setFieldHeight(final int height) {
-        fieldHeight = height;
+        size.setFieldHeight(height);
     }
 
-    public void setWidth(final int w) {
-        width = w;
+    public void setWidth(final int width) {
+        size.setWidth(width);
     }
 
-    public void setHeight(final int h) {
-        height = h;
+    public void setHeight(final int height) {
+        size.setHeight(height);
     }
 
     public int getFieldWidth() {
-        return fieldWidth;
+        return size.getFieldWidth();
     }
 
     public int getFieldHeight() {
-        return fieldHeight;
+        return size.getFieldHeight();
+    }
+
+    public int compareTo(final GUIElement element) {
+        return id.compareTo(element.id);
     }
 
     public enum Justify {

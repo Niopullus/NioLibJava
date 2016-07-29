@@ -12,26 +12,23 @@ public class SketchTrigger extends SketchNode implements Trigger {
     private int xRad;
     private int yRad;
 
-    public SketchTrigger(final String name, final Sketch sketch, final int xRad, final int yRad) {
+    public SketchTrigger(final String name, final Sketch sketch, final int _xRad, final int _yRad) {
         super(name, sketch);
-        setup(xRad, yRad);
+        xRad = _xRad;
+        yRad = _yRad;
     }
 
     public SketchTrigger() {
         this("unnamed node", null, 0, 0);
     }
 
-    public void init(final Node node) {
-        super.init(node);
+    public void integrate(final Node node) {
+        super.integrate(node);
         if (node instanceof SketchTrigger) {
             final SketchTrigger sketchTrigger = (SketchTrigger) node;
-            setup(sketchTrigger.xRad, sketchTrigger.yRad);
+            xRad = sketchTrigger.xRad;
+            yRad = sketchTrigger.yRad;
         }
-    }
-
-    public void setup(final int _xRad, final int _yRad) {
-        xRad = _xRad;
-        yRad = _yRad;
     }
 
     public void trigger(final CollideData data) {

@@ -21,6 +21,9 @@ public class Scene implements Parcel {
     private int width;
     private int height;
     private boolean isSubScene;
+    private Point mousePos;
+    private int widthDiff;
+    private int heightDiff;
 
     public Scene() {
         width = Main.Width();
@@ -48,8 +51,14 @@ public class Scene implements Parcel {
     }
 
     public Point getMousePos() {
-        final SceneManager sceneManager = getSceneManager();
-        return sceneManager.getMousePos();
+        if (mousePos != null) {
+            return new Point(mousePos.x + widthDiff, mousePos.y + heightDiff);
+        }
+        return null;
+    }
+
+    public Point getTMousePos() {
+        return mousePos;
     }
 
     public boolean getMouseHeld() {
@@ -100,10 +109,26 @@ public class Scene implements Parcel {
         }
     }
 
+    public int getWidthDiff() {
+        if (superScene != null) {
+            return superScene.width - width;
+        } else {
+            return 0;
+        }
+    }
+
+    public int getHeightDiff() {
+        if (superScene != null) {
+            return superScene.height - height;
+        } else {
+            return 0;
+        }
+    }
+
     public final void parcelDraw(final Canvas canvas) {
         drawScene(canvas);
         if (subscene != null) {
-            canvas.c(getWidth(), getHeight()).parcel(subscene, 0, 0, 100, 0);
+            canvas.c(getWidth(), getHeight()).parcel(subscene, 0, 0, 5000, 0);
         }
     }
 
@@ -170,6 +195,11 @@ public class Scene implements Parcel {
         final MousePack pack = new MousePack();
         pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getWindowWidth()));
         pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getWindowHeight())));
+        pack.widthDiff = scene.getWidthDiff() / 2;
+        pack.heightDiff = scene.getHeightDiff() / 2;
+        scene.mousePos = new Point(pack.x, pack.y);
+        scene.widthDiff = pack.widthDiff;
+        scene.heightDiff = pack.heightDiff;
         scene.mouseMove(pack);
     }
 
@@ -178,6 +208,8 @@ public class Scene implements Parcel {
         final MousePack pack = new MousePack();
         pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getWindowWidth()));
         pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getWindowHeight())));
+        pack.widthDiff = scene.getWidthDiff() / 2;
+        pack.heightDiff = scene.getHeightDiff() / 2;
         if (e.getButton() == 1) {
             scene.mousePress(pack);
         } else if (e.getButton() == 2) {
@@ -192,6 +224,8 @@ public class Scene implements Parcel {
         final MousePack pack = new MousePack();
         pack.x = (int) (e.getX() * ((double) Main.Width() / Main.getWindowWidth()));
         pack.y = (int) (Main.Height() - (e.getY() * ((double) Main.Height() / Main.getWindowHeight())));
+        pack.widthDiff = scene.getWidthDiff() / 2;
+        pack.heightDiff = scene.getHeightDiff() / 2;
         if (e.getButton() == 1) {
             scene.mouseRelease(pack);
         } else if (e.getButton() == 2) {
@@ -251,26 +285,56 @@ public class Scene implements Parcel {
 
     public static class KeyPack {
 
-        public char letter;
-        public int code;
+        private char letter;
+        private int code;
+
+        public char getLetter() {
+            return letter;
+        }
+
+        public int getCode() {
+            return code;
+        }
 
     }
 
     public static class MousePack {
 
-        public int x;
-        public int y;
+        private int x;
+        private int y;
+        private int widthDiff;
+        private int heightDiff;
 
         public Point getPos() {
+            return new Point(x - widthDiff, y - heightDiff);
+        }
+
+        public Point getTPos() {
             return new Point(x, y);
+        }
+
+        public int getX() {
+            return x - widthDiff;
+        }
+
+        public int getY() {
+            return y - heightDiff;
         }
 
     }
 
     public static class MouseWheelPack {
 
-        public Direction direction;
-        public int notches;
+        private Direction direction;
+        private int notches;
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public int getNotches() {
+            return notches;
+        }
 
     }
 

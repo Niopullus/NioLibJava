@@ -2,6 +2,7 @@ package com.niopullus.NioLib;
 
 import com.niopullus.NioLib.draw.Canvas;
 import com.niopullus.NioLib.draw.DrawElement;
+import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.SceneManager;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
@@ -67,13 +68,6 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         return middleMouseHeld;
     }
 
-    public Point getMousePos() {
-        final Point point = new Point();
-        point.x = (int) (mousePos.getX() * ((double) Main.Width() / Main.getWindowWidth()));
-        point.y = (int) (Main.Height() - (mousePos.getY() * ((double) Main.Height() / Main.getWindowHeight())));
-        return point;
-    }
-
     public void addNotify() {
         super.addNotify();
         if (thread == null) {
@@ -87,6 +81,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     }
 
     public void init() {
+        loadImages();
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
         running = true;
@@ -95,13 +90,14 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         presentInitScene();
         Data.init(fileManager);
         setupConfig();
-        loadImages();
     }
 
     private void loadImages() {
         Picture.loadPictureFromJar("build.png", "buildMode");
         Picture.loadPictureFromJar("delete.png", "deleteMode");
         Picture.loadPictureFromJar("edit.png", "editMode");
+        Picture.loadPictureFromJar("target.png", "target");
+        Picture.loadPictureFromJar("check.png", "check");
     }
 
     private void setupConfig() {
@@ -173,6 +169,10 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Scene getCurrentScene() {
+        return Main.main.sceneManager.getCurrentScene();
     }
 
     private void iterateDrawElements(final List<DrawElement> elements, final Graphics2D g) {
@@ -263,21 +263,29 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     }
 
     public void mouseDragged(final MouseEvent e) {
-        sceneManager.mouseMoved(e);
-        mousePos = e.getPoint();
+        if (sceneManager != null) {
+            sceneManager.mouseMoved(e);
+            mousePos = e.getPoint();
+        }
     }
 
     public void mouseMoved(final MouseEvent e) {
-        sceneManager.mouseMoved(e);
-        mousePos = e.getPoint();
+        if (sceneManager != null) {
+            sceneManager.mouseMoved(e);
+            mousePos = e.getPoint();
+        }
     }
 
     public void mouseWheelMoved(final MouseWheelEvent e) {
-        sceneManager.mouseWheelMoved(e);
+        if (sceneManager != null) {
+            sceneManager.mouseWheelMoved(e);
+        }
     }
 
     //TODO:
     //Fix the file root system for Macs and Windows computers
+    //Angles /
+    //Revise/loading saving for nodes/tiles /
     //Fix mouse button detection /
     //Dynamic Sketch nodes /
     //Sketch nodes /
@@ -285,5 +293,6 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     //Sketch backgrounds /
     //GUIElementNode /
     //Sort out fonts /
+    //Multi Tiles /
 
 }

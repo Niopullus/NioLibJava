@@ -12,20 +12,20 @@ public class DataTree implements Crushable {
     private List data;
 
     public DataTree() {
-        this.data = new ArrayList();
+        data = new ArrayList();
     }
 
-    public DataTree(final List data) {
-        this.data = data;
+    public DataTree(final List _data) {
+        data = _data;
     }
 
-    public void setData(final List data) {
-        this.data = data;
+    public void setData(final List _data) {
+        data = _data;
     }
 
     public void setData(final Crushable crushable) {
-        final DataTree data = crushable.crush();
-        this.data = data.get();
+        final DataTree _data = crushable.crush();
+        data = _data.get();
     }
 
     private int addData(final Object object, final DataPath path, final List folder) {
@@ -337,6 +337,10 @@ public class DataTree implements Crushable {
 
     private static void complainUSymbol() {
         Log.doc("FOUND UNIDENTIFIED SYMBOL", "NioLib", LogManager.LogType.ERROR);
+    }
+
+    public String toString() {
+        return data.toString();
     }
 
 }

@@ -18,6 +18,7 @@ public class Theme {
     private int borderGap;
     private int widthGap;
     private int heightGap;
+    private int lineGap;
 
     public Theme() {
         bgColor = Color.WHITE;
@@ -30,6 +31,7 @@ public class Theme {
         borderGap = 15;
         widthGap = 10;
         heightGap = 10;
+        lineGap = 10;
     }
 
     public Color getBgColor() {
@@ -74,6 +76,10 @@ public class Theme {
 
     public Font getFont(final int fontSize) {
         return new Font(fontName, Font.BOLD, fontSize);
+    }
+
+    public int getLineGap() {
+        return lineGap;
     }
 
     public void setBgColor(final Color c) {

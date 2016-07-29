@@ -24,19 +24,17 @@ public class DynamicSketchNode extends SketchNode {
 
     public DynamicSketchNode(final String name, final Sketch sketch, final int width, final int height) {
         super(name, sketch, width, height);
-        setup();
+        sketches = new ArrayList<>();
+        currentSketch = null;
+        currentOffsetMode = null;
     }
 
     public DynamicSketchNode() {
         this("unnamed node", null);
     }
 
-    public void init(final Node node) {
-        super.init(node);
-        setup();
-    }
-
-    public void setup() {
+    public void intergrate(final Node node) {
+        super.integrate(node);
         sketches = new ArrayList<>();
         currentSketch = null;
         currentOffsetMode = null;

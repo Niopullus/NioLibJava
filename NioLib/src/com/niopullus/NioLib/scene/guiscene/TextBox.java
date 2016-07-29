@@ -14,33 +14,44 @@ public class TextBox extends SelectableGUIElement {
     private boolean expand;
     private int tick;
     private int currentLine;
-    private int width;
     private int height;
     private int lineLimit;
 
-    public TextBox(final String content, final Font font, final int widthGap, final int heightGap, final int _width, final int lines, final Theme theme) {
-        super(content, font, widthGap, heightGap, theme);
+    public TextBox(final String content, final Theme theme, final int fontSize, final GUISize size, final int lineLimit) {
+        super(content, theme, fontSize, size);
         expand = false;
         tick = 0;
         currentLine = 0;
-        width = _width;
-        lineLimit = lines;
-        determineDimensions();
-        updateBackgrounds();
+        determineLineLimit(lineLimit, size);
         fillLines();
-    }
-
-    public TextBox(final String content, final Font font, final int widthGap, final int heightGap, final int width, final int lines) {
-        this(content, font, widthGap, heightGap, width, lines, null);
+        fillDisplayChars();
+        initHeight();
+        updateDimensions();
+        updateBackgrounds();
     }
 
     public TextBox(final String content, final Theme theme, final int fontSize, final int width, final int lines) {
-        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), width, lines, theme);
+        this(content, theme, fontSize, new GUISize(width, 0, true, false), lines);
+    }
+
+    public TextBox(final String content, final Theme theme, final int fontSize, final GUISize size) {
+        this(content, theme, fontSize, size, 0);
     }
 
     private void fillLines() {
         for (int i = 1; i < lineLimit; i++) {
             addLine("");
+        }
+    }
+
+    private void determineLineLimit(final int limit, final GUISize size) {
+        final int lineGap = getLineGap();
+        if (size.isKeepHeight()) {
+            final Font font = getFont();
+            lineLimit = getLinePotential(font, size.getFieldHeight() - size.getHeightGap() * 2, lineGap);
+            setDisplayLines(lineLimit);
+        } else {
+            lineLimit = limit;
         }
     }
 
@@ -66,22 +77,24 @@ public class TextBox extends SelectableGUIElement {
     }
 
     public void keyPress(final Scene.KeyPack pack) {
+        final int packCode = pack.getCode();
+        final char packLetter = pack.getLetter();
         if (expand) {
             final String line = getLine(currentLine);
-            if (pack.code == KeyEvent.VK_BACK_SPACE) {
+            if (packCode == KeyEvent.VK_BACK_SPACE) {
                 if (line.length() - 1 >= 0) {
                     setContent(currentLine, line.substring(0, line.length() - 1));
                 }
-            } else if (pack.code == KeyEvent.VK_UP) {
+            } else if (packCode == KeyEvent.VK_UP) {
                 if (currentLine - 1 >= 0) {
                     currentLine--;
                 }
-            } else if (pack.code == KeyEvent.VK_DOWN) {
+            } else if (packCode == KeyEvent.VK_DOWN) {
                 if (currentLine + 1 < lineLimit) {
                     currentLine++;
                 }
-            } else if (pack.letter != KeyEvent.CHAR_UNDEFINED) {
-                final String potLine = line + pack.letter;
+            } else if (packLetter != KeyEvent.CHAR_UNDEFINED) {
+                final String potLine = line + packLetter;
                 final FontMetrics metrics = StringSize.getFontMetrics(getFont());
                 if (metrics.stringWidth(potLine) + getWidthGap() * 2 <= getFieldWidth()) {
                     setContent(currentLine, potLine);
@@ -93,10 +106,32 @@ public class TextBox extends SelectableGUIElement {
     public void determineDimensions() {
         final FontMetrics fontMetrics = StringSize.getFontMetrics(getFont());
         final int height = fontMetrics.getAscent() - fontMetrics.getDescent();
+        final int width = getWidth();
         setFieldWidth(width - getBorderSpacing() * 2);
         setFieldHeight(lineLimit * height + getHeightGap() * 2 + (lineLimit - 1) * getLineGap());
         setWidth(width);
         setHeight(getFieldHeight() + 2 * getBorderSpacing());
+    }
+
+    public void initWidth() {
+        //Blank implementation
+    }
+
+    public void initHeight() {
+        final boolean keepHeight = isKeepHeight();
+        if (!keepHeight) {
+            final Font font = getFont();
+            final int heightGap = getHeightGap();
+            final int fieldHeight;
+            final int borderSpacing = getBorderSpacing();
+            final int lineGap = getLineGap();
+            final FontMetrics metrics = StringSize.getFontMetrics(font);
+            final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * lineLimit + (lineLimit - 1) * lineGap;
+            fieldHeight = stringHeight + 2 * heightGap;
+            setFieldHeight(fieldHeight);
+            setHeight(fieldHeight + borderSpacing * 2);
+            setDisplayLines(lineLimit);
+        }
     }
 
     public String getLineDisplay(final int index) {

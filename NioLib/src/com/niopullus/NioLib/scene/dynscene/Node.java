@@ -5,16 +5,20 @@ import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.scene.NodeHandler;
 import com.niopullus.NioLib.scene.dynscene.reference.NodeReference;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
-import com.niopullus.NioLib.Utilities;
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.scene.dynscene.reference.Reference;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**Polymorphic sprite designed for a Dynamic Scene
+/**Polymorphic sprite designed for a Dynamic Scene.
+ * All significant instance variables should be registered by overriding
+ * the integrate() method. When overriding a integrate, always call super.
+ * Inside that method, manually copy all instance variables over from
+ * 'this' to the node passed in as a parameter.
+ * Modify saving/loading by overriding the crush() and uncrush(DataTree)
+ * methods.
  * Created by Owen on 3/5/2016.
  */
 public class Node implements Comparable<Node>, CollideData, Boundable, Crushable, Parcel {
@@ -47,6 +51,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
     private NodeReference reference;
     private DataTree data;
     private NodePartitionManager partitionManager;
+    private boolean drawn;
 
     public Node() {
         this("unnamedNode");
@@ -56,15 +61,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         this(name, 0, 0);
     }
 
-    public Node(final String name, final int width, final int height) {
-        setup(name, width, height, null, new DataTree());
-    }
-
-    public void init(final Node node) {
-        setup(node.getName(), node.width, node.height, node.reference, node.data.copy());
-    }
-
-    public void setup(final String name, final int _width, final int _height, final NodeReference _reference, final DataTree _data) {
+    public Node(final String name, final int _width, final int _height) {
         children = new ArrayList<>();
         id = new UUID(name);
         physicsData = new PhysicsData();
@@ -76,8 +73,9 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         cy = 0;
         cwidth = 0;
         cheight = 0;
-        reference = _reference;
-        data = _data;
+        reference = null;
+        data = new DataTree();
+        drawn = false;
     }
 
     public NodeReference getReference() {
@@ -361,6 +359,10 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         }
     }
 
+    public boolean isDrawn() {
+        return drawn;
+    }
+
     public void setCX(final int _cx) {
         cx = _cx;
         updateNode();
@@ -527,6 +529,10 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         isWorld = true;
     }
 
+    public void markDrawn() {
+        drawn = true;
+    }
+
     public void setRotatation(final double _angle) {
         angle = _angle;
     }
@@ -554,9 +560,17 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         height = (int) (oHeight * yScale);
     }
 
+    public void rotate(final double _angle) {
+        angle += _angle;
+    }
+
     public void setPosition(final int x, final int y) {
         setX(x);
         setY(y);
+    }
+
+    public void resetDrawnState() {
+        drawn = false;
     }
 
     public void update() {
@@ -579,8 +593,9 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
 
     public void removeChild(final Node node) {
         final int index = Collections.binarySearch(children, node);
-        if (index != -1) {
+        if (index >= 0) {
             children.remove(index);
+            deleteNode(node);
         } else {
             System.out.println("ERROR: TRIED TO REMOVE NODE THAT WAS NOT PRESENT");
         }
@@ -689,6 +704,16 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         }
     }
 
+    public void deleteNode(final Node node) {
+        if (parent == null) {
+            if (partitionManager != null) {
+                partitionManager.removeNode(node);
+            }
+        } else {
+            parent.deleteNode(node);
+        }
+    }
+
     public void parcelDraw(final Canvas canvas) {
         //To be overridden
     }
@@ -717,12 +742,21 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         try {
             final Class<?> nodeClass = getClass();
             final Node node = (Node) nodeClass.newInstance();
-            node.init(this);
+            node.integrate(this);
             return node;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void integrate(final Node node) {
+        id = new UUID(node.getName());
+        width = node.width;
+        height = node.height;
+        reference = node.reference;
+        physicsData = node.physicsData.copy();
+        data = node.data.copy();
     }
 
     /**
@@ -733,6 +767,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
      *     f - details {
      *         i - x
      *         i - y
+     *         d - angle
      *         f - physicsData
      *         i - nodeState
      *     }
@@ -746,26 +781,28 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         result.addFolder();
         result.addData(x, 2);
         result.addData(y, 2);
+        result.addData(angle, 2);
         result.addData(physicsData, 2);
         result.addData(isUniverse ? 2: isWorld ? 1: 0, 2);
         result.addData(children);
         return result;
     }
 
-    public static Node uncrush(final DataTree data, final NodeHandler scene) {
+    public Node uncrush(final DataTree data, final NodeHandler scene) {
         final int id = data.getI(0);
         final DataTree nodeData = new DataTree(data.getF(1));
         final int x = data.getI(2, 0);
         final int y = data.getI(2, 1);
-        final PhysicsData physicsData = PhysicsData.uncrush(new DataTree(data.getF(2, 2)));
-        final int state = data.getI(2, 3);
+        final double angle = data.getD(2, 2);
+        final PhysicsData physicsData = PhysicsData.uncrush(new DataTree(data.getF(2, 3)));
+        final int state = data.getI(2, 4);
         final List<List> children = data.getF(3);
         final List<Node> decompressedChildren = new ArrayList<>();
         final NodeReference ref = state == 0 ? Ref.getNodeRef(id) : null;
         final Node node;
         PhysicsHandler physicsHandler;
         for (List child : children) {
-            final Node kid = Node.uncrush(new DataTree(child), scene);
+            final Node kid = uncrush(new DataTree(child), scene);
             decompressedChildren.add(kid);
         }
         if (ref == null) {
@@ -780,6 +817,7 @@ public class Node implements Comparable<Node>, CollideData, Boundable, Crushable
         node.physicsData = physicsData;
         node.x = x;
         node.y = y;
+        node.angle = angle;
         for (Node kid : decompressedChildren) {
             node.addChild(kid);
         }

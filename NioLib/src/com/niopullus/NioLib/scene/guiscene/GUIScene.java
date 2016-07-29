@@ -2,6 +2,8 @@ package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.DrawElement;
+import com.niopullus.NioLib.draw.ParcelElement;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
@@ -11,6 +13,7 @@ import com.niopullus.NioLib.Utilities;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**Manages elements of a scene designed to serve as a GUI
@@ -58,7 +61,7 @@ public class GUIScene extends Scene {
         } else {
             override1 = !selected.isOverrideKeys();
         }
-        if (pack.code == KeyEvent.VK_ENTER) {
+        if (pack.getCode() == KeyEvent.VK_ENTER) {
             if (selected != null) {
                 selected.activate();
             }
@@ -69,13 +72,13 @@ public class GUIScene extends Scene {
             } else {
                 override2 = !selected.isOverrideArrows();
             }
-            if (pack.code == KeyEvent.VK_UP) {
+            if (pack.getCode() == KeyEvent.VK_UP) {
                 if (override2) {
                     arrow(Direction.N);
                 } else {
                     selected.upArrow();
                 }
-            } else if (pack.code == KeyEvent.VK_DOWN) {
+            } else if (pack.getCode() == KeyEvent.VK_DOWN) {
                 if (override2) {
                     arrow(Direction.N);
                 } else {
@@ -110,9 +113,24 @@ public class GUIScene extends Scene {
 
     public void addElement(final GUIElement guiElement) {
         elements.add(guiElement);
+        Collections.sort(elements);
         guiElement.setGUIScene(this);
         if (guiElement instanceof SelectableGUIElement) {
             selectableElements.add((SelectableGUIElement) guiElement);
+            Collections.sort(selectableElements);
+        }
+    }
+
+    public void removeElement(final GUIElement element) {
+        int index = Collections.binarySearch(elements, element);
+        if (index >= 0) {
+            elements.remove(index);
+            Collections.sort(elements);
+            if (element instanceof SelectableGUIElement) {
+                index = Collections.binarySearch(selectableElements, element);
+                selectableElements.remove(index);
+                Collections.sort(selectableElements);
+            }
         }
     }
 
@@ -143,10 +161,10 @@ public class GUIScene extends Scene {
     }
 
     public void activate() {
-        updateSelection(getMousePos(), true);
+        updateSelection(getTMousePos(), true);
         if (selected != null) {
             final Rectangle rect = selected.getRectOrigin();
-            if (Utilities.pointInRect(rect, getMousePos())) {
+            if (Utilities.pointInRect(rect, getTMousePos())) {
                 selected.activate();
             }
         }
@@ -215,7 +233,7 @@ public class GUIScene extends Scene {
 
     public void mouseMove(final MousePack pack) {
         if (selected == null || !selected.isOverrideMouse()) {
-            updateSelection(pack.getPos(), false);
+            updateSelection(pack.getTPos(), false);
         } else {
             selected.moveMouse(pack);
         }

@@ -120,7 +120,7 @@ public class Tilemap implements Crushable, Parcel {
         if (y < 0) {
             yReg--;
         }
-        return this.map.get(xReg, yReg);
+        return map.get(xReg, yReg);
     }
 
     public Tile ogetTile(final int x, final int y) {
@@ -205,8 +205,11 @@ public class Tilemap implements Crushable, Parcel {
                             final Tile tile = region.get(k, l);
                             if (tile != null && tile instanceof MultiTile) {
                                 final MultiTile multiTile = (MultiTile) tile;
+                                final Point anchor = multiTile.getAnchor();
+                                final int xInReg = i < 0 ? (regSize - k) : k;
+                                final int yInReg = j < 0 ? (regSize - l) : l;
                                 region.set(null, k, l);
-                                setMultiTile(multiTile, i * regSize + k, j * regSize + l);
+                                setMultiTile(multiTile, i * regSize + xInReg - anchor.x, j * regSize + yInReg - anchor.y);
                             }
                         }
                     }
@@ -310,7 +313,8 @@ public class Tilemap implements Crushable, Parcel {
              final int x = data.getI(i, 0);
              final int y = data.getI(i, 1);
              final DataTree regionData = new DataTree(data.getF(i, 2));
-             final TileRegion region = TileRegion.uncrush(regionData, map);
+             final Point pos = new Point(x * regSize + (x < 0 ? -1 : 0), y * regSize + (y < 0 ? -1 : 0));
+             final TileRegion region = TileRegion.uncrush(regionData, map, pos);
              map.setRegion(region, x, y);
          }
          map.expandMultiTiles();

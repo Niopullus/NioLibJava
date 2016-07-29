@@ -10,25 +10,21 @@ public class GUIElementNode extends Node {
 
     private GUIElement element;
 
-    public GUIElementNode(final String name, final GUIElement element) {
+    public GUIElementNode(final String name, final GUIElement _element) {
         super(name);
-        setup(element);
+        element = _element;
     }
 
     public GUIElementNode() {
         this("unnamed node", null);
     }
 
-    public void init(final Node node) {
-        super.init(node);
+    public void integrate(final Node node) {
+        super.integrate(node);
         if (node instanceof GUIElementNode) {
             final GUIElementNode guiElementNode = (GUIElementNode) node;
-            setup(guiElementNode.element);
+            element = guiElementNode.element;
         }
-    }
-
-    public void setup(final GUIElement _element) {
-        element = _element;
     }
 
     public void parcelDraw(final Canvas canvas) {

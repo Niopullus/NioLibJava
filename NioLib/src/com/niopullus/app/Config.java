@@ -1,11 +1,14 @@
 package com.niopullus.app;
 
 
+import com.niopullus.NioLib.MDArrayList;
 import com.niopullus.NioLib.Picture;
 import com.niopullus.NioLib.scene.dynscene.ShapeNode;
 import com.niopullus.NioLib.scene.dynscene.SketchNode;
+import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
 import com.niopullus.NioLib.scene.dynscene.reference.Ref;
 import com.niopullus.NioLib.scene.dynscene.reference.TileReference;
+import com.niopullus.NioLib.scene.dynscene.tile.MultiTile;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
 
 import static com.niopullus.NioLib.scene.dynscene.reference.TileReference.TileReferencePack;
@@ -50,6 +53,9 @@ public final class Config {
         Picture.loadPictureFromJar("metaltile.jpg", "metaltile");
         Picture.loadPictureFromJar("coolguy.png", "coolguy");
         Picture.loadPictureFromJar("bricks.jpg", "bricks");
+        Picture.loadPictureFromJar("mystmach1-1.png", "mystmach1-1");
+        Picture.loadPictureFromJar("mystmach2-1.png", "mystmach2-1");
+        Picture.loadPictureFromJar("mystmach1-2.png", "mystmach1-2");
         Ref.registerNode("the square", 1, 1, new ShapeNode("the square", Color.BLUE, 100, 100));
         Ref.registerNode("osama", 1, 1, new SketchNode("osama", Picture.getPicture("kfc"), 100, 100));
         final TileReferencePack pack = new TileReferencePack();
@@ -69,6 +75,17 @@ public final class Config {
         pack2.name = "bricks";
         Ref.registerTile(pack2);
         Ref.registerNode("coolguy", 1, 1, new SketchNode("coolguy", Picture.getPicture("coolguy"), 100, 200));
+        final MultiTileReference.MultiTileReferencePack pack3 = new MultiTileReference.MultiTileReferencePack();
+        pack3.sample = new MultiTile("mystmach");
+        pack3.collidable = true;
+        pack3.elasticity = 0;
+        final MDArrayList<Picture> images1 = new MDArrayList<>(2);
+        images1.set(Picture.getPicture("mystmach1-1"), 0, 0);
+        images1.set(Picture.getPicture("mystmach2-1"), 1, 0);
+        images1.set(Picture.getPicture("mystmach1-2"), 0, 1);
+        pack3.images = images1;
+        pack3.name = "mystmach";
+        Ref.registerMultiTile(pack3);
     }
 
 }

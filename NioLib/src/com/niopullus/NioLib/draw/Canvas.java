@@ -124,12 +124,6 @@ public class Canvas {
         return result;
     }
 
-    public void display(final Graphics2D g) {
-        for (DrawElement element : elements) {
-            element.draw(g);
-        }
-    }
-
     /**
      * Used to provide variety for the specific way that a parcel is to be
      * drawn
@@ -341,8 +335,8 @@ public class Canvas {
             pack.angle = angle;
             pack.opacity = opacity;
             pack.elements = canvas.elements;
-            pack.width = canvas.getWidth();
-            pack.height = canvas.getHeight();
+            pack.width = width;
+            pack.height = height;
             pack.xSF = (double) width / canvas.getWidth();
             pack.ySF = (double) height / canvas.getHeight();
             element.define(pack);

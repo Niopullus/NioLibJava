@@ -19,14 +19,6 @@ public class CameraNode extends Node {
         this("unnamed node", 0, 0, 0, 0);
     }
 
-    public void init(final Node node) {
-        super.init(node);
-        if (node instanceof CameraNode) {
-            final CameraNode cameraNode = (CameraNode) node;
-            setup(cameraNode.xMin, cameraNode.yMin, cameraNode.xMax, cameraNode.yMax);
-        }
-    }
-
     public void setup(final int xMin, final int yMin, final int xMax, final int yMax) {
         setBounds(xMin, yMin, xMax, yMax);
     }
@@ -55,6 +47,14 @@ public class CameraNode extends Node {
             super.setY(yMin);
         } else {
             super.setY(y);
+        }
+    }
+
+    public void integrate(final Node node) {
+        super.integrate(node);
+        if (node instanceof CameraNode) {
+            final CameraNode cameraNode = (CameraNode) node;
+            setup(cameraNode.xMin, cameraNode.yMin, cameraNode.xMax, cameraNode.yMax);
         }
     }
 

@@ -83,7 +83,7 @@ public class Picture implements Sketch, Parcel {
         final Comparator<Picture> comparator = getComparator();
         final Picture sample = new Picture(null, picName);
         final int index = Collections.binarySearch(pictures, sample, comparator);
-        if (index != -1) {
+        if (index >= 0) {
             return pictures.get(index);
         }
         return null;

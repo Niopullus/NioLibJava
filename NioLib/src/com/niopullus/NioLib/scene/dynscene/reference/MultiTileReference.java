@@ -16,13 +16,13 @@ public class MultiTileReference extends TileReference {
 
     private int width;
     private int height;
-    private MDArrayList<Picture> images; //Dim1: Set, Dim2: x, Dim3: y
+    private MDArrayList<Picture> images;
     private Point tileAnchor;
 
     public MultiTileReference(final MultiTileReferencePack pack) {
         super(pack.derive());
-        width = pack.images.getSize(0);
-        height = pack.images.getSize(1);
+        width = pack.images.getSize(1);
+        height = pack.images.getSize(2);
         images = new MDArrayList<>(3);
         pack.images.layerCheck(2);
         images.add(pack.images);
@@ -84,8 +84,9 @@ public class MultiTileReference extends TileReference {
     private void determineAnchor() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (images.get(i ,j) != null) {
+                if (images.get(0, i, j) != null) {
                     tileAnchor = new Point(i, j);
+                    return;
                 }
             }
         }

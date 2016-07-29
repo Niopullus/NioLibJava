@@ -263,7 +263,11 @@ public class MDArrayList<T> {
 
     public int getSize(final int layer) {
         final LayerStatus status = getLayerStatus(layer);
-        return status.size;
+        if (status.restricted) {
+            return status.size;
+        } else {
+            return getSizeOfLayer(layer);
+        }
     }
 
     public boolean isRestricted(final int layer) {
@@ -301,7 +305,6 @@ public class MDArrayList<T> {
     }
 
     private Directory safeGet(final List folder, final int index, final int layer) {
-        //System.out.println("Safe getting");
         fillFolder(folder, index);
         Object taken = folder.get(index);
         if (taken == null || taken == placeHolder) {
@@ -314,7 +317,6 @@ public class MDArrayList<T> {
     }
 
     private void fillFolder(final List folder, final int end) {
-        //System.out.println("Filling with an end of " + end);
         if (end - folder.size() < 0 && !enablePlaceHolder) {
             complain();
             return;
@@ -337,20 +339,49 @@ public class MDArrayList<T> {
     }
 
     private boolean validDir(final int folderSize, final int pathIndex, final int layer, final boolean ignoreFS, final boolean addMode) {
-        //System.out.println("Checking with values of " + folderSize + ", " + pathIndex + ", " + layer + ", " + ignoreFS + ", " + addMode);
         final LayerStatus status = getLayerStatus(layer);
         final boolean b1 = pathIndex < folderSize;
         final boolean b2 = !status.restricted || (!addMode ? pathIndex < status.size : folderSize < status.size);
-        //System.out.println("Did it pass inspection? " + ((b1 || ignoreFS) && b2));
         return (b1 || ignoreFS) && b2;
     }
 
     private void complain() {
+        final Thread currentThread = Thread.currentThread();
+        final StackTraceElement[] elements = currentThread.getStackTrace();
         System.out.println("EXCEPTION WHEN TRYING TO USE MDARRAY");
+        for (StackTraceElement element : elements) {
+            System.out.println(element);
+        }
+    }
+
+    public String toString() {
+        return content.toString();
     }
 
     private void complainLayerCount() {
         System.out.println("ATTEMPTED TO ASSIGN A MDARRAYLIST TO A LOCATION WHERE IT IS WARRANTED THAT THE" + " CURRENT AND OVERRIDING LISTS CONTAIN AN EQUAL AMOUNT OF LAYERS");
+    }
+
+    public int getSizeOfLayer(final int layer) {
+        return getSizeOfLayer(content, 1, layer);
+    }
+
+    public int getSizeOfLayer(final List folder, final int curLayer, final int targetLayer) {
+        int result = 0;
+        if (curLayer == targetLayer) {
+            return folder.size();
+        } else {
+            for (Object object: folder) {
+                if (object instanceof List) {
+                    final List list = (List) object;
+                    int localMax = getSizeOfLayer(list, curLayer + 1, targetLayer);
+                    if (localMax > result) {
+                        result = localMax;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private static class Directory implements List {
@@ -360,33 +391,6 @@ public class MDArrayList<T> {
 
         public Directory() {
             content = new ArrayList<>();
-        }
-
-        public int getSizeofLayer(final int layer) {
-            if (layer == 0) {
-                int max = 0;
-                for (Object o : content) {
-                    if (o instanceof List) {
-                        final List list = (List) o;
-                        if (max < list.size()) {
-                            max = list.size();
-                        }
-                    }
-                }
-                return max;
-            } else {
-                int max = 0;
-                for (Object o : content) {
-                    if (o instanceof Directory) {
-                        final Directory dir = (Directory) o;
-                        final int listSize = dir.getSizeofLayer(layer - 1);
-                        if (max < listSize) {
-                            max = listSize;
-                        }
-                    }
-                }
-                return max;
-            }
         }
 
         public int getLayer() {
@@ -401,6 +405,10 @@ public class MDArrayList<T> {
             final Directory result = new Directory();
             result.content = list;
             return result;
+        }
+
+        public String toString() {
+            return content.toString();
         }
 
         private static Directory convertList(final List list, final int layer) {

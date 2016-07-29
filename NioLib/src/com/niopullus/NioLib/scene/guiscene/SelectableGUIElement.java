@@ -5,6 +5,7 @@ import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.*;
 
 import java.awt.*;
+import java.util.List;
 
 /**GUIElement that can be informed that they have been selected by the GUIScene
  * Created by Owen on 4/1/2016.
@@ -20,15 +21,14 @@ public class SelectableGUIElement extends GUIElement {
     private boolean overrideKeys;
     private boolean overrideMouseWheel;
 
-    public SelectableGUIElement(final String content, final Font font, final int widthGap, final int heightGap, final Theme theme) {
-        super(content, font, widthGap, heightGap, theme);
-        selectedBG = new ColorBackground(Color.WHITE);
-        selectedBorderBG = new ColorBackground(Color.CYAN);
+    public SelectableGUIElement(final String content, final Theme theme, final int fontSize, final GUISize size) {
+        super(content, theme, fontSize, size);
         selectedTextColor = Color.black;
         selected = false;
+        overrideMouse = false;
         overrideArrows = false;
-        updateSelectedBorder();
-        updateSelectedBG();
+        overrideKeys = false;
+        overrideMouseWheel = false;
         setTheme(theme);
     }
 
@@ -77,6 +77,12 @@ public class SelectableGUIElement extends GUIElement {
         }
     }
 
+    public void setupBackgrounds() {
+        super.setupBackgrounds();
+        selectedBG = new ColorBackground(Color.WHITE);
+        selectedBorderBG = new ColorBackground(Color.CYAN);
+    }
+
     public void updateBackgrounds() {
         super.updateBackgrounds();
         updateSelectedBG();
@@ -107,16 +113,38 @@ public class SelectableGUIElement extends GUIElement {
 
     public void parcelDraw(final Canvas canvas) {
         if (selected) {
-            final FontMetrics metrics = StringSize.getFontMetrics(getFont());
+            final Font font = getFont();
+            final int heightGap = getHeightGap();
+            final int fieldHeight = getFieldHeight();
+            final FontMetrics metrics = StringSize.getFontMetrics(font);
             final int height = metrics.getAscent() - metrics.getDescent();
+            final int displayLines = getDisplayLines();
+            final int borderSpacing = getBorderSpacing();
+            final int lineGap = getLineGap();
+            final List<Integer> displayChars = getDisplayChars();
+            final int linesHeight = displayLines * (height + lineGap) - lineGap;
+            final int hrGap = (fieldHeight - heightGap * 2 - linesHeight) / 2;
+            int yPos;
             canvas.o.parcel(selectedBorderBG, 0, 0, 5, 0);
-            canvas.o.parcel(selectedBG, getBorderSpacing(), getBorderSpacing(), 10, 0);
-            int yPos = getBorderSpacing() + getHeightGap();
-            for (int i = 0; i < getLineCount(); i++) {
-                final String line = getLineDisplay(getLineCount() - i - 1);
-                final int xPos = getXPos(getLine(getLineCount() - i - 1));
-                canvas.o.text(line, getSelectedTextColor(), getFont(), xPos, yPos, 20, 0, 1);
-                yPos += getLineGap() + height;
+            canvas.o.parcel(selectedBG, borderSpacing, borderSpacing, 10, 0);
+            yPos = fieldHeight + borderSpacing - heightGap - hrGap - height;
+            for (int i = 0; i < displayLines; i++) {
+                final String line = getLineDisplay(i);
+                final String initLine = getLine(i);
+                final Integer chars = displayChars.get(i);
+                final String displayLine;
+                final String initDisplayLine;
+                final int xPos;
+                if (chars != null) {
+                    displayLine = line.substring(0, chars + 1) + "...";
+                    initDisplayLine = initLine.substring(0, chars + 1) + "...";
+                } else {
+                    displayLine = line;
+                    initDisplayLine = initLine;
+                }
+                xPos = getXPos(initDisplayLine);
+                canvas.o.text(displayLine, selectedTextColor, font, xPos, yPos, 20, 0, 1);
+                yPos -= lineGap + height;
             }
         } else {
             super.parcelDraw(canvas);
@@ -172,7 +200,7 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     public void enableOverrideMouse() {
-        overrideKeys = true;
+        overrideMouse = true;
     }
 
     public void enableOverrideArrows() {

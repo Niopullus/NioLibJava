@@ -46,12 +46,16 @@ public class MultiTilePart extends Tile {
     }
 
     public DataTree crush() {
-        final Point anchor = multiTile.getAnchor();
-        if (anchor.equals(new Point(relX, relY))) {
+        if (isAnchor()) {
             return multiTile.crush();
         } else {
             return null;
         }
+    }
+
+    public boolean isAnchor() {
+        final Point anchor = multiTile.getAnchor();
+        return anchor.equals(new Point(relX, relY));
     }
 
 }

@@ -16,13 +16,17 @@ public class MultiTile extends Tile {
 
     private List<MultiTilePart> parts;
     private Point refTilePoint;
-    private final int tileType;
+    private int tileType;
 
-    public MultiTile(final String refName, final Point refTP) {
+    public MultiTile(final String refName) {
         super(refName);
         parts = new ArrayList<>();
         refTilePoint = new Point();
         tileType = 1;
+    }
+
+    public MultiTile() {
+        this("cloning MT in process");
     }
 
     public int getTileType() {
@@ -112,6 +116,10 @@ public class MultiTile extends Tile {
         return result;
     }
 
+    public Point getTrueTileMapPos() {
+        return super.getTileMapPos();
+    }
+
     public void setRefTilePoint(final Point point) {
         refTilePoint = point;
     }
@@ -125,7 +133,10 @@ public class MultiTile extends Tile {
             for (int j = 0; j < getHeight(); j++) {
                 final Picture image = getImage(i, j);
                 if (image != null) {
-                    canvas.o.sketch(image, i * getTileSize(), j * getTileSize(), getTileSize(), getTileSize());
+                    final int tileSize = getTileSize();
+                    final int x = i * tileSize;
+                    final int y = j * tileSize;
+                    canvas.o.sketch(image, x, y, tileSize, tileSize, 0);
                 }
             }
         }

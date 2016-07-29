@@ -182,17 +182,19 @@ public class DrawElement {
      * @param angle is the angle at which the DrawElement should be drawn
      * @param opacity is the opacity for which the DrawElement should be drawn
      */
-    public void adjustGraphics(final Graphics2D g, final double angle, final float opacity) {
-        if (angle != 0) {
-            final int transX = dx1 + getWidth() / 2;
-            final int transY = dy1 + getHeight() / 2;
-            g.translate(transX, transY);
-            g.rotate(angle);
-            g.translate(-transX, -transY);
-        }
-        if (opacity != 1) {
-            final AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity);
-            g.setComposite(ac);
+    public void adjustGraphics(final Graphics2D g, final DrawPosition position, final double angle, final float opacity) {
+        if (!(this instanceof ParcelElement)) {
+            if (angle != 0) {
+                final int transX = position.getDx1() + position.getWidth() / 2;
+                final int transY = position.getDy1() + position.getHeight() / 2;
+                g.translate(transX, transY);
+                g.rotate(angle);
+                g.translate(-transX, -transY);
+            }
+            if (opacity != 1) {
+                final AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity);
+                g.setComposite(ac);
+            }
         }
     }
 
@@ -205,7 +207,7 @@ public class DrawElement {
         if (drawPosition.isVisible()) {
             final AffineTransform old = g.getTransform();
             final Composite oldComp = g.getComposite();
-            adjustGraphics(g, getTAngle(), getTOpacity());
+            adjustGraphics(g, drawPosition, getTAngle(), getTOpacity());
             display(g, drawPosition);
             g.setTransform(old);
             g.setComposite(oldComp);

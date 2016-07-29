@@ -2,8 +2,10 @@ package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.SignedContainer;
+import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.draw.Canvas;
+import com.niopullus.NioLib.draw.ParcelElement;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -19,10 +21,12 @@ public class NodePartitionManager implements Serializable, Parcel {
     private SignedContainer<NodePartition> partitions;
     private PhysicsHandler physicsHandler;
     private Node world;
+    private List<Node> drawnNodes;
 
     public NodePartitionManager(final int partSize, final int width, final int height) {
         size = partSize;
         partitions = new SignedContainer<>(width, height);
+        drawnNodes = new ArrayList<>();
     }
 
     public void updateNode(final Node node) {
@@ -65,7 +69,7 @@ public class NodePartitionManager implements Serializable, Parcel {
         world = _world;
     }
 
-    private void removeNode(final Node node) {
+    public void removeNode(final Node node) {
         for (int i = node.getPartRangeX()[0]; i <= node.getPartRangeX()[1]; i++) {
             for (int j = node.getPartRangeY()[0]; j <= node.getPartRangeY()[1]; j++) {
                 if (partitions.isValidLoc(i, j)) {
@@ -77,7 +81,9 @@ public class NodePartitionManager implements Serializable, Parcel {
     }
 
     public Point convertPointToPart(final int x, final int y) {
-        return new Point(x / size, y / size);
+        final int partX = (int) Math.ceil((double) x / size);
+        final int partY = (int) Math.ceil((double) y / size);
+        return new Point(partX, partY);
     }
 
     public HalfCollision getHalfCollision(final Node node, final Direction dir) {
@@ -132,7 +138,7 @@ public class NodePartitionManager implements Serializable, Parcel {
         for (int i = p1.x; i <= p2.x; i++) {
             for (int j = p1.y; j <= p2.y; j++) {
                 if (partitions.get(i, j) != null) {
-                    if (i == p1.x || j == p2.y || i == p2.x || j == p2.y) {
+                    if (i == p1.x || j == p1.y || i == p2.x || j == p2.y) {
                         nodes.addAll(partitions.get(i, j).getNodes(new Rectangle(x, y, width, height)));
                     } else {
                         nodes.addAll(partitions.get(i, j).getNodes());
@@ -146,14 +152,35 @@ public class NodePartitionManager implements Serializable, Parcel {
     public void parcelDraw(final Canvas canvas) {
         final Point p1 = convertPointToPart(-world.getX(), -world.getY());
         final Point p2 = convertPointToPart(-world.getX() + Main.Width(), -world.getY() + Main.Height());
-        for (int i = p1.x; i <= p2.x; i++) {
-            for (int j = p1.y; j < p2.y; j++) {
+        for (int i = p1.x; i <= p2.x + 2; i++) {
+            for (int j = p1.y; j < p2.y + 2; j++) {
                 final NodePartition partition = partitions.get(i, j);
                 if (partition != null) {
-                    canvas.o.parcel(partition, 0, 0, 0, 0, 0, 0, 1f);
+                    canvas.o.parcel(partition, 0, 0, 0, 0);
                 }
             }
         }
+        /**
+        for (DrawElement element : canvas.getElements()) {
+            for (DrawElement element1 : ((ParcelElement) element).getElements()) {
+                for (DrawElement element2 : ((ParcelElement) element1).getElements()) {
+                    System.out.println(element2.getClass() + " - " + element1.getDrawPosition());
+                }
+            }
+        }
+         **/
+        resetDrawnStates();
+    }
+
+    public void addDrawnNode(final Node node) {
+        drawnNodes.add(node);
+    }
+
+    private void resetDrawnStates() {
+        for (Node node : drawnNodes) {
+            node.resetDrawnState();
+        }
+        drawnNodes = new ArrayList<>();
     }
 
 }

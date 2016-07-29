@@ -10,9 +10,10 @@ public class ShapeTrigger extends ShapeNode implements Trigger {
     private int xRad;
     private int yRad;
 
-    public ShapeTrigger(final String name, final Color color, final int width, final int height, final int xRad, final int yRad) {
+    public ShapeTrigger(final String name, final Color color, final int width, final int height, final int _xRad, final int _yRad) {
         super(name, color, width, height);
-        setup(xRad, yRad);
+        xRad = _xRad;
+        yRad = _yRad;
     }
 
     public ShapeTrigger() {
@@ -20,16 +21,12 @@ public class ShapeTrigger extends ShapeNode implements Trigger {
     }
 
     public void init(final Node node) {
-        super.init(node);
+        super.integrate(node);
         if (node instanceof ShapeTrigger) {
             final ShapeTrigger shapeTrigger = (ShapeTrigger) node;
-            setup(shapeTrigger.xRad, shapeTrigger.yRad);
+            xRad = shapeTrigger.xRad;
+            yRad = shapeTrigger.yRad;
         }
-    }
-
-    public void setup(final int _xRad, final int _yRad) {
-        xRad = _xRad;
-        yRad = _yRad;
     }
 
     public int getXRad() {

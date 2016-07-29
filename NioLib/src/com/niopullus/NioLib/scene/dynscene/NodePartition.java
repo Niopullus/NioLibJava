@@ -34,13 +34,14 @@ public class NodePartition implements Parcel {
     }
 
     public List<Node> getNodes(final Rectangle rect) {
-        final List<Node> nodes = new ArrayList<>();
-        for (Node node : nodes) {
+        final List<Node> _nodes = new ArrayList<>();
+        for (NodeEntry entry : nodes) {
+            final Node node = entry.node;
             if (Utilities.rectIntersect(rect, node.getWRect())) {
-                nodes.add(node);
+                _nodes.add(node);
             }
         }
-        return nodes;
+        return _nodes;
     }
 
     public HalfCollision getHalfCollision(final Node node1, final Direction dir) {
@@ -160,7 +161,7 @@ public class NodePartition implements Parcel {
         if (index != -1) {
             entry = nodes.remove(index);
         } else {
-            System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT");
+            System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT (1)");
         }
         Collections.sort(nodes);
         if (entry.collidable) {
@@ -168,7 +169,7 @@ public class NodePartition implements Parcel {
             if (index != -1) {
                 collidableNodes.remove(index);
             } else {
-                System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT");
+                System.out.println("ERROR: TRIED TO REMOVE A NODE THAT IS NOT PRESENT (2)");
             }
         }
     }
@@ -176,7 +177,11 @@ public class NodePartition implements Parcel {
     public void parcelDraw(final Canvas canvas) {
         for (NodeEntry entry : nodes) {
             final Node node = entry.node;
-            canvas.o.parcel(node, node.getX(), node.getY(), node.getWidth(), node.getHeight(), node.getZ(), node.getAngle(), 1f);
+            if (!node.isDrawn()) {
+                canvas.o.parcel(node, node.getTX(), node.getTY(), node.getWidth(), node.getHeight(), node.getZ(), node.getAngle(), 1f);
+                node.markDrawn();
+                partitionManager.addDrawnNode(node);
+            }
         }
     }
 

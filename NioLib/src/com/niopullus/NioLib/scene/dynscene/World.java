@@ -80,6 +80,7 @@ public class World {
 
     public static World loadWorld(final String fileName, final DynamicScene scene) {
         final World result = new World();
+        final Node sample = new Node();
         final PhysicsHandler physicsHandler = new PhysicsHandler();
         final Tilemap fgMap;
         final Tilemap bgMap;
@@ -91,7 +92,7 @@ public class World {
             textData = Data.getTextFromJar("/worlds/" + fileName);
         }
         data = DataTree.decompress(textData);
-        universe = Node.uncrush(new DataTree(data.getF(3)), scene);
+        universe = sample.uncrush(new DataTree(data.getF(3)), scene);
         fgMap = Tilemap.uncrush(new DataTree(data.getF(1)), universe.getChild(0), Config.TILESIZE);
         bgMap = Tilemap.uncrush(new DataTree(data.getF(2)), universe.getChild(0), Config.TILESIZE);
         physicsHandler.setTilemap(fgMap);

@@ -25,10 +25,6 @@ public class SceneManager implements Parcel {
         this.scenes = new ArrayList<>();
     }
 
-    public Point getMousePos() {
-        return main.getMousePos();
-    }
-
     public boolean getMouseHeld() {
         return main.getMouseHeld();
     }
@@ -39,6 +35,10 @@ public class SceneManager implements Parcel {
 
     public boolean getMiddleMouseHeld() {
         return main.getMiddleMouseHeld();
+    }
+
+    public Scene getCurrentScene() {
+        return currentScene;
     }
 
     public void tick() {

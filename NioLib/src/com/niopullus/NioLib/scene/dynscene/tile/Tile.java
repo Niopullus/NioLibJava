@@ -39,7 +39,7 @@ public class Tile implements CollideData, Crushable, Parcel {
         this(refName, new DataTree());
     }
 
-    private Tile() {
+    public Tile() {
         this("created by clone init");
     }
 
@@ -116,6 +116,13 @@ public class Tile implements CollideData, Crushable, Parcel {
         tileMapPos = point;
     }
 
+    public void integrate(final Tile tile) {
+        reference = tile.reference;
+        tilemap = tile.tilemap;
+        tileMapPos = tile.tileMapPos;
+        data = tile.data;
+    }
+
     public Tile copy(final DataTree data) {
         try {
             final Class<?> tileClass = getClass();
@@ -152,7 +159,7 @@ public class Tile implements CollideData, Crushable, Parcel {
         return result;
     }
 
-    public static Tile uncrush(final DataTree data) {
+    public Tile uncrush(final DataTree data) {
         final int tiletype = data.getI(0);
         final int id = data.getI(1);
         final List dataFolder = data.getF(2);

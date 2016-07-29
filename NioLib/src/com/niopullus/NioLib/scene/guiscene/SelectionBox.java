@@ -7,6 +7,7 @@ import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Direction;
 
 import java.awt.*;
+import java.util.List;
 
 /**A GUIElement that allows the user to select between preset choices
  * Created by Owen on 3/31/2016.
@@ -16,20 +17,14 @@ public class SelectionBox extends SelectableGUIElement {
     private int selection;
     private boolean expand;
 
-    public SelectionBox(final String content, final Font font, final int widthGap, final int heightGap, final Theme theme) {
-        super(content, font, widthGap, heightGap, theme);
+    public SelectionBox(final String content, final Theme theme, final int fontSize, final GUISize size) {
+        super(content, theme, fontSize, size);
         selection = 0;
         expand = false;
-        determineDimensions();
-        updateBackgrounds();
-    }
-
-    public SelectionBox(final String content, final Font font, final int widthGap, final int heightGap) {
-        this(content, font, widthGap, heightGap, null);
     }
 
     public SelectionBox(final String content, final Theme theme, final int fontSize) {
-        this(content, theme.getFont(fontSize), theme.getWidthGap(), theme.getHeightGap(), theme);
+        this(content, theme, fontSize, new GUISize());
     }
 
     public String getContent() {
@@ -80,7 +75,7 @@ public class SelectionBox extends SelectableGUIElement {
     }
 
     public void moveMouseWheel(final Scene.MouseWheelPack pack) {
-        final Direction dir = pack.direction;
+        final Direction dir = pack.getDirection();
         if (dir == Direction.N) {
             downArrow();
         } else if (dir == Direction.S) {
@@ -89,51 +84,66 @@ public class SelectionBox extends SelectableGUIElement {
     }
 
     public void parcelDraw(final Canvas canvas) {
+        final Font font = getFont();
+        final FontMetrics metrics = StringSize.getFontMetrics(font);
+        final int textHeight = metrics.getAscent() - metrics.getDescent();
+        final int fieldHeight = getFieldHeight();
+        final int heightGap = getHeightGap();
+        final int borderSpacing = getBorderSpacing();
         if (expand) {
             Background bg;
             Background border;
             Color textColor;
             int yPos = (int) (-getHeight() * ((double) selection - 0.5 * getLineCount() + 0.5));
             for (int i = 0; i < getLineCount(); i++) {
-                final String line = getLine(i);
-                final int xPos = getXPos(line);
+                final String line = getLineDisplay(i);
+                final List<Integer> displayChars = getDisplayChars();
+                final int xPos;
+                final int rhGap = (fieldHeight - heightGap * 2 - textHeight) / 2;
+                final Integer lineChars = displayChars.get(i);
+                final String displayLine;
+                if (lineChars != null) {
+                    displayLine = line.substring(0, lineChars + 1) + "...";
+                } else {
+                    displayLine = line;
+                }
+                xPos = getXPos(displayLine);
                 bg = i != selection ? getBG() : getSelectedBG();
                 border = i != selection ? getBorderBG() : getSelectedBorderBG();
                 textColor = i != selection ? getTextColor() : getSelectedTextColor();
                 canvas.o.parcel(border, 0, yPos, 20, 0);
                 canvas.o.parcel(bg, getBorderSpacing(), yPos + getBorderSpacing(), 30, 0);
-                canvas.o.text(line, textColor, getFont(), xPos, yPos + getBorderSpacing() + getHeightGap(), 40, 0, 1);
+                canvas.o.text(displayLine, textColor, getFont(), xPos, yPos + borderSpacing + heightGap + rhGap, 40, 0, 1);
                 yPos += getHeight();
             }
         } else {
             final Background bg = !getSelected() ? getBG() : getSelectedBG();
             final Background border = !getSelected() ? getBorderBG() : getSelectedBorderBG();
             final Color textColor = !getSelected() ? getTextColor() : getSelectedTextColor();
-            final FontMetrics metrics = StringSize.getFontMetrics(getFont());
             final int height = metrics.getAscent() - metrics.getDescent();
             final int yPos = getBorderSpacing() + getHeightGap();
             final String line = getLineDisplay(selection);
-            final int xPos = getXPos(getLine(selection));
+            final int xPos;
+            final int rhGap = (fieldHeight - heightGap * 2 - textHeight) / 2;
+            final List<Integer> displayChars = getDisplayChars();
+            final Integer lineChars = displayChars.get(selection);
+            final String displayLine;
+            if (lineChars != null) {
+                displayLine = line.substring(0, lineChars + 1) + "...";
+            } else {
+                displayLine = line;
+            }
+            xPos = getXPos(displayLine);
             canvas.o.parcel(border, 0, 0, 10, 0);
             canvas.o.parcel(bg, getBorderSpacing(), getBorderSpacing(), 20, 0);
-            canvas.o.text(line, textColor, getFont(), xPos, yPos, 30, 0, 1);
+            canvas.o.text(displayLine, textColor, getFont(), xPos, yPos + rhGap, 30, 0, 1);
         }
     }
 
-    public void determineDimensions() {
+    public void determineHeight() {
         final FontMetrics metrics = StringSize.getFontMetrics(getFont());
         final int stringHeight = metrics.getAscent() - metrics.getDescent();
-        int stringWidth = 0;
-        for (int i = 0; i < getLineCount(); i++) {
-            final String line = getLine(i);
-            final int tempWidth = metrics.stringWidth(line);
-            if (tempWidth > stringWidth) {
-                stringWidth = tempWidth;
-            }
-        }
-        setFieldWidth(stringWidth + 2 * getWidthGap());
         setFieldHeight(stringHeight + 2 * getHeightGap());
-        setWidth(getFieldWidth() + getBorderSpacing() * 2);
         setHeight(getFieldHeight() + getBorderSpacing() * 2);
     }
 
