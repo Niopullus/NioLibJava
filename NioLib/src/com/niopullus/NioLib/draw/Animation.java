@@ -1,7 +1,7 @@
-package com.niopullus.NioLib;
+package com.niopullus.NioLib.draw;
 
-import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.draw.Parcel;
+import com.niopullus.NioLib.Picture;
+import com.niopullus.NioLib.Sketch;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

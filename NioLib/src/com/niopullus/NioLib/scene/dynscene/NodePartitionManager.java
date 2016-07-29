@@ -2,10 +2,8 @@ package com.niopullus.NioLib.scene.dynscene;
 
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.SignedContainer;
-import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.draw.ParcelElement;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -54,12 +52,13 @@ public class NodePartitionManager implements Serializable, Parcel {
         for (int i = partPointMin.x; i <= partPointMax.x; i++) {
             for (int j = partPointMin.y; j <= partPointMax.y; j++) {
                 if (partitions.get(i, j) == null) {
-                    NodePartition part = new NodePartition();
-                    part.setPartitionManager(this);
-                    partitions.set(i, j, part);;
+                    final NodePartition partition = new NodePartition();
+                    partition.setPartitionManager(this);
+                    partitions.set(i, j, partition);
                 }
                 if (partitions.isValidLoc(i, j)) {
-                    partitions.get(i, j).addNode(node);
+                    final NodePartition partition = partitions.get(i, j);
+                    partition.addNode(node);
                 }
             }
         }

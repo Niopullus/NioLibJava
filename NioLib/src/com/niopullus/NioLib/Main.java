@@ -284,15 +284,12 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     //TODO:
     //Fix the file root system for Macs and Windows computers
-    //Angles /
-    //Revise/loading saving for nodes/tiles /
-    //Fix mouse button detection /
-    //Dynamic Sketch nodes /
-    //Sketch nodes /
-    //Dynamic backgrounds /
-    //Sketch backgrounds /
-    //GUIElementNode /
-    //Sort out fonts /
-    //Multi Tiles /
+    //GUIScene editor
+    //Registry editor
+    //Sketch tiles
+    //Custom rendering
+    //Easy GUIs
+    //Completely redo ListScene (Code, not features)
+    //Condense instance variables
 
 }

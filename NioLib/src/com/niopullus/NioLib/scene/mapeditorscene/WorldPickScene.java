@@ -1,6 +1,5 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
-import com.niopullus.NioLib.Data;
 import com.niopullus.NioLib.Root;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.dynscene.World;

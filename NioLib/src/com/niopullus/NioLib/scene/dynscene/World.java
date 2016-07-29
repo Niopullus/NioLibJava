@@ -8,7 +8,6 @@ import com.niopullus.NioLib.scene.dynscene.tile.Tilemap;
 import com.niopullus.app.Config;
 
 import java.awt.*;
-import java.util.List;
 
 /**General container for DynamicScene related instance variables
  * Created by Owen on 4/13/2016.

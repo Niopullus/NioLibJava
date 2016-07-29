@@ -5,7 +5,6 @@ import com.niopullus.NioLib.scene.dynscene.reference.MultiTileReference;
 import com.niopullus.NioLib.draw.Canvas;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,8 +2,6 @@ package com.niopullus.NioLib.scene.guiscene;
 
 import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.draw.DrawElement;
-import com.niopullus.NioLib.draw.ParcelElement;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.Scene;
@@ -56,22 +54,14 @@ public class GUIScene extends Scene {
 
     public void keyPress(final KeyPack pack) {
         boolean override1;
-        if (selected == null) {
-            override1 = true;
-        } else {
-            override1 = !selected.isOverrideKeys();
-        }
+        override1 = selected == null || !selected.isOverrideKeys();
         if (pack.getCode() == KeyEvent.VK_ENTER) {
             if (selected != null) {
                 selected.activate();
             }
         } else if (override1) {
             boolean override2;
-            if (selected == null) {
-                override2 = true;
-            } else {
-                override2 = !selected.isOverrideArrows();
-            }
+            override2 = selected == null || !selected.isOverrideArrows();
             if (pack.getCode() == KeyEvent.VK_UP) {
                 if (override2) {
                     arrow(Direction.N);

@@ -7,12 +7,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-/**
+/**Includes helpful methods
  * Created by Owen on 3/5/2016.
  */
-public abstract class Utilities {
+public class Utilities {
 
     public static final Object placeHolder = new Object();
+
+    private Utilities() {
+        //Blank implementation
+    }
 
     public static BufferedImage loadImage(String imageDir) {
         BufferedImage image = null;
@@ -85,7 +89,7 @@ public abstract class Utilities {
     }
 
     public static ArrayList<BufferedImage> loadImages(ArrayList<String> dirs) {
-        ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+        ArrayList<BufferedImage> images = new ArrayList<>();
         for (String imgDir : dirs) {
             images.add(Utilities.loadImage(imgDir));
         }
@@ -96,26 +100,6 @@ public abstract class Utilities {
         BufferedImage[] images = new BufferedImage[dirs.length];
         for (int i = 0; i < dirs.length; i++) {
             images[i] = Utilities.loadImage(dirs[i]);
-        }
-        return images;
-    }
-
-    public ArrayList<BufferedImage> getImageSet(final String baseIMG, final int setCount) {
-        final ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
-        for (int i = 0; i < setCount; i++) {
-            images.add(Utilities.loadImage(baseIMG + "s" + i));
-        }
-        return images;
-    }
-
-    public ArrayList<ArrayList<BufferedImage>> getImageGroup(final String baseIMG, final int groupCount, final int setCount) {
-        final ArrayList<ArrayList<BufferedImage>> images = new ArrayList<ArrayList<BufferedImage>>();
-        for (int g = 0; g < groupCount; g++) {
-            final ArrayList<BufferedImage> set = new ArrayList<>();
-            for (int s = 0; s < groupCount; s++) {
-                set.add(Utilities.loadImage(baseIMG + "g" + g + "s" + s));
-            }
-            images.add(set);
         }
         return images;
     }

@@ -4,7 +4,6 @@ import com.niopullus.NioLib.DataTree;
 import com.niopullus.NioLib.Picture;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**Tile that stands in for a part of a MultiTile
  * Created by Owen on 4/11/2016.

@@ -1,8 +1,5 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-
-import java.awt.*;
-
 /**Clickable trigger for specified code
  * Created by Owen on 3/5/2016.
  */

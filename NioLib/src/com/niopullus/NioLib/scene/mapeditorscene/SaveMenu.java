@@ -1,6 +1,5 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
-import com.niopullus.NioLib.Data;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.guiscene.*;
@@ -9,7 +8,8 @@ import com.niopullus.NioLib.scene.guiscene.Label;
 
 import java.awt.*;
 
-/**
+/**Used to prompt the user as to how they would like to save a World from
+ * the MapEditorScene.
  * Created by Owen on 4/13/2016.
  */
 public class SaveMenu extends GUIScene {

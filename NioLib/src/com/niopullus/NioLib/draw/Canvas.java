@@ -1,6 +1,5 @@
 package com.niopullus.NioLib.draw;
 
-import com.niopullus.NioLib.Animation;
 import com.niopullus.NioLib.Sketch;
 
 import java.util.ArrayList;

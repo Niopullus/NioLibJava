@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.niopullus.NioLib.Picture;
 import com.niopullus.NioLib.draw.Canvas;
-import com.niopullus.NioLib.draw.DrawElement;
 import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.Scene;

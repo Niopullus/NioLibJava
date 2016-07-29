@@ -3,7 +3,6 @@ package com.niopullus.NioLib.scene.dynscene.reference;
 import com.niopullus.NioLib.Picture;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 /**Stores information about a tile

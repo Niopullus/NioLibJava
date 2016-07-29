@@ -7,7 +7,6 @@ import com.niopullus.NioLib.scene.dynscene.tile.MultiTile;
 import com.niopullus.NioLib.MDArrayList;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**Reference pertaining to a Multi Tile
  * Created by Owen on 4/11/2016.

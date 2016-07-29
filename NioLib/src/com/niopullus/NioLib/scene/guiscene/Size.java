@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-/**
+/**Stores information regarding the size of various objects
  * Created by Owen on 7/17/2016.
  */
 public class Size {

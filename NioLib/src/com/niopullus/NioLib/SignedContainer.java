@@ -3,7 +3,7 @@ package com.niopullus.NioLib;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 
-/**
+/**Functions as an ArrayList that includes negative indexes
  * Created by Owen on 4/2/2016.
  */
 public class SignedContainer<T> implements Serializable {

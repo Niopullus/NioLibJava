@@ -3,7 +3,6 @@ package com.niopullus.NioLib.scene.dynscene;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
 import com.niopullus.NioLib.scene.dynscene.tile.Tilemap;
 import com.niopullus.NioLib.Utilities;
-import com.niopullus.app.Config;
 
 import java.awt.*;
 import java.util.ArrayList;

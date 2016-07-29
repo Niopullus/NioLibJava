@@ -1,7 +1,5 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-import java.awt.*;
-
 /**Non-interactive GUIElement for displaying text
  * Created by Owen on 3/6/2016.
  */

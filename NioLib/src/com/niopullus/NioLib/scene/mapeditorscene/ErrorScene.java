@@ -8,7 +8,8 @@ import com.niopullus.NioLib.scene.guiscene.Theme;
 
 import java.awt.*;
 
-/**
+/**Used to display to the user of a ListScene that what they have done
+ * has resulted in an unintended action.
  * Created by Owen on 7/24/2016.
  */
 public class ErrorScene extends GUIScene {

@@ -1,6 +1,6 @@
 package com.niopullus.NioLib.scene.guiscene;
 
-/**
+/**Stores information regarding the size of a GUIElement
  * Created by Owen on 7/18/2016.
  */
 public class GUISize extends Size {

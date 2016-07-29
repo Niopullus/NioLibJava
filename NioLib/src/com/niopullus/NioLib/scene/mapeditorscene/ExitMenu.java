@@ -1,9 +1,7 @@
 package com.niopullus.NioLib.scene.mapeditorscene;
 
-import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.Background;
 import com.niopullus.NioLib.scene.ColorBackground;
-import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.guiscene.*;
 import com.niopullus.NioLib.scene.guiscene.Button;
 import com.niopullus.NioLib.scene.guiscene.Label;
@@ -11,7 +9,8 @@ import com.niopullus.app.InitScene;
 
 import java.awt.*;
 
-/**
+/**Used to prompt the user as to whether they would like to exit a scene
+ * and return to InitScene
  * Created by Owen on 4/13/2016.
  */
 public class ExitMenu extends GUIScene {

@@ -2,7 +2,6 @@ package com.niopullus.NioLib.scene.mapeditorscene;
 
 import com.niopullus.NioLib.Crushable;
 import com.niopullus.NioLib.DataTree;
-import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.Scene;
 import com.niopullus.NioLib.scene.dynscene.Node;
 import com.niopullus.NioLib.scene.dynscene.tile.Tile;
@@ -12,11 +11,10 @@ import com.niopullus.NioLib.scene.guiscene.Button;
 import com.niopullus.NioLib.scene.guiscene.Label;
 
 import java.awt.*;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/**Used to display information regarding selections and Tile/Node data
  * Created by Owen on 7/13/2016.
  */
 public class ListScene extends GUIScene {

@@ -6,10 +6,6 @@ import com.niopullus.NioLib.scene.guiscene.Label;
 import com.niopullus.app.Config;
 import com.niopullus.app.InitScene;
 
-import java.awt.*;
-import java.io.File;
-import java.util.ArrayList;
-
 /**If configured in such a way, the first time the program is run,
  * this scene will appear so the user can choose the directory
  * they wish to use

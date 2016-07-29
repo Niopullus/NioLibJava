@@ -94,7 +94,7 @@ public class MDArrayList<T> {
             complain();
             return null;
         }
-        result = new MDArrayList<T>(layers - path.count());
+        result = new MDArrayList<>(layers - path.count());
         result.content = (Directory) get(path, content, 1);
         return result;
     }

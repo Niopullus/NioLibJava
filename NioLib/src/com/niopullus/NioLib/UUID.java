@@ -1,7 +1,5 @@
 package com.niopullus.NioLib;
 
-import java.io.Serializable;
-
 /**Used to Universally identify an object
  * Created by Owen on 3/5/2016.
  */

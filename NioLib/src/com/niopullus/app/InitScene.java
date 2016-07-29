@@ -1,6 +1,5 @@
 package com.niopullus.app;
 
-import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.scene.ColorBackground;
 import com.niopullus.NioLib.scene.guiscene.*;
 import com.niopullus.NioLib.scene.guiscene.Button;

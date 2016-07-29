@@ -6,11 +6,8 @@ import com.niopullus.NioLib.Main;
 import com.niopullus.NioLib.draw.Parcel;
 import com.niopullus.NioLib.draw.StringSize;
 import com.niopullus.NioLib.scene.*;
-import com.niopullus.app.Config;
-import javafx.geometry.Point3D;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import java.awt.*;
