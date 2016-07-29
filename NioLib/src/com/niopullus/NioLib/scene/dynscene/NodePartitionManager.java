@@ -31,8 +31,8 @@ public class NodePartitionManager implements Serializable, Parcel {
 
     public void updateNode(final Node node) {
         if (node.getPartRangeX() != null && node.getPartRangeY() != null) {
-            final Point partPointMin = convertPointToPart(node.getCMinX(), node.getCMidY());
-            final Point partPointMax = convertPointToPart(node.getCMaxX(), node.getCMaxY());
+            final Point partPointMin = convertPointToPartFloor(node.getCMinX(), node.getCMidY());
+            final Point partPointMax = convertPointToPartCeil(node.getCMaxX(), node.getCMaxY());
             final boolean s1 = partPointMin.x != node.getPartRangeX()[0];
             final boolean s2 = partPointMax.x != node.getPartRangeX()[1];
             final boolean s3 = partPointMin.y != node.getPartRangeY()[0];
@@ -47,8 +47,8 @@ public class NodePartitionManager implements Serializable, Parcel {
     }
 
     private void addNode(final Node node) {
-        final Point partPointMin = convertPointToPart(node.getCMinX(), node.getCMidY());
-        final Point partPointMax = convertPointToPart(node.getCMaxX(), node.getCMaxY());
+        final Point partPointMin = convertPointToPartFloor(node.getCMinX(), node.getCMidY());
+        final Point partPointMax = convertPointToPartCeil(node.getCMaxX(), node.getCMaxY());
         node.setPartRangeX(new int[]{partPointMin.x, partPointMax.x});
         node.setPartRangeY(new int[]{partPointMin.y, partPointMax.y});
         for (int i = partPointMin.x; i <= partPointMax.x; i++) {
@@ -80,9 +80,15 @@ public class NodePartitionManager implements Serializable, Parcel {
         }
     }
 
-    public Point convertPointToPart(final int x, final int y) {
+    public Point convertPointToPartCeil(final int x, final int y) {
         final int partX = (int) Math.ceil((double) x / size);
         final int partY = (int) Math.ceil((double) y / size);
+        return new Point(partX, partY);
+    }
+
+    public Point convertPointToPartFloor(final int x, final int y) {
+        final int partX = (int) Math.floor((double) x / size);
+        final int partY = (int) Math.floor((double) y / size);
         return new Point(partX, partY);
     }
 
@@ -93,17 +99,17 @@ public class NodePartitionManager implements Serializable, Parcel {
         HalfCollision result = new HalfCollision(distance, null);
         boolean override = false;
         if (dir == Direction.E) {
-            p1 = convertPointToPart(node.getCMaxX(), node.getCMinY());
-            p2 = convertPointToPart((int) (node.getCMaxX() + node.getXv()), node.getCMaxY());
+            p1 = convertPointToPartFloor(node.getCMaxX(), node.getCMinY());
+            p2 = convertPointToPartCeil((int) (node.getCMaxX() + node.getXv()), node.getCMaxY());
         } else if (dir == Direction.W) {
-            p1 = convertPointToPart((int) (node.getCMinX() + node.getXv()), node.getCMinY());
-            p2 = convertPointToPart(node.getCMinX(), node.getCMaxY());
+            p1 = convertPointToPartFloor((int) (node.getCMinX() + node.getXv()), node.getCMinY());
+            p2 = convertPointToPartCeil(node.getCMinX(), node.getCMaxY());
         } else if (dir == Direction.N) {
-            p1 = convertPointToPart(node.getCMinX(), node.getCMaxY());
-            p2 = convertPointToPart(node.getCMaxX(), (int) (node.getCMaxY() + node.getYv()));
+            p1 = convertPointToPartFloor(node.getCMinX(), node.getCMaxY());
+            p2 = convertPointToPartCeil(node.getCMaxX(), (int) (node.getCMaxY() + node.getYv()));
         } else if (dir == Direction.S) {
-            p1 = convertPointToPart(node.getCMinX(), node.getCMinY());
-            p2 = convertPointToPart(node.getCMaxX(), (int) (node.getCMinY() + node.getYv()));
+            p1 = convertPointToPartFloor(node.getCMinX(), node.getCMinY());
+            p2 = convertPointToPartCeil(node.getCMaxX(), (int) (node.getCMinY() + node.getYv()));
         }
         for (int i = p1.x; i <= p2.x && !override; i++) {
             for (int j = p1.y; j <= p2.y && !override; j++) {
@@ -133,11 +139,12 @@ public class NodePartitionManager implements Serializable, Parcel {
 
     public List<Node> getNodesAt(final int x, final int y, final int width, final int height) {
         final List<Node> nodes = new ArrayList<>();
-        final Point p1 = convertPointToPart(x, y);
-        final Point p2 = convertPointToPart(x + width, y + height);
+        final Point p1 = convertPointToPartFloor(x, y);
+        final Point p2 = convertPointToPartCeil(x + width, y + height);
         for (int i = p1.x; i <= p2.x; i++) {
             for (int j = p1.y; j <= p2.y; j++) {
-                if (partitions.get(i, j) != null) {
+                final NodePartition partition = partitions.get(i, j);
+                if (partition != null) {
                     if (i == p1.x || j == p1.y || i == p2.x || j == p2.y) {
                         nodes.addAll(partitions.get(i, j).getNodes(new Rectangle(x, y, width, height)));
                     } else {
@@ -150,8 +157,8 @@ public class NodePartitionManager implements Serializable, Parcel {
     }
 
     public void parcelDraw(final Canvas canvas) {
-        final Point p1 = convertPointToPart(-world.getX(), -world.getY());
-        final Point p2 = convertPointToPart(-world.getX() + Main.Width(), -world.getY() + Main.Height());
+        final Point p1 = convertPointToPartFloor(-world.getX(), -world.getY());
+        final Point p2 = convertPointToPartCeil(-world.getX() + Main.Width(), -world.getY() + Main.Height());
         for (int i = p1.x; i <= p2.x + 2; i++) {
             for (int j = p1.y; j < p2.y + 2; j++) {
                 final NodePartition partition = partitions.get(i, j);
@@ -160,15 +167,6 @@ public class NodePartitionManager implements Serializable, Parcel {
                 }
             }
         }
-        /**
-        for (DrawElement element : canvas.getElements()) {
-            for (DrawElement element1 : ((ParcelElement) element).getElements()) {
-                for (DrawElement element2 : ((ParcelElement) element1).getElements()) {
-                    System.out.println(element2.getClass() + " - " + element1.getDrawPosition());
-                }
-            }
-        }
-         **/
         resetDrawnStates();
     }
 
