@@ -106,9 +106,6 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         final String folder = programFiles + "/" + Config.DIRNAME;
         final String config = folder + "/" + "config.txt";
         if (!Data.fileExists(config)) {
-            Data.createFolderFromFile(programFiles, Config.DIRNAME);
-            Data.createFileFromFile(folder, "config.txt");
-            Data.writeToFileFromFile(config, "Directory: null", true);
             determineDir();
         } else {
             final String text = Data.getTextFromFile(config);
@@ -122,18 +119,25 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         if (Config.PROMPTFOLDERDIRECTORY) {
             presentSelectDirScene();
         } else {
-            final String programFilesDir = System.getenv("APPDATA");
-            final String programFiles = programFilesDir.replace("\\", "/");
-            final String configFolder = programFiles + "/" + Config.DIRNAME;
-            final String config = configFolder + "/" + "config.txt";
             final String folderDir = Data.getJarFolder();
             final String folder = folderDir + "/" + Config.DIRNAME;
-            Data.createFolderFromFile(folderDir, Config.DIRNAME);
-            Data.createFolderFromFile(folder, "worlds");
-            Data.writeToFileFromFile(config, "Directory: " + folder, true);
+            writeDir(folderDir);
             Root.init(fileManager, folder);
             presentInitScene();
         }
+    }
+
+    public static void writeDir(final String folderPath) {
+        final String programFilesDir = System.getenv("APPDATA");
+        final String programFiles = programFilesDir.replace("\\", "/");
+        final String configFolder = programFiles + "/" + Config.DIRNAME;
+        final String config = configFolder + "/" + "config.txt";
+        final String folder = folderPath + "/" + Config.DIRNAME;
+        Data.createFolderFromFile(folderPath, Config.DIRNAME);
+        Data.createFolderFromFile(folder, "worlds");
+        Data.createFolderFromFile(programFiles, Config.DIRNAME);
+        Data.createFileFromFile(configFolder, "config.txt");
+        Data.writeToFileFromFile(config, "Directory: " + folder, true);
     }
 
     public void presentInitScene() {

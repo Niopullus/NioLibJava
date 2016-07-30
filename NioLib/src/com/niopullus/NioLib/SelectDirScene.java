@@ -26,20 +26,24 @@ public class SelectDirScene extends GUIScene {
         label = new Label("Choose the directory you would like to use for this program", theme, 40);
         complain = new Label("That directory is invalid", theme, 40);
         done = new Button("Done", theme, 40);
-        textBox = new TextBox(defaultFolder, theme, 40, 500, 1);
+        textBox = new TextBox(defaultFolder, theme, 40, Main.Width() - 100, 1);
+        label.setPosition(0, 200);
+        complain.setPosition(0, 100);
+        done.setPosition(0, -200);
+        textBox.setPosition(0, 0);
         addElement(label);
         addElement(done);
         addElement(textBox);
     }
 
-    public void buttonActivate(final SelectableGUIElement element) {
-        if (element == done) {
+    public void buttonActivate(final Button b) {
+        if (b == done) {
             final String folder = textBox.getContent();
             if (Data.fileExists(folder)) {
-                Data.createFileFromFile(folder, Config.DIRNAME);
-                Root.init(fileManager, folder);
+                Data.createFolderFromFile(folder, Config.DIRNAME);
+                Main.writeDir(folder);
+                Root.init(fileManager, folder + "/" + Config.DIRNAME);
                 presentScene(new InitScene());
-                System.out.println("Initialized Root");
             } else {
                 addElement(complain);
             }
