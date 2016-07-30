@@ -9,8 +9,6 @@ import com.niopullus.NioLib.scene.mapeditorscene.WorldPickScene;
  */
 public class InitScene extends GUIScene {
 
-    private Button b1;
-
     /**
      * Scene setup
      */
