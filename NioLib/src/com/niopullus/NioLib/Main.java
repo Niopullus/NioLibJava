@@ -101,7 +101,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     }
 
     private void setupConfig() {
-        final String programFilesDir = System.getenv("APPDATA");
+        final String programFilesDir = getProgramFiles();
         final String programFiles = programFilesDir.replace("\\", "/");
         final String folder = programFiles + "/" + Config.DIRNAME;
         final String config = folder + "/" + "config.txt";
@@ -127,8 +127,18 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         }
     }
 
+    public static String getProgramFiles() {
+        final String OS = System.getProperty("os.name");
+        final String formattedOS = OS.toUpperCase();
+        if (formattedOS.contains("WIN")) {
+            return System.getenv("AppData");
+        } else {
+            return System.getProperty("user.home") + "/Library/Application Support";
+        }
+    }
+
     public static void writeDir(final String folderPath) {
-        final String programFilesDir = System.getenv("APPDATA");
+        final String programFilesDir = getProgramFiles();
         final String programFiles = programFilesDir.replace("\\", "/");
         final String configFolder = programFiles + "/" + Config.DIRNAME;
         final String config = configFolder + "/" + "config.txt";

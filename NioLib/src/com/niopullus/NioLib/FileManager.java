@@ -151,13 +151,20 @@ public class FileManager {
             final String path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
             final String jar = path.substring(1, path.length() - 1).replace("\\", "/");
             final String jarPath;
+            String os = System.getProperty("os.name");
+            os = os.toUpperCase();
+            String result;
             int index = -1;
             for (int i = 0; i < jar.length(); i++) {
                 if ("/".equals(jar.substring(i, i + 1))) {
                     index = i;
                 }
             }
-            return jar.substring(0, index);
+            result =  jar.substring(0, index);
+            if (!os.contains("WIN")) {
+                result = "/" + result;
+            }
+            return result;
         } catch (final Exception e) {
             e.printStackTrace();
         }
