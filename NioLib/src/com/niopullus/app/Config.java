@@ -27,7 +27,7 @@ public final class Config {
     public static final int DEFAULTELEMENTGAPWIDTH = 20;
     public static final int DEFAULTELEMENTGAPHEIGHT = 20;
     public static final boolean CREATEFOLDER = true;
-    public static final boolean PROMPTFOLDERDIRECTORY = true;
+    public static final boolean PROMPTFOLDERDIRECTORY = false;
 
     public static void init() {
         //Register tiles, nodes, program setup
