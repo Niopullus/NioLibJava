@@ -1,6 +1,5 @@
 package com.niopullus.NioLib.draw;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +36,6 @@ public class ParcelElement extends DrawElement {
         return (int) (super.getHeight() * ySF);
     }
 
-    public void display(final Graphics2D g, final DrawPosition drawPosition) {
-        for (DrawElement element : elements) {
-            element.draw(g);
-        }
-    }
-
     /**
      * Used as the input for parameters for this
      * @param pack contains instance-variable initialization
@@ -68,10 +61,11 @@ public class ParcelElement extends DrawElement {
     public List<DrawElement> retrieveElements() {
         final List<DrawElement> result = new ArrayList<>();
         for (DrawElement element : elements) {
-            result.add(element);
             if (element instanceof ParcelElement) {
                 final ParcelElement parcelElement = (ParcelElement) element;
                 result.addAll(parcelElement.retrieveElements());
+            } else {
+                result.add(element);
             }
         }
         return result;
