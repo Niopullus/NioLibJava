@@ -386,13 +386,4 @@ public class Canvas {
 
     }
 
-    public enum DrawMode {
-
-        ORIGIN,
-        CENTERED,
-        MIDDLE,
-        TAB
-
-    }
-
 }

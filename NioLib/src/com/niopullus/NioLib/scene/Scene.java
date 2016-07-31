@@ -61,21 +61,6 @@ public class Scene implements Parcel {
         return mousePos;
     }
 
-    public boolean getMouseHeld() {
-        final SceneManager sceneManager = getSceneManager();
-        return sceneManager.getMouseHeld();
-    }
-
-    public boolean getMouseHeldRight() {
-        final SceneManager sceneManager = getSceneManager();
-        return sceneManager.getRightMouseHeld();
-    }
-
-    public boolean getMouseHeldMiddle() {
-        final SceneManager sceneManager = getSceneManager();
-        return sceneManager.getMiddleMouseHeld();
-    }
-
     public Scene getSuperScene() {
         return superScene;
     }

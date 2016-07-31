@@ -11,16 +11,12 @@ public class DrawPosition {
     private int dy1;
     private int dx2;
     private int dy2;
-    private int z;
-    private double angle;
 
     public DrawPosition() {
         dx1 = 0;
         dy1 = 0;
         dx2 = 0;
         dy2 = 0;
-        z = 0;
-        angle = 0;
     }
 
     public int getDx1() {
@@ -37,14 +33,6 @@ public class DrawPosition {
 
     public int getDy2() {
         return dy2;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
-    public double getAngle() {
-        return angle;
     }
 
     public int getWidth() {
@@ -71,16 +59,8 @@ public class DrawPosition {
         dy2 = _dy2;
     }
 
-    public void setZ(final int _z) {
-        z = _z;
-    }
-
-    public void setAngle(final double _angle) {
-        angle = _angle;
-    }
-
     public String toString() {
-        return "(" + dx1 + "," + dy1 + ") - (" + dx2 + "," + dy2 + ") - " + z + ", " + angle;
+        return "(" + dx1 + "," + dy1 + ") - (" + dx2 + "," + dy2 + ")";
     }
 
     public boolean isVisible() {

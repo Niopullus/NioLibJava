@@ -15,25 +15,11 @@ import java.util.List;
  */
 public class SceneManager implements Parcel {
 
-    private Main main;
     private Scene currentScene;
     private List<Scene> scenes;
 
-    public SceneManager(final Main main) {
-        this.main = main;
-        this.scenes = new ArrayList<>();
-    }
-
-    public boolean getMouseHeld() {
-        return main.getMouseHeld();
-    }
-
-    public boolean getRightMouseHeld() {
-        return main.getRightMouseHeld();
-    }
-
-    public boolean getMiddleMouseHeld() {
-        return main.getMiddleMouseHeld();
+    public SceneManager() {
+        scenes = new ArrayList<>();
     }
 
     public Scene getCurrentScene() {

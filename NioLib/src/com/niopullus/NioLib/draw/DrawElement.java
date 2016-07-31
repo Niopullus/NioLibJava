@@ -128,8 +128,6 @@ public class DrawElement {
         result.setDy1(Main.Height() - getTDy2());
         result.setDx2(getTDx2());
         result.setDy2(Main.Height() - getTDy1());
-        result.setZ(getTZ());
-        result.setAngle(getTAngle());
         return result;
     }
 
@@ -163,16 +161,6 @@ public class DrawElement {
 
     public void setOpacity(final float _opacity) {
         opacity = _opacity;
-    }
-
-    public void setPosition(final int dx1, final int dy1, final int dx2, final int dy2, final int z, final double angle, final float opacity) {
-        setDx1(dx1);
-        setDy1(dy1);
-        setDx2(dx2);
-        setDy2(dy2);
-        setZ(z);
-        setAngle(angle);
-        setOpacity(opacity);
     }
 
     /**

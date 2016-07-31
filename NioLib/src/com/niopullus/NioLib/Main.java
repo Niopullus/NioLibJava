@@ -28,10 +28,6 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     private BufferedImage image;
     private Graphics2D g;
     private SceneManager sceneManager;
-    private Point mousePos;
-    private boolean mouseHeld;
-    private boolean rightMouseHeld;
-    private boolean middleMouseHeld;
     private FileManager fileManager;
     private static final int WIDTH = Config.IMGWIDTH;
     private static final int HEIGHT = Config.IMGHEIGHT;
@@ -54,18 +50,6 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         setPreferredSize(new Dimension((int) (WIDTH * SCALE), (int) (HEIGHT * SCALE)));
         setFocusable(Config.WINDOWRESIZABLE);
         requestFocus();
-    }
-
-    public boolean getMouseHeld() {
-        return mouseHeld;
-    }
-
-    public boolean getRightMouseHeld() {
-        return rightMouseHeld;
-    }
-
-    public boolean getMiddleMouseHeld() {
-        return middleMouseHeld;
     }
 
     public void addNotify() {
@@ -252,20 +236,10 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     public void mousePressed(final MouseEvent e) {
         sceneManager.mousePressed(e);
-        switch (e.getButton()) {
-            case 1: mouseHeld = true; break;
-            case 2: rightMouseHeld = true; break;
-            case 3: middleMouseHeld = true; break;
-        }
     }
 
     public void mouseReleased(final MouseEvent e) {
         sceneManager.mouseReleased(e);
-        switch (e.getButton()) {
-            case 1: mouseHeld = false; break;
-            case 2: rightMouseHeld = false; break;
-            case 3: middleMouseHeld = false; break;
-        }
     }
 
     public void mouseEntered(final MouseEvent e) {
@@ -279,14 +253,12 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
     public void mouseDragged(final MouseEvent e) {
         if (sceneManager != null) {
             sceneManager.mouseMoved(e);
-            mousePos = e.getPoint();
         }
     }
 
     public void mouseMoved(final MouseEvent e) {
         if (sceneManager != null) {
             sceneManager.mouseMoved(e);
-            mousePos = e.getPoint();
         }
     }
 
