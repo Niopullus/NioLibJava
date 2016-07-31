@@ -69,7 +69,7 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
         running = true;
-        sceneManager = new SceneManager(this);
+        sceneManager = new SceneManager();
         fileManager = new FileManager();
         presentInitScene();
         Data.init(fileManager);
