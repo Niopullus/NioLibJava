@@ -82,8 +82,8 @@ public class Scene implements Parcel {
         height = _height;
     }
 
-    public void setSceneManager(final SceneManager sceneManager) {
-        this.sceneManager = sceneManager;
+    public void setSceneManager(final SceneManager _sceneManager) {
+        sceneManager = _sceneManager;
     }
 
     public Scene surfaceScene() {
