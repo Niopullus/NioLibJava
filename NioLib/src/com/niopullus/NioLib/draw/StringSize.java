@@ -23,4 +23,19 @@ public final class StringSize {
         return new Size(width, height);
     }
 
+    public static int getStringWidth(final String line, final Font font) {
+        final FontMetrics metrics = canvas.getFontMetrics(font);
+        return metrics.stringWidth(line);
+    }
+
+    public static int getStringHeight(final Font font) {
+        final FontMetrics metrics = canvas.getFontMetrics(font);
+        return metrics.getAscent() - metrics.getDescent();
+    }
+
+    public static int getStringLeading(final Font font) {
+        final FontMetrics metrics = canvas.getFontMetrics(font);
+        return metrics.getLeading();
+    }
+
 }

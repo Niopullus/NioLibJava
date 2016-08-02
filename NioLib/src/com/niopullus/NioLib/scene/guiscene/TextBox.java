@@ -95,8 +95,7 @@ public class TextBox extends SelectableGUIElement {
                 }
             } else if (packLetter != KeyEvent.CHAR_UNDEFINED) {
                 final String potLine = line + packLetter;
-                final FontMetrics metrics = StringSize.getFontMetrics(getFont());
-                if (metrics.stringWidth(potLine) + getWidthGap() * 2 <= getFieldWidth()) {
+                if (StringSize.getStringWidth(potLine, getFont()) + getWidthGap() * 2 <= getFieldWidth()) {
                     setContent(currentLine, potLine);
                 }
             }
@@ -104,8 +103,7 @@ public class TextBox extends SelectableGUIElement {
     }
 
     public void determineDimensions() {
-        final FontMetrics fontMetrics = StringSize.getFontMetrics(getFont());
-        final int height = fontMetrics.getAscent() - fontMetrics.getDescent();
+        final int height = StringSize.getStringHeight(getFont());
         final int width = getWidth();
         setFieldWidth(width - getBorderSpacing() * 2);
         setFieldHeight(lineLimit * height + getHeightGap() * 2 + (lineLimit - 1) * getLineGap());
@@ -125,8 +123,7 @@ public class TextBox extends SelectableGUIElement {
             final int fieldHeight;
             final int borderSpacing = getBorderSpacing();
             final int lineGap = getLineGap();
-            final FontMetrics metrics = StringSize.getFontMetrics(font);
-            final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * lineLimit + (lineLimit - 1) * lineGap;
+            final int stringHeight = StringSize.getStringHeight(font) * lineLimit + (lineLimit - 1) * lineGap;
             fieldHeight = stringHeight + 2 * heightGap;
             setFieldHeight(fieldHeight);
             setHeight(fieldHeight + borderSpacing * 2);

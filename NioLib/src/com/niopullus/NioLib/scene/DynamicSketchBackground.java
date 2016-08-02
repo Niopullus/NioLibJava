@@ -21,13 +21,19 @@ public class DynamicSketchBackground extends SketchBackground {
 
     public DynamicSketchBackground(final Sketch sketch, final int width, final int height) {
         super(sketch, width, height);
+        xShiftSpeed = 0;
+        yShiftSpeed = 0;
+        wX = 0;
+        wY = 0;
+        wWidth = sketch.getWidth();
+        wHeight = sketch.getHeight();
     }
 
     public void setXShiftSpeed(final int speed) {
         xShiftSpeed = speed;
     }
 
-    public void setyShiftSpeed(final int speed) {
+    public void setYShiftSpeed(final int speed) {
         yShiftSpeed = speed;
     }
 

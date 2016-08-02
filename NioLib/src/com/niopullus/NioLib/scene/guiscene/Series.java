@@ -124,8 +124,7 @@ public class Series extends SelectableGUIElement {
     private int getPartHeight() {
         final Font font = getFont();
         final int borderSpacing = getBorderSpacing();
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int lineHeight = metrics.getAscent() - metrics.getDescent();
+        final int lineHeight = StringSize.getStringHeight(font);
         final int heightGap = getHeightGap();
         return lineHeight + heightGap * 2 + borderSpacing * 2;
     }
@@ -245,8 +244,7 @@ public class Series extends SelectableGUIElement {
 
     public void parcelDraw(final Canvas canvas) {
         final Font font = getFont();
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int textHeight = metrics.getAscent() - metrics.getDescent();
+        final int textHeight = StringSize.getStringHeight(font);
         final int fieldHeight = getFieldHeight();
         final int heightGap = getHeightGap();
         final int borderSpacing = getBorderSpacing();

@@ -196,24 +196,16 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         tag = _tag;
     }
 
-    public void setGUIScene(final GUIScene scene) {
-        this.scene = scene;
+    public void setGUIScene(final GUIScene _scene) {
+        scene = _scene;
     }
 
-    public void setJustify(final Justify justify) {
-        this.justify = justify;
+    public void setJustify(final Justify _justify) {
+        justify = _justify;
     }
 
-    public void setTextColor(final Color color) {
-        this.textColor = color;
-    }
-
-    public void setColor(final Color color) {
-        bg.setColor(color);
-    }
-
-    public void setBorderColor(final Color color) {
-        borderBG.setColor(color);
+    public void setTextColor(final Color _color) {
+        textColor = _color;
     }
 
     public void setZ(final int _z) {
@@ -360,14 +352,13 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     public Integer shortenTo(final String line, final int width) {
         if (line != null) {
             final Font font = getFont();
-            final FontMetrics metrics = StringSize.getFontMetrics(font);
             String result;
-            if (metrics.stringWidth(line) <= width) {
+            if (StringSize.getStringWidth(line, font) <= width) {
                 return null;
             }
             for (int i = 0; i < line.length(); i++) {
                 final String modLine = line.substring(0, i + 1) + "...";
-                final int modWidth = metrics.stringWidth(modLine);
+                final int modWidth = StringSize.getStringWidth(modLine, font);
                 if (modWidth > width) {
                     return i - 1;
                 }
@@ -389,8 +380,7 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     }
 
     public int getLinePotential(final Font font, final int heightSpace, final int lineGap) {
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int lineHeight = metrics.getAscent() - metrics.getDescent() + lineGap;
+        final int lineHeight = StringSize.getStringHeight(font) + lineGap;
         return heightSpace / lineHeight;
     }
 
@@ -399,10 +389,9 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         final int widthGap = getWidthGap();
         final int width = getWidth();
         final int fieldWidth;
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
         int stringWidth = 0;
         for (String line : lines) {
-            final int tempWidth = metrics.stringWidth(line);
+            final int tempWidth = StringSize.getStringWidth(line, font);
             if (tempWidth > stringWidth) {
                 stringWidth = tempWidth;
             }
@@ -417,8 +406,7 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         final Font font = getFont();
         final int heightGap = getHeightGap();
         final int fieldHeight;
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int stringHeight = (metrics.getAscent() - metrics.getDescent()) * getLineCount() + (lines.size() - 1) * lineGap;
+        final int stringHeight = StringSize.getStringHeight(font) * getLineCount() + (lines.size() - 1) * lineGap;
         fieldHeight = stringHeight + 2 * heightGap;
         setFieldHeight(fieldHeight);
         setHeight(fieldHeight + borderSpacing * 2);
@@ -427,8 +415,7 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
 
     private void determineLineGap() {
         final Font font = getFont();
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        lineGap = metrics.getLeading();
+        lineGap = StringSize.getStringLeading(font);
     }
 
     public void updateBackgrounds() {
@@ -454,12 +441,14 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         final Font font = getFont();
         final int heightGap = getHeightGap();
         final int fieldHeight = getFieldHeight();
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int height = metrics.getAscent() - metrics.getDescent();
+        final int height = StringSize.getStringHeight(font);
         final int linesHeight = displayLines * (height + lineGap) - lineGap;
         final int hrGap = (fieldHeight - heightGap * 2 - linesHeight) / 2;
+        final Background bg = getCurrentBG();
+        final Background border = getCurrentBorder();
+        final Color textColor = getCurrentTextColor();
         int yPos;
-        canvas.o.parcel(borderBG, 0, 0, 5, 0);
+        canvas.o.parcel(border, 0, 0, 5, 0);
         canvas.o.parcel(bg, borderSpacing, borderSpacing, 10, 0);
         yPos = getHeight() - borderSpacing - heightGap - hrGap - height;
         for (int i = 0; i < displayLines; i++) {
@@ -482,6 +471,18 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         }
     }
 
+    public Background getCurrentBG() {
+        return bg;
+    }
+
+    public Background getCurrentBorder() {
+        return borderBG;
+    }
+
+    public Color getCurrentTextColor() {
+        return textColor;
+    }
+
     public void removeFromScene() {
         final GUIScene scene = getGUIScene();
         scene.removeElement(this);
@@ -496,8 +497,7 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     public int calcXPos(final String line, final int space) {
         if (line != null) {
             final Font font = getFont();
-            final FontMetrics metrics = StringSize.getFontMetrics(font);
-            final int diff = space - metrics.stringWidth(line);
+            final int diff = space - StringSize.getStringWidth(line, font);
             final int widthGap = getWidthGap();
             int result = borderSpacing + widthGap;
              if (justify == Justify.CENTER) {
@@ -511,8 +511,14 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     }
 
     public void setTheme(final Theme theme) {
-        bg.setColor(theme.getBgColor());
-        borderBG.setColor(theme.getBorderColor());
+        if (bg instanceof ColorBackground) {
+            final ColorBackground colorBG = (ColorBackground) bg;
+            colorBG.setColor(theme.getBgColor());
+        }
+        if (borderBG instanceof ColorBackground) {
+            final ColorBackground colorBorder = (ColorBackground) borderBG;
+            colorBorder.setColor(theme.getBorderColor());
+        }
         textColor = theme.getTextColor();
         borderSpacing = theme.getBorderGap();
         fontName = theme.getFontName();

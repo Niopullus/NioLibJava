@@ -85,8 +85,7 @@ public class SelectionBox extends SelectableGUIElement {
 
     public void parcelDraw(final Canvas canvas) {
         final Font font = getFont();
-        final FontMetrics metrics = StringSize.getFontMetrics(font);
-        final int textHeight = metrics.getAscent() - metrics.getDescent();
+        final int textHeight = StringSize.getStringHeight(font);
         final int fieldHeight = getFieldHeight();
         final int heightGap = getHeightGap();
         final int borderSpacing = getBorderSpacing();
@@ -117,32 +116,12 @@ public class SelectionBox extends SelectableGUIElement {
                 yPos += getHeight();
             }
         } else {
-            final Background bg = !getSelected() ? getBG() : getSelectedBG();
-            final Background border = !getSelected() ? getBorderBG() : getSelectedBorderBG();
-            final Color textColor = !getSelected() ? getTextColor() : getSelectedTextColor();
-            final int height = metrics.getAscent() - metrics.getDescent();
-            final int yPos = getBorderSpacing() + getHeightGap();
-            final String line = getLineDisplay(selection);
-            final int xPos;
-            final int rhGap = (fieldHeight - heightGap * 2 - textHeight) / 2;
-            final List<Integer> displayChars = getDisplayChars();
-            final Integer lineChars = displayChars.get(selection);
-            final String displayLine;
-            if (lineChars != null) {
-                displayLine = line.substring(0, lineChars + 1) + "...";
-            } else {
-                displayLine = line;
-            }
-            xPos = getXPos(displayLine);
-            canvas.o.parcel(border, 0, 0, 10, 0);
-            canvas.o.parcel(bg, getBorderSpacing(), getBorderSpacing(), 20, 0);
-            canvas.o.text(displayLine, textColor, getFont(), xPos, yPos + rhGap, 30, 0, 1);
+            super.parcelDraw(canvas);
         }
     }
 
     public void determineHeight() {
-        final FontMetrics metrics = StringSize.getFontMetrics(getFont());
-        final int stringHeight = metrics.getAscent() - metrics.getDescent();
+        final int stringHeight = StringSize.getStringHeight(getFont());
         setFieldHeight(stringHeight + 2 * getHeightGap());
         setHeight(getFieldHeight() + getBorderSpacing() * 2);
     }

@@ -18,9 +18,9 @@ public class Background implements Parcel {
         this(0, 0);
     }
 
-    public Background(final int width, final int height) {
-        this.width = width;
-        this.height = height;
+    public Background(final int _width, final int _height) {
+        width = _width;
+        height = _height;
     }
 
     public int getWidth() {
@@ -31,20 +31,12 @@ public class Background implements Parcel {
         return height;
     }
 
-    public Color getColor() {
-        return null; //To be overridden
+    public void setWidth(final int _width) {
+        width = _width;
     }
 
-    public void setWidth(final int width) {
-        this.width = width;
-    }
-
-    public void setHeight(final int height) {
-        this.height = height;
-    }
-
-    public void setColor(final Color color) {
-        //To be overridden
+    public void setHeight(final int _height) {
+        height = _height;
     }
 
     public void parcelDraw(final Canvas canvas) {

@@ -164,12 +164,8 @@ public class GUIScene extends Scene {
         //To be overridden
     }
 
-    public Color getBackgroundColor() {
-        return background.getColor();
-    }
-
-    public void setBackground(final Background background) {
-        this.background = background;
+    public void setBackground(final Background _background) {
+        background = _background;
         background.setWidth(getWidth());
         background.setHeight(getHeight());
     }

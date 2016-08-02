@@ -15,9 +15,9 @@ public class ColorBackground extends Background {
         super();
     }
 
-    public ColorBackground(final Color color, final int width, final int height) {
+    public ColorBackground(final Color _color, final int width, final int height) {
         super(width, height);
-        this.color = color;
+        color = _color;
     }
 
     public ColorBackground(final Color color) {
@@ -28,8 +28,8 @@ public class ColorBackground extends Background {
         return color;
     }
 
-    public void setColor(final Color color) {
-        this.color = color;
+    public void setColor(final Color _color) {
+        color = _color;
     }
 
     public void parcelDraw(final Canvas canvas) {

@@ -32,14 +32,6 @@ public class SelectableGUIElement extends GUIElement {
         setTheme(theme);
     }
 
-    public Color getSelectedColor() {
-        return selectedBG.getColor();
-    }
-
-    public Color getSelectedBorderColor() {
-        return selectedBorderBG.getColor();
-    }
-
     public Color getSelectedTextColor() {
         return selectedTextColor;
     }
@@ -56,25 +48,21 @@ public class SelectableGUIElement extends GUIElement {
         return selectedBorderBG;
     }
 
-    public void setSelectedColor(final Color color) {
-        selectedBG.setColor(color);
-    }
-
-    public void setSelectedBorderColor(final Color color) {
-        selectedBorderBG.setColor(color);
-    }
-
     public void setSelectedTextColor(final Color color) {
         selectedTextColor = color;
     }
 
     public void setTheme(final Theme t) {
         super.setTheme(t);
-        if (selectedBG != null && selectedBorderBG != null) {
-            selectedBG.setColor(t.getSelectedBgColor());
-            selectedBorderBG.setColor(t.getSelectedBorderColor());
-            selectedTextColor = t.getSelectedTextColor();
+        if (selectedBG != null && selectedBG instanceof ColorBackground) {
+            final ColorBackground colorBG = (ColorBackground) selectedBG;
+            colorBG.setColor(t.getBgColor());
         }
+        if (selectedBorderBG != null && selectedBorderBG instanceof ColorBackground) {
+            final ColorBackground colorBorder = (ColorBackground) selectedBorderBG;
+            colorBorder.setColor(t.getBorderColor());
+        }
+        selectedTextColor = t.getSelectedTextColor();
     }
 
     public void setupBackgrounds() {
@@ -111,44 +99,16 @@ public class SelectableGUIElement extends GUIElement {
         selected = false;
     }
 
-    public void parcelDraw(final Canvas canvas) {
-        if (selected) {
-            final Font font = getFont();
-            final int heightGap = getHeightGap();
-            final int fieldHeight = getFieldHeight();
-            final FontMetrics metrics = StringSize.getFontMetrics(font);
-            final int height = metrics.getAscent() - metrics.getDescent();
-            final int displayLines = getDisplayLines();
-            final int borderSpacing = getBorderSpacing();
-            final int lineGap = getLineGap();
-            final List<Integer> displayChars = getDisplayChars();
-            final int linesHeight = displayLines * (height + lineGap) - lineGap;
-            final int hrGap = (fieldHeight - heightGap * 2 - linesHeight) / 2;
-            int yPos;
-            canvas.o.parcel(selectedBorderBG, 0, 0, 5, 0);
-            canvas.o.parcel(selectedBG, borderSpacing, borderSpacing, 10, 0);
-            yPos = fieldHeight + borderSpacing - heightGap - hrGap - height;
-            for (int i = 0; i < displayLines; i++) {
-                final String line = getLineDisplay(i);
-                final String initLine = getLine(i);
-                final Integer chars = displayChars.get(i);
-                final String displayLine;
-                final String initDisplayLine;
-                final int xPos;
-                if (chars != null) {
-                    displayLine = line.substring(0, chars + 1) + "...";
-                    initDisplayLine = initLine.substring(0, chars + 1) + "...";
-                } else {
-                    displayLine = line;
-                    initDisplayLine = initLine;
-                }
-                xPos = getXPos(initDisplayLine);
-                canvas.o.text(displayLine, selectedTextColor, font, xPos, yPos, 20, 0, 1);
-                yPos -= lineGap + height;
-            }
-        } else {
-            super.parcelDraw(canvas);
-        }
+    public Background getCurrentBG() {
+        return selected ? selectedBG : super.getCurrentBG();
+    }
+
+    public Background getCurrentBorder() {
+        return selected ? selectedBorderBG : super.getCurrentBorder();
+    }
+
+    public Color getCurrentTextColor() {
+        return selected ? selectedTextColor : super.getCurrentTextColor();
     }
 
     public void activate() {
