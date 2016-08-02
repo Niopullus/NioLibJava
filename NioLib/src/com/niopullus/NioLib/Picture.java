@@ -16,11 +16,13 @@ public class Picture implements Sketch, Parcel {
 
     private BufferedImage image;
     private String name;
+    private UUID id;
     private final static List<Picture> pictures = new ArrayList<>();
 
     public Picture(final BufferedImage _image, final String _name) {
         image = _image;
         name = _name;
+        id = new UUID("pic");
     }
 
     public BufferedImage getImage() {
@@ -49,9 +51,9 @@ public class Picture implements Sketch, Parcel {
 
     private static Comparator<Picture> getComparator() {
         return (final Picture p1, final Picture p2) -> {
-            final String name1 = p1.name;
-            final String name2 = p2.name;
-            return name1.compareTo(name2);
+            final UUID id1 = p1.id;
+            final UUID id2 = p2.id;
+            return id1.compareTo(id2);
         };
     }
 

@@ -1,5 +1,7 @@
 package com.niopullus.NioLib.draw;
 
+import com.niopullus.NioLib.scene.guiscene.Size;
+
 import java.awt.*;
 import java.awt.Canvas;
 
@@ -14,8 +16,11 @@ public final class StringSize {
         //Blank implementation
     }
 
-    public static FontMetrics getFontMetrics(final Font font) {
-        return canvas.getFontMetrics(font);
+    public static Size getStringSize(final String line, final Font font) {
+        final FontMetrics metrics = canvas.getFontMetrics(font);
+        final int width = metrics.stringWidth(line);
+        final int height = metrics.getAscent() - metrics.getDescent();
+        return new Size(width, height);
     }
 
 }

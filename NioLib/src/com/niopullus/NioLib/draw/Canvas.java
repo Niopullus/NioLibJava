@@ -1,6 +1,7 @@
 package com.niopullus.NioLib.draw;
 
 import com.niopullus.NioLib.Sketch;
+import com.niopullus.NioLib.scene.guiscene.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,46 +194,6 @@ public class Canvas {
             addElement(element);
         }
 
-        public void animation(final Animation animation, final int x, final int y, final int z) {
-            animation(animation, x, y, 1, z);
-        }
-
-        public void animation(final Animation animation, final int x, final int y, final double scaleFactor, final int z) {
-            animation(animation, x, y, (int) (animation.getWidth() * scaleFactor), (int) (animation.getHeight() * scaleFactor), z);
-        }
-
-        public void animation(final Animation animation, final int x, final int y, final int width, final int height, final int z) {
-            animation(animation, x, y, width, height, z, 0);
-        }
-
-        public void animation(final Animation animation, final int x, final int y, final int width, final int height, final int z,
-                              final double angle) {
-            animation(animation, x, y, x + width, y + height, 0, 0, animation.getWidth(), animation.getHeight(), z, angle, 1);
-        }
-
-        public void animation(final Animation animation, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1,
-                              final int sy1, final int sx2, final int sy2, final int z, final double angle, final float opacity) {
-            final int width = dx2 - dx1;
-            final int height = dy2 - dy1;
-            final Point position = getPos(dx1, dy1, width, height);
-            final ImageElement.ImageElementPack pack = new ImageElement.ImageElementPack();
-            final ImageElement element;
-            pack.image = animation.getImage();
-            pack.dx1 = position.x;
-            pack.dy1 = position.y;
-            pack.dx2 = position.x + width;
-            pack.dy2 = position.y + height;
-            pack.sx1 = sx1;
-            pack.sy1 = sy1;
-            pack.sx2 = sx2;
-            pack.sy2 = sy2;
-            pack.z = z;
-            pack.angle = angle;
-            pack.opacity = opacity;
-            element = new ImageElement(pack);
-            addElement(element);
-        }
-
         public void sketch(final Sketch sketch, final int x, final int y, final int z) {
             sketch(sketch, x, y, 1, z);
         }
@@ -284,9 +245,9 @@ public class Canvas {
 
         public void text(final String line, final Color color, final Font font, final int x, final int y, final int z, final double angle,
                          final float opacity) {
-            final FontMetrics fontMetrics = StringSize.getFontMetrics(font);
-            final int width = fontMetrics.stringWidth(line);
-            final int height = fontMetrics.getAscent() - fontMetrics.getDescent();
+            final Size size = StringSize.getStringSize(line, font);
+            final int width = size.getWidth();
+            final int height = size.getHeight();
             final Point position = getPos(x, y, width, height);
             final TextElement.TextElementPack pack = new TextElement.TextElementPack();
             final TextElement element;

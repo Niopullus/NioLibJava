@@ -77,7 +77,7 @@ public class Animation implements Sketch, Parcel {
     }
 
     public void parcelDraw(final Canvas canvas) {
-        canvas.o.animation(this, 0, 0, width, height, 0);
+        canvas.o.sketch(this, 0, 0, width, height, 0);
     }
 
 }
