@@ -113,7 +113,7 @@ public class Scene implements Parcel {
     public final void parcelDraw(final Canvas canvas) {
         drawScene(canvas);
         if (subscene != null) {
-            canvas.c(getWidth(), getHeight()).parcel(subscene, 0, 0, 5000, 0);
+            canvas.c(width, height).parcel(subscene, 0, 0, 5000, 0);
         }
     }
 
