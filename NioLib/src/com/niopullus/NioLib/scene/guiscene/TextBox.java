@@ -14,7 +14,6 @@ public class TextBox extends SelectableGUIElement {
     private boolean expand;
     private int tick;
     private int currentLine;
-    private int height;
     private int lineLimit;
 
     public TextBox(final String content, final Theme theme, final int fontSize, final GUISize size, final int lineLimit) {

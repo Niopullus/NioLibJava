@@ -37,7 +37,7 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     public boolean getSelected() {
-        return this.selected;
+        return selected;
     }
 
     public Background getSelectedBG() {
@@ -52,17 +52,17 @@ public class SelectableGUIElement extends GUIElement {
         selectedTextColor = color;
     }
 
-    public void setTheme(final Theme t) {
-        super.setTheme(t);
-        if (selectedBG != null && selectedBG instanceof ColorBackground) {
+    public void setTheme(final Theme theme) {
+        super.setTheme(theme);
+        if (selectedBG instanceof ColorBackground) {
             final ColorBackground colorBG = (ColorBackground) selectedBG;
-            colorBG.setColor(t.getBgColor());
+            colorBG.setColor(theme.getSelectedBgColor());
         }
-        if (selectedBorderBG != null && selectedBorderBG instanceof ColorBackground) {
+        if (selectedBorderBG instanceof ColorBackground) {
             final ColorBackground colorBorder = (ColorBackground) selectedBorderBG;
-            colorBorder.setColor(t.getBorderColor());
+            colorBorder.setColor(theme.getSelectedBorderColor());
         }
-        selectedTextColor = t.getSelectedTextColor();
+        selectedTextColor = theme.getSelectedTextColor();
     }
 
     public void setupBackgrounds() {
@@ -136,6 +136,10 @@ public class SelectableGUIElement extends GUIElement {
     }
 
     public void mousePress(final Scene.MousePack pack) {
+        //To be overridden
+    }
+
+    public void mouseRelease(final Scene.MousePack pack) {
         //To be overridden
     }
 

@@ -12,7 +12,7 @@ public class InitScene extends GUIScene {
      * Scene setup
      */
     public InitScene() {
-
+        super();
     }
 
     /**

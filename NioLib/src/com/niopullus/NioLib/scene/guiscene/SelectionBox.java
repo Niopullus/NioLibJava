@@ -33,7 +33,7 @@ public class SelectionBox extends SelectableGUIElement {
 
     public void addLine(final String item) {
         super.addLine(item);
-        selection = getLineCount() / 2;
+        selection = getLineCount() - 1;
     }
 
     public void activate() {

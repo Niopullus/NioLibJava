@@ -20,7 +20,6 @@ public class Series extends SelectableGUIElement {
     private GUIElement pageDisplay;
     private int page;
     private int pages;
-    private int numCheckable;
     private Integer partsPerPage;
     private Integer selectedItem;
     private Integer checkLimit;
@@ -62,6 +61,9 @@ public class Series extends SelectableGUIElement {
 
     public void disableCheckBoxes() {
         checkBoxes = false;
+        updateDimensions();
+        updateBackgrounds();
+        checked = new ArrayList<>();
     }
 
     public List<Boolean> getCheckedIndexes() {
@@ -94,7 +96,6 @@ public class Series extends SelectableGUIElement {
             final int fieldWidth;
             final int borderSpacing = getBorderSpacing();
             final int partSize = getPartHeight() - borderSpacing * 2;
-            final int widthGap = getWidthGap();
             width = getWidth();
             fieldWidth = getFieldWidth();
             setWidth(width + partSize);
@@ -109,8 +110,8 @@ public class Series extends SelectableGUIElement {
     }
 
     private void fillChecked() {
-        checked = new ArrayList<>();
         final int lineCount = getLineCount();
+        checked = new ArrayList<>();
         for (int i = 0; i < lineCount; i++) {
             checked.add(false);
         }
@@ -150,9 +151,6 @@ public class Series extends SelectableGUIElement {
 
     public int getWidthFree() {
         final int partSize = getPartHeight();
-        final int borderSpacing = getBorderSpacing();
-        final int smallPartSize = partSize - borderSpacing * 2;
-        final int widthGap = getWidthGap();
         return super.getWidthFree() - partSize;
     }
 

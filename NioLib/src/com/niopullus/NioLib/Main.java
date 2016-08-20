@@ -175,8 +175,8 @@ public class Main extends JPanel implements Runnable, KeyListener, MouseListener
 
     private void iterateDrawElements(final List<DrawElement> elements, final Graphics2D g) {
         final Comparator<DrawElement> comparator = (final DrawElement o1, final DrawElement o2) -> {
-            final Integer z = o1.getZ();
-            return z.compareTo(o2.getZ());
+            final Integer z = o1.getTZ();
+            return z.compareTo(o2.getTZ());
         };
         elements.sort(comparator);
         for (DrawElement element : elements) {

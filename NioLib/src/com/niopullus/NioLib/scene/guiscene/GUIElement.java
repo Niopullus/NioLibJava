@@ -46,7 +46,6 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         if (content != null) {
             lines.add(content);
         }
-        textColor = Color.BLACK;
         x = 0;
         y = 0;
         z = 0;
@@ -127,7 +126,9 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     public Rectangle getRectOrigin() {
         final int width = getWidth();
         final int height = getHeight();
-        return new Rectangle(Main.Width() / 2 - width / 2 + x, Main.Height() / 2 - height / 2 + y, width, height);
+        final int rectX = Main.Width() / 2 - width / 2 + x;
+        final int rectY = Main.Height() / 2 - height / 2 + y;
+        return new Rectangle(rectX, rectY, width, height);
     }
 
     public GUIScene getGUIScene() {
@@ -244,6 +245,8 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
 
     public void setFontName(final String _fontName) {
         fontName = _fontName;
+        updateDimensions();
+        updateBackgrounds();
     }
 
     public void setFontSize(final int _fontSize) {
@@ -328,8 +331,6 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     }
 
     public void shortenLine(final int index) {
-        final int fieldWidth = getFieldWidth();
-        final int widthGap = getWidthGap();
         final String line = lines.get(index);
         final int widthFree = getWidthFree();
         final Integer chars = shortenTo(line, widthFree);
@@ -352,7 +353,6 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     public Integer shortenTo(final String line, final int width) {
         if (line != null) {
             final Font font = getFont();
-            String result;
             if (StringSize.getStringWidth(line, font) <= width) {
                 return null;
             }
@@ -387,7 +387,6 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
     public void determineWidth() {
         final Font font = getFont();
         final int widthGap = getWidthGap();
-        final int width = getWidth();
         final int fieldWidth;
         int stringWidth = 0;
         for (String line : lines) {
@@ -411,11 +410,6 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
         setFieldHeight(fieldHeight);
         setHeight(fieldHeight + borderSpacing * 2);
         displayLines = lines.size();
-    }
-
-    private void determineLineGap() {
-        final Font font = getFont();
-        lineGap = StringSize.getStringLeading(font);
     }
 
     public void updateBackgrounds() {
@@ -500,7 +494,7 @@ public class GUIElement implements Parcel, Comparable<GUIElement> {
             final int diff = space - StringSize.getStringWidth(line, font);
             final int widthGap = getWidthGap();
             int result = borderSpacing + widthGap;
-             if (justify == Justify.CENTER) {
+            if (justify == Justify.CENTER) {
                 result += diff / 2;
             } else if (justify == Justify.RIGHT) {
                 result += diff;

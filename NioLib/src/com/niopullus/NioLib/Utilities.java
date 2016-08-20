@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.List;
 
 /**Includes helpful methods
  * Created by Owen on 3/5/2016.
@@ -28,21 +29,8 @@ public class Utilities {
         return image;
     }
 
-    public static void drawCenteredString(String s, int tx, int ty, Graphics g) {
-        int w = Main.Width();
-        int h = Main.Height();
-        FontMetrics fm = g.getFontMetrics();
-        int x = ((w - fm.stringWidth(s)) / 2) + tx;
-        int y = ((fm.getAscent() + (h - (fm.getAscent() + fm.getDescent())) / 2)) + ty;
-        g.drawString(s, x, Utilities.convertY(y) + (fm.getAscent() + fm.getDescent()) * 2 / 3);
-    }
-
-    public static int convertY(int y) {
-        return Main.Height() - y;
-    }
-
     public static <T extends Comparable> T lesser(T input1, T input2) {
-        int comp = input1.compareTo(input2);
+        final int comp = input1.compareTo(input2);
         if (comp < 0) {
             return input1;
         } else {
@@ -51,7 +39,7 @@ public class Utilities {
     }
 
     public static <T extends Comparable> T greater(T input1, T input2) {
-        int comp = input1.compareTo(input2);
+        final int comp = input1.compareTo(input2);
         if (comp > 0) {
             return input1;
         } else {
@@ -88,8 +76,8 @@ public class Utilities {
         return r1.x <= r2.getMaxX() && r1.getMaxX() >= r2.x && r1.y <= r2.getMaxY() && r1.getMaxY() >= r2.y;
     }
 
-    public static ArrayList<BufferedImage> loadImages(ArrayList<String> dirs) {
-        ArrayList<BufferedImage> images = new ArrayList<>();
+    public static List<BufferedImage> loadImages(List<String> dirs) {
+        List<BufferedImage> images = new ArrayList<>();
         for (String imgDir : dirs) {
             images.add(Utilities.loadImage(imgDir));
         }

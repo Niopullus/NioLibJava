@@ -232,6 +232,16 @@ public class GUIScene extends Scene {
             } else {
                 selected.mousePress(pack);
             }
+        } else {
+            activate();
+        }
+    }
+
+    public void mouseRelease(final MousePack pack) {
+        if (selected != null) {
+            if (selected.isOverrideMouse()) {
+                selected.mouseRelease(pack);
+            }
         }
     }
 
